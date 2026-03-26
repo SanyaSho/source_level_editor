@@ -32,6 +32,31 @@
     processorArchitecture='*' publicKeyToken='6595b64144ccf1df' \
     language='*'\"")
 #endif
+
+#if defined( SLE )
+static void WaitForDebuggerConnect( LPSTR lpCmdLine, int time )
+{
+	if( strstr( lpCmdLine, "-wait_for_debugger" ) )
+	{
+		DWORD startTick = GetTickCount64();
+		DWORD timeoutMS = time * 1000;
+
+		printf( "\nArg -wait_for_debugger found.\nWaiting %dsec for debugger...\n", time );
+
+		while( GetTickCount64() - startTick < timeoutMS )
+		{
+			if( IsDebuggerPresent() )
+			{
+				printf( "Debugger connected...\n\n" );
+				return;
+			}
+
+			Sleep( 100 );
+		}
+	}
+}
+#endif // SLE
+
 //-----------------------------------------------------------------------------
 // Global systems
 //-----------------------------------------------------------------------------
@@ -69,6 +94,11 @@ DEFINE_WINDOWED_APPLICATION_OBJECT_GLOBALVAR( g_ApplicationObject );
 //-----------------------------------------------------------------------------
 bool CHammerApp::Create( )
 {
+#if defined( SLE )
+	// Wait for debugger to be connected in the next 15 seconds
+	WaitForDebuggerConnect( (LPSTR)CommandLine()->GetCmdLine(), 15 );
+#endif // SLE
+
 	// Save some memory so engine/hammer isn't so painful
 	CommandLine()->AppendParm( "-disallowhwmorph", NULL );
 	
