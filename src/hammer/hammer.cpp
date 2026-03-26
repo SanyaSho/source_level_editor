@@ -531,6 +531,8 @@ bool CHammer::Connect( CreateInterfaceFn factory )
 	{
 		strcat( m_szAppDir, "\\bin" );
 	}
+
+	g_pFullFileSystem->AddSearchPath( "level_editor", "GAME", PATH_ADD_TO_HEAD );
 	
 	// Create the message window object for capturing errors and warnings.
 	// This does NOT create the window itself. That happens later in CMainFrame::Create.

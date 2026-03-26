@@ -810,7 +810,7 @@ void StudioModel::DrawModel3D(CRender3D *pRender, const Color &color, float flAl
 			if ( !pRender->IsPicking() )
 			{
 				pRender->PushRenderMode(RENDER_MODE_CURRENT);
-				IMaterial* overlay = materials->FindMaterial("../../bin/level_editor/materials/editor/modelflatshaded", TEXTURE_GROUP_OTHER, false);
+				IMaterial* overlay = materials->FindMaterial("editor/modelflatshaded", TEXTURE_GROUP_OTHER, false);
 				if ( overlay )
 				{
 					overlay->AddRef();
@@ -887,7 +887,7 @@ void StudioModel::DrawModel3D(CRender3D *pRender, const Color &color, float flAl
 		//// SLE NEW - draw overlaying model in solid colour as selection overlay
 		if(!(pRender->IsPicking()) && bSelectionOverlay)
 		{
-			IMaterial* overlay = materials->FindMaterial("../../bin/level_editor/materials/editor/modelselectionoverlay", TEXTURE_GROUP_OTHER, false);
+			IMaterial* overlay = materials->FindMaterial("editor/modelselectionoverlay", TEXTURE_GROUP_OTHER, false);
 			if (overlay)
 			{
 				overlay->AddRef();

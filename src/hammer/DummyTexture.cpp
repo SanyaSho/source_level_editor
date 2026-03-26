@@ -44,7 +44,7 @@ CDummyTexture::CDummyTexture(const char *pszName, TEXTUREFORMAT eFormat)
 	if (!errorMaterial && Options.view3d.bMissingMatAsError)
 	{
 	//	errorMaterial = materials->CreateMaterial("__editor_error", new KeyValues("UnlitGeneric", "$basetexture", "error"));
-		errorMaterial = materials->FindMaterial("../../bin/level_editor/materials/editor/missing", TEXTURE_GROUP_OTHER, false);
+		errorMaterial = materials->FindMaterial("editor/missing", TEXTURE_GROUP_OTHER, false);
 			
 		errorMaterial->AddRef();
 	}
