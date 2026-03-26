@@ -1054,8 +1054,8 @@ bool CRender::SetView( CMapView * pView )
 		!GetRequiredMaterial( "editor/flatnocull", m_pFlatNoCull[0] ) ||
 		!GetRequiredMaterial( "editor/dotted", m_pDotted[0]	)	
 #ifdef SLE //// SLE NEW - some extra overlays	
-		//|| !GetRequiredMaterial( "../../bin/level_editor/materials/editor/clippingoverlay", m_pClippingOverlay[0])
-		//|| !GetRequiredMaterial( "../../bin/level_editor/materials/editor/hiddenwire", m_pHiddenWire[0])
+		//|| !GetRequiredMaterial( "editor/clippingoverlay", m_pClippingOverlay[0])
+		//|| !GetRequiredMaterial( "editor/hiddenwire", m_pHiddenWire[0])
 #endif
 		)
 	{

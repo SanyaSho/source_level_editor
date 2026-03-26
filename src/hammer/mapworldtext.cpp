@@ -199,7 +199,7 @@ void CWorldTextHelper::RenderWorldText(CRender2D* pRender2D, CRender3D* pRender3
 	Vector vecStartPos;
 	VectorCopy( m_Origin, vecStartPos );
 
-	IMaterial* pDebugText = materials->FindMaterial("../../bin/level_editor/materials/editor/worldtext", TEXTURE_GROUP_OTHER, false );
+	IMaterial* pDebugText = materials->FindMaterial("editor/worldtext", TEXTURE_GROUP_OTHER, false );
 	if (!pDebugText)
 		return;
 	else
