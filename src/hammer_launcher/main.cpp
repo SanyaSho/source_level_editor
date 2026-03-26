@@ -22,6 +22,9 @@
 #include "inputsystem/iinputsystem.h"
 #include "tier0/icommandline.h"
 #include "p4lib/ip4.h"
+#if defined( SLE ) && defined( SLE_STEAM )
+#include "steam/steam_api.h"
+#endif // SLE_STEAM
 
 #ifdef SLE
 //#define NEW_FILESYSTEM
@@ -55,6 +58,35 @@ static void WaitForDebuggerConnect( LPSTR lpCmdLine, int time )
 		}
 	}
 }
+
+#if defined( SLE_STEAM )
+
+#if !defined( ENGINE_DLL )
+#define WarningAndLog Warning
+#define MsgAndLog Msg
+#endif // ENGINE_DLL
+
+void InstallSteamAPIWarningMessageHook()
+{
+	if ( !SteamUtils() )
+		return;
+
+	SteamUtils()->SetWarningMessageHook(
+		[] ( int nSeverity, const char *pchDebugText )
+		{
+			if ( nSeverity != 0 )
+			{
+				WarningAndLog( "[SteamAPI] %s\n", pchDebugText );
+			}
+			else
+			{
+				MsgAndLog( "[SteamAPI] %s\n", pchDebugText );
+			}
+		}
+	);
+}
+#endif // SLE_STEAM
+
 #endif // SLE
 
 //-----------------------------------------------------------------------------
@@ -212,6 +244,18 @@ bool CHammerApp::PreInit( )
 	if ( !g_pHammer->InitSessionGameConfig( GetVProjectCmdLineValue() ) )
 		return false;
 
+#if defined( SLE ) && defined( SLE_STEAM )
+	// Initialize Steam for AppId-based mounting from TF2
+	if ( !SteamAPI_Init() )
+	{
+		Error( "Failed to initialize SteamAPI" );
+	}
+
+	InstallSteamAPIWarningMessageHook();
+
+	SteamAPI_SetTryCatchCallbacks( false ); // We don't use exceptions, so tell steam not to use try/catch in callback handlers
+#endif // SLE_STEAM
+
 #ifdef NEW_FILESYSTEM
 	bool bDone = false;
 	do
@@ -279,6 +323,9 @@ bool CHammerApp::PreInit( )
 
 void CHammerApp::PostShutdown()
 {
+#if defined( SLE ) && defined( SLE_STEAM )
+	SteamAPI_Shutdown();
+#endif // SLE && SLE_STEAM
 }
 
 //-----------------------------------------------------------------------------

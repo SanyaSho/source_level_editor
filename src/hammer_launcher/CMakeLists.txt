@@ -18,6 +18,9 @@ BEGIN_SRC( HAMMER_LAUNCHER_SOURCE_FILES "Source Files" )
 		SOURCES
 		#$Folder "Source Files"
 		#{
+			"${SRCDIR}/public/filesystem_init.cpp"
+			"${SRCDIR}/public/filesystem_init.h"
+
 			"main.cpp"
 		#}
 	)
@@ -49,6 +52,13 @@ add_object(
 	SOURCES ${HAMMER_LAUNCHER_SOURCE_FILES}
 )
 
+target_compile_definitions(
+	hammer_launcher PRIVATE
+
+	# SLE
+	SLE_STEAM
+)
+
 target_link_options(
 	hammer_launcher PRIVATE
 
@@ -61,3 +71,6 @@ target_link_libraries(
 	appframework
 )
 
+target_use_steamapi(
+	hammer_launcher
+)
