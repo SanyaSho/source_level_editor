@@ -50,3 +50,12 @@ int build_number( void )
 
 	return b;
 }
+
+#if defined( SLE )
+#include "revision.h"
+
+const char *GetRevisionInfo()
+{
+	return BUILD_GIT_BRANCH "@" BUILD_GIT_COMMIT;
+}
+#endif // SLE

@@ -413,6 +413,7 @@ BEGIN_SRC( HAMMER_DLL_SOURCE_FILES "Source Files" )
 			"ChildFrm.cpp"
 			"ChildFrm.h"
 			"BuildNum.cpp"
+			"BuildNum.h"
 			"MainFrm.cpp"
 			"MainFrm.h"
 			"MDIClientWnd.cpp"
@@ -682,8 +683,4 @@ target_link_libraries(
 	tier2
 	tier3
 	vgui_controls
-)
-
-target_use_steamapi(
-	hammer_dll
 )

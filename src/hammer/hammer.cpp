@@ -1249,7 +1249,7 @@ InitReturnVal_t CHammer::HammerInternalInit()
 	pMainFrame->UpdateWindow();
 
 #ifdef SLE // report editor being launched
-	Msg( mwStatus, "Preparing Source Level Editor 2.117..." );
+	Msg( mwStatus, "Preparing Source Level Editor 2.117... (%s)", GetRevisionInfo() );
 #endif
 
 	// Now that we've initialized the file system, we can parse this config's gameinfo.txt for the additional settings there.
@@ -1369,7 +1369,7 @@ InitReturnVal_t CHammer::HammerInternalInit()
 
 #ifdef SLE // report editor being launched
 	Msg( mwStatus, "------------------------------------------------------------------" );
-	Msg( mwStatus, "Done loading Source Level Editor 2.117" );
+	Msg( mwStatus, "Done loading Source Level Editor 2.117 (%s)", GetRevisionInfo() );
 #endif
 	return INIT_OK;
 }
@@ -1784,7 +1784,11 @@ BOOL CAboutDlg::OnInitDialog(void)
 		char szTemp2[MAX_PATH];
 		int nBuild = build_number();
 		pWnd->GetWindowText(szTemp1, sizeof(szTemp1));
+#if defined( SLE )
+		sprintf(szTemp2, szTemp1, nBuild, GetRevisionInfo());
+#else
 		sprintf(szTemp2, szTemp1, nBuild);
+#endif
 		pWnd->SetWindowText(szTemp2);
 	}
 

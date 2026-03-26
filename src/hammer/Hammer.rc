@@ -1199,7 +1199,7 @@ BEGIN
     LTEXT           "Made for personal use. For non-profit use only.",IDC_STATIC,38,31,201,10
     LTEXT           "Valve Hammer Editor is a trademark of Valve Corporation.",IDC_STATIC,38,43,201,10
 //    LTEXT           " ",IDC_REDHERRING,13,47,156,8
-    LTEXT           "Build %d",IDC_BUILD_NUMBER,38,7,69,8
+    LTEXT           "Build %d (%s)",IDC_BUILD_NUMBER,38,7,69,8
 END
 
 //// PROGRESS BAR PANEL

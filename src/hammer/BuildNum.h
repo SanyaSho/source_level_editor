@@ -11,4 +11,8 @@
 
 int build_number( void );
 
+#if defined( SLE )
+const char *GetRevisionInfo();
+#endif // SLE
+
 #endif // BUILDNUM_H
