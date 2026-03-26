@@ -554,7 +554,7 @@ void CGameConfig::LoadGDFiles(void)
 		{
 			CMapWorld *pWorld = pDoc->GetMapWorld();
 			pWorld->SetClass(GD.ClassForName(pWorld->GetClassName()));
-			pWorld->EnumChildren((ENUMMAPCHILDRENPROC)UpdateClassPointer, (DWORD)&GD, MAPCLASS_TYPE(CMapEntity));
+			pWorld->EnumChildren((ENUMMAPCHILDRENPROC)UpdateClassPointer, (DWORD_PTR)&GD, MAPCLASS_TYPE(CMapEntity));
 		}
 	}
 }

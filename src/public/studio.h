@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -26,7 +26,7 @@
 #include "datamap.h"
 #include "generichash.h"
 #include "localflexcontroller.h"
-
+#include "utlsymbol.h"
 
 #define STUDIO_ENABLE_PERF_COUNTERS
 
@@ -106,6 +106,39 @@ struct mstudiodata_t
 #define STUDIO_PROC_AIMATATTACH 4
 #define STUDIO_PROC_JIGGLE 5
 
+// If you want to embed a pointer into one of the structures that is serialized, use this class! It will ensure that the pointers consume the 
+// right amount of space and work correctly across 32 and 64 bit. It also makes sure that there is no surprise about how large the structure
+// is when placed in the middle of another structure, and supports Intel's desired behavior on 64-bit that pointers are always 8-byte aligned.
+#pragma pack( push, 4 )
+template < class T > 
+struct ALIGN4 serializedstudioptr_t
+{
+	T* m_pData;
+#ifndef PLATFORM_64BITS
+	int32 padding;
+#endif
+
+	serializedstudioptr_t() 
+	{ 
+		m_pData = nullptr; 
+		#if _DEBUG && !defined( PLATFORM_64BITS )
+			padding = 0; 
+		#endif
+	}
+
+	inline operator       T*()             { return m_pData; }
+	inline operator const T*() const       { return m_pData; }
+
+	inline       T* operator->( )          { return m_pData; }
+	inline const T* operator->( ) const    { return m_pData; }
+
+	inline T* operator=( T* ptr )          { return m_pData = ptr; }
+	
+} ALIGN4_POST;
+
+#pragma pack( pop )
+
+
 struct mstudioaxisinterpbone_t
 {
 	DECLARE_BYTESWAP_DATADESC();
@@ -114,7 +147,7 @@ struct mstudioaxisinterpbone_t
 	Vector			pos[6];	// X+, X-, Y+, Y-, Z+, Z-
 	Quaternion		quat[6];// X+, X-, Y+, Y-, Z+, Z-
 
-	mstudioaxisinterpbone_t(){}
+	mstudioaxisinterpbone_t() = default;
 private:
 	// No copy constructors allowed
 	mstudioaxisinterpbone_t(const mstudioaxisinterpbone_t& vOther);
@@ -129,7 +162,7 @@ struct mstudioquatinterpinfo_t
 	Vector			pos;		// new position
 	Quaternion		quat;		// new angle
 
-	mstudioquatinterpinfo_t(){}
+	mstudioquatinterpinfo_t() = default;
 private:
 	// No copy constructors allowed
 	mstudioquatinterpinfo_t(const mstudioquatinterpinfo_t& vOther);
@@ -143,7 +176,7 @@ struct mstudioquatinterpbone_t
 	int				triggerindex;
 	inline mstudioquatinterpinfo_t *pTrigger( int i ) const { return  (mstudioquatinterpinfo_t *)(((byte *)this) + triggerindex) + i; };
 
-	mstudioquatinterpbone_t(){}
+	mstudioquatinterpbone_t() = default;
 private:
 	// No copy constructors allowed
 	mstudioquatinterpbone_t(const mstudioquatinterpbone_t& vOther);
@@ -228,7 +261,7 @@ struct mstudioaimatbone_t
 	Vector			upvector;
 	Vector			basepos;
 
-	mstudioaimatbone_t() {}
+	mstudioaimatbone_t() = default;
 private:
 	// No copy constructors allowed
 	mstudioaimatbone_t(const mstudioaimatbone_t& vOther);
@@ -264,7 +297,7 @@ struct mstudiobone_t
 
 	int					unused[8];		// remove as appropriate
 
-	mstudiobone_t(){}
+	mstudiobone_t() = default;
 private:
 	// No copy constructors allowed
 	mstudiobone_t(const mstudiobone_t& vOther);
@@ -306,7 +339,7 @@ struct mstudiolinearbone_t
 
 	int unused[6];
 
-	mstudiolinearbone_t(){}
+	mstudiolinearbone_t() = default;
 private:
 	// No copy constructors allowed
 	mstudiolinearbone_t(const mstudiolinearbone_t& vOther);
@@ -337,7 +370,7 @@ struct mstudioboneflexdrivercontrol_t
 	float m_flMin;				// Min value of bone component mapped to 0 on flex controller
 	float m_flMax;				// Max value of bone component mapped to 1 on flex controller
 
-	mstudioboneflexdrivercontrol_t(){}
+	mstudioboneflexdrivercontrol_t() = default;
 private:
 	// No copy constructors allowed
 	mstudioboneflexdrivercontrol_t( const mstudioboneflexdrivercontrol_t &vOther );
@@ -363,7 +396,7 @@ struct mstudioboneflexdriver_t
 
 	int unused[3];
 
-	mstudioboneflexdriver_t(){}
+	mstudioboneflexdriver_t() = default;
 private:
 	// No copy constructors allowed
 	mstudioboneflexdriver_t( const mstudioboneflexdriver_t &vOther );
@@ -435,7 +468,7 @@ struct mstudiobbox_t
 		return ((const char*)this) + szhitboxnameindex;
 	}
 
-	mstudiobbox_t() {}
+	mstudiobbox_t() = default;
 
 private:
 	// No copy constructors allowed
@@ -499,7 +532,7 @@ struct mstudioikerror_t
 	Vector		pos;
 	Quaternion	q;
 
-	mstudioikerror_t() {}
+	mstudioikerror_t() = default;
 
 private:
 	// No copy constructors allowed
@@ -514,7 +547,7 @@ struct mstudiocompressedikerror_t
 	float	scale[6];
 	short	offset[6];
 	inline mstudioanimvalue_t *pAnimvalue( int i ) const { if (offset[i] > 0) return  (mstudioanimvalue_t *)(((byte *)this) + offset[i]); else return NULL; };
-	mstudiocompressedikerror_t(){}
+	mstudiocompressedikerror_t() = default;
 
 private:
 	// No copy constructors allowed
@@ -565,7 +598,7 @@ struct mstudioikrule_t
 
 	int			unused[7];
 
-	mstudioikrule_t() {}
+	mstudioikrule_t() = default;
 
 private:
 	// No copy constructors allowed
@@ -664,7 +697,7 @@ struct mstudiomovement_t
 	Vector				vector;		// movement vector relative to this blocks initial angle
 	Vector				position;	// relative to start of animation???
 
-	mstudiomovement_t(){}
+	mstudiomovement_t() = default;
 private:
 	// No copy constructors allowed
 	mstudiomovement_t(const mstudiomovement_t& vOther);
@@ -733,7 +766,7 @@ struct mstudioanimdesc_t
 	byte				*pZeroFrameData( ) const { if (zeroframeindex) return (((byte *)this) + zeroframeindex); else return NULL; };
 	mutable float		zeroframestalltime;		// saved during read stalls
 
-	mstudioanimdesc_t(){}
+	mstudioanimdesc_t() = default;
 private:
 	// No copy constructors allowed
 	mstudioanimdesc_t(const mstudioanimdesc_t& vOther);
@@ -753,6 +786,14 @@ struct mstudioautolayer_t
 	float				peak;	// start of full influence
 	float				tail;	// end of full influence
 	float				end;	// end of all influence
+};
+
+struct mstudioactivitymodifier_t
+{
+	DECLARE_BYTESWAP_DATADESC();
+	
+	int					sznameindex;
+	inline char			*pszName() { return (sznameindex) ? (char *)(((byte *)this) + sznameindex ) : NULL; }
 };
 
 // sequence descriptions
@@ -851,9 +892,13 @@ struct mstudioseqdesc_t
 
 	int					cycleposeindex;		// index of pose parameter to use as cycle index
 
-	int					unused[7];		// remove/add as appropriate (grow back to 8 ints on version change!)
+	int					activitymodifierindex;
+	int					numactivitymodifiers;
+	inline mstudioactivitymodifier_t *pActivityModifier( int i ) const { Assert( i >= 0 && i < numactivitymodifiers); return activitymodifierindex != 0 ? (mstudioactivitymodifier_t *)(((byte *)this) + activitymodifierindex) + i : NULL; };
 
-	mstudioseqdesc_t(){}
+	int					unused[5];		// remove/add as appropriate (grow back to 8 ints on version change!)
+
+	mstudioseqdesc_t() = default;
 private:
 	// No copy constructors allowed
 	mstudioseqdesc_t(const mstudioseqdesc_t& vOther);
@@ -1053,7 +1098,7 @@ public:
 	};
 	friend class CSortByIndex;
 
-	mstudiovertanim_t(){}
+	mstudiovertanim_t() = default;
 //private:
 // No copy constructors allowed, but it's needed for std::sort()
 //	mstudiovertanim_t(const mstudiovertanim_t& vOther);
@@ -1164,7 +1209,7 @@ struct mstudiovertex_t
 	Vector				m_vecNormal;
 	Vector2D			m_vecTexCoord;
 
-	mstudiovertex_t() {}
+	mstudiovertex_t() = default;
 
 private:
 	// No copy constructors allowed
@@ -1180,10 +1225,15 @@ struct mstudiotexture_t
 	int						flags;
 	int						used;
     int						unused1;
+
 	mutable IMaterial		*material;  // fixme: this needs to go away . .isn't used by the engine, but is used by studiomdl
 	mutable void			*clientmaterial;	// gary, replace with client material pointer if used
 	
+#ifdef PLATFORM_64BITS
+	int						unused[8];
+#else
 	int						unused[10];
+#endif
 };
 
 // eyeball
@@ -1216,7 +1266,7 @@ struct mstudioeyeball_t
 	char	unused3[3];
 	int		unused4[7];
 
-	mstudioeyeball_t(){}
+	mstudioeyeball_t() = default;
 private:
 	// No copy constructors allowed
 	mstudioeyeball_t(const mstudioeyeball_t& vOther);
@@ -1231,7 +1281,7 @@ struct mstudioiklink_t
 	Vector	kneeDir;	// ideal bending direction (per link, if applicable)
 	Vector	unused0;	// unused
 
-	mstudioiklink_t(){}
+	mstudioiklink_t() = default;
 private:
 	// No copy constructors allowed
 	mstudioiklink_t(const mstudioiklink_t& vOther);
@@ -1275,6 +1325,10 @@ struct mstudio_modelvertexdata_t
 	const void			*pVertexData;
 	const void			*pTangentData;
 };
+#ifdef PLATFORM_64BITS
+// 64b - match 32-bit packing
+#pragma pack( push, 4 )
+#endif
 
 struct mstudio_meshvertexdata_t
 {
@@ -1290,11 +1344,19 @@ struct mstudio_meshvertexdata_t
 	int					GetGlobalVertexIndex( int i ) const;
 
 	// indirection to this mesh's model's vertex data
+#ifndef PLATFORM_64BITS
 	const mstudio_modelvertexdata_t	*modelvertexdata;
+#else
+	int unused_modelvertexdata;
+#endif
 
 	// used for fixup calcs when culling top level lods
 	// expected number of mesh verts at desired lod
 	int					numLODVertexes[MAX_NUM_LODS];
+
+#ifdef PLATFORM_64BITS
+	serializedstudioptr_t< const mstudio_modelvertexdata_t >	modelvertexdata;
+#endif
 };
 
 struct mstudiomesh_t
@@ -1327,9 +1389,13 @@ struct mstudiomesh_t
 
 	mstudio_meshvertexdata_t vertexdata;
 
+#ifdef PLATFORM_64BITS
+	int					unused[6]; // remove as appropriate
+#else
 	int					unused[8]; // remove as appropriate
+#endif
 
-	mstudiomesh_t(){}
+	mstudiomesh_t() = default;
 private:
 	// No copy constructors allowed
 	mstudiomesh_t(const mstudiomesh_t& vOther);
@@ -1371,8 +1437,16 @@ struct mstudiomodel_t
 
 	mstudio_modelvertexdata_t vertexdata;
 
+#ifdef PLATFORM_64BITS
+	int					unused[6];		// mstudio_modelvertexdata_t has 2 naked ptrs
+#else
 	int					unused[8];		// remove as appropriate
+#endif
 };
+
+#ifdef PLATFORM_64BITS
+#pragma pack( pop )
+#endif
 
 inline bool mstudio_modelvertexdata_t::HasTangentData( void ) const 
 {
@@ -1603,7 +1677,7 @@ struct mstudiomouth_t
 	Vector				forward;
 	int					flexdesc;
 
-	mstudiomouth_t(){}
+	mstudiomouth_t() = default;
 private:
 	// No copy constructors allowed
 	mstudiomouth_t(const mstudiomouth_t& vOther);
@@ -1947,75 +2021,75 @@ struct vertexFileFixup_t
 };
 
 // This flag is set if no hitbox information was specified
-#define STUDIOHDR_FLAGS_AUTOGENERATED_HITBOX	( 1 << 0 )
+#define STUDIOHDR_FLAGS_AUTOGENERATED_HITBOX				0x00000001
 
 // NOTE:  This flag is set at loadtime, not mdl build time so that we don't have to rebuild
 // models when we change materials.
-#define STUDIOHDR_FLAGS_USES_ENV_CUBEMAP		( 1 << 1 )
+#define STUDIOHDR_FLAGS_USES_ENV_CUBEMAP					0x00000002
 
 // Use this when there are translucent parts to the model but we're not going to sort it 
-#define STUDIOHDR_FLAGS_FORCE_OPAQUE			( 1 << 2 )
+#define STUDIOHDR_FLAGS_FORCE_OPAQUE						0x00000004
 
 // Use this when we want to render the opaque parts during the opaque pass
 // and the translucent parts during the translucent pass
-#define STUDIOHDR_FLAGS_TRANSLUCENT_TWOPASS		( 1 << 3 )
+#define STUDIOHDR_FLAGS_TRANSLUCENT_TWOPASS					0x00000008
 
 // This is set any time the .qc files has $staticprop in it
 // Means there's no bones and no transforms
-#define STUDIOHDR_FLAGS_STATIC_PROP				( 1 << 4 )
+#define STUDIOHDR_FLAGS_STATIC_PROP							0x00000010
 
 // NOTE:  This flag is set at loadtime, not mdl build time so that we don't have to rebuild
 // models when we change materials.
-#define STUDIOHDR_FLAGS_USES_FB_TEXTURE		    ( 1 << 5 )
+#define STUDIOHDR_FLAGS_USES_FB_TEXTURE						0x00000020
 
 // This flag is set by studiomdl.exe if a separate "$shadowlod" entry was present
 //  for the .mdl (the shadow lod is the last entry in the lod list if present)
-#define STUDIOHDR_FLAGS_HASSHADOWLOD			( 1 << 6 )
+#define STUDIOHDR_FLAGS_HASSHADOWLOD						0x00000040
 
 // NOTE:  This flag is set at loadtime, not mdl build time so that we don't have to rebuild
 // models when we change materials.
-#define STUDIOHDR_FLAGS_USES_BUMPMAPPING		( 1 << 7 )
+#define STUDIOHDR_FLAGS_USES_BUMPMAPPING					0x00000080
 
 // NOTE:  This flag is set when we should use the actual materials on the shadow LOD
 // instead of overriding them with the default one (necessary for translucent shadows)
-#define STUDIOHDR_FLAGS_USE_SHADOWLOD_MATERIALS	( 1 << 8 )
+#define STUDIOHDR_FLAGS_USE_SHADOWLOD_MATERIALS				0x00000100
 
 // NOTE:  This flag is set when we should use the actual materials on the shadow LOD
 // instead of overriding them with the default one (necessary for translucent shadows)
-#define STUDIOHDR_FLAGS_OBSOLETE				( 1 << 9 )
+#define STUDIOHDR_FLAGS_OBSOLETE							0x00000200
 
-#define STUDIOHDR_FLAGS_UNUSED					( 1 << 10 )
+#define STUDIOHDR_FLAGS_UNUSED								0x00000400
 
 // NOTE:  This flag is set at mdl build time
-#define STUDIOHDR_FLAGS_NO_FORCED_FADE			( 1 << 11 )
+#define STUDIOHDR_FLAGS_NO_FORCED_FADE						0x00000800
 
 // NOTE:  The npc will lengthen the viseme check to always include two phonemes
-#define STUDIOHDR_FLAGS_FORCE_PHONEME_CROSSFADE	( 1 << 12 )
+#define STUDIOHDR_FLAGS_FORCE_PHONEME_CROSSFADE				0x00001000
 
 // This flag is set when the .qc has $constantdirectionallight in it
 // If set, we use constantdirectionallightdot to calculate light intensity
 // rather than the normal directional dot product
 // only valid if STUDIOHDR_FLAGS_STATIC_PROP is also set
-#define STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT ( 1 << 13 )
+#define STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT		0x00002000
 
 // Flag to mark delta flexes as already converted from disk format to memory format
-#define STUDIOHDR_FLAGS_FLEXES_CONVERTED		( 1 << 14 )
+#define STUDIOHDR_FLAGS_FLEXES_CONVERTED					0x00004000
 
 // Indicates the studiomdl was built in preview mode
-#define STUDIOHDR_FLAGS_BUILT_IN_PREVIEW_MODE	( 1 << 15 )
+#define STUDIOHDR_FLAGS_BUILT_IN_PREVIEW_MODE				0x00008000
 
 // Ambient boost (runtime flag)
-#define STUDIOHDR_FLAGS_AMBIENT_BOOST			( 1 << 16 )
+#define STUDIOHDR_FLAGS_AMBIENT_BOOST						0x00010000
 
 // Don't cast shadows from this model (useful on first-person models)
-#define STUDIOHDR_FLAGS_DO_NOT_CAST_SHADOWS		( 1 << 17 )
+#define STUDIOHDR_FLAGS_DO_NOT_CAST_SHADOWS					0x00020000
 
 // alpha textures should cast shadows in vrad on this model (ONLY prop_static!)
-#define STUDIOHDR_FLAGS_CAST_TEXTURE_SHADOWS	( 1 << 18 )
+#define STUDIOHDR_FLAGS_CAST_TEXTURE_SHADOWS				0x00040000
 
 
 // flagged on load to indicate no animation events on this model
-#define STUDIOHDR_FLAGS_VERT_ANIM_FIXED_POINT_SCALE	( 1 << 21 )
+#define STUDIOHDR_FLAGS_VERT_ANIM_FIXED_POINT_SCALE			0x00200000
 
 // NOTE! Next time we up the .mdl file format, remove studiohdr2_t
 // and insert all fields in this structure into studiohdr_t.
@@ -2044,7 +2118,17 @@ struct studiohdr2_t
 	int m_nBoneFlexDriverIndex;
 	inline mstudioboneflexdriver_t *pBoneFlexDriver( int i ) const { Assert( i >= 0 && i < m_nBoneFlexDriverCount ); return (mstudioboneflexdriver_t *)(((byte *)this) + m_nBoneFlexDriverIndex) + i; }
 
+#ifdef PLATFORM_64BITS
+	mutable serializedstudioptr_t< void	> virtualModel;
+	mutable serializedstudioptr_t< void	> animblockModel;
+
+	serializedstudioptr_t< void> pVertexBase;
+	serializedstudioptr_t< void> pIndexBase;
+
+	int reserved[56 - 4 * sizeof( serializedstudioptr_t< void > ) / sizeof( int ) ];
+#else
 	int reserved[56];
+#endif
 };
 
 struct studiohdr_t
@@ -2247,7 +2331,12 @@ struct studiohdr_t
 	const studiohdr_t	*FindModel( void **cache, char const *modelname ) const;
 
 	// implementation specific back pointer to virtual data
+#ifdef PLATFORM_64BITS
+	// implementation specific back pointer to virtual data. Relocated to studiohdr2_t
+	int					unused_virtualModel;
+#else
 	mutable void		*virtualModel;
+#endif
 	virtualmodel_t		*GetVirtualModel( void ) const;
 
 	// for demand loaded animation blocks
@@ -2256,7 +2345,12 @@ struct studiohdr_t
 	int					numanimblocks;
 	int					animblockindex;
 	inline mstudioanimblock_t *pAnimBlock( int i ) const { Assert( i > 0 && i < numanimblocks); return (mstudioanimblock_t *)(((byte *)this) + animblockindex) + i; };
+#ifdef PLATFORM_64BITS
+	// implementation specific back pointer to virtual data. Relocated to studiohdr2_t
+	int					unused_animblockModel;
+#else
 	mutable void		*animblockModel;
+#endif
 	byte *				GetAnimBlock( int i ) const;
 
 	int					bonetablebynameindex;
@@ -2264,8 +2358,14 @@ struct studiohdr_t
 
 	// used by tools only that don't cache, but persist mdl's peer data
 	// engine uses virtualModel to back link to cache pointers
-	void				*pVertexBase;
-	void				*pIndexBase;
+#ifdef PLATFORM_64BITS
+	// implementation specific back pointer to virtual data. Relocated to studiohdr2_t
+	int					unused_pVertexBase;
+	int					unused_pIndexBase;
+#else
+	mutable void		*pVertexBase;
+	mutable void		*pIndexBase;
+#endif
 
 	// if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
 	// this value is used to calculate directional components of lighting 
@@ -2313,12 +2413,30 @@ struct studiohdr_t
 	inline int			BoneFlexDriverCount() const { return studiohdr2index ? pStudioHdr2()->m_nBoneFlexDriverCount : 0; }
 	inline const mstudioboneflexdriver_t* BoneFlexDriver( int i ) const { Assert( i >= 0 && i < BoneFlexDriverCount() ); return studiohdr2index ? pStudioHdr2()->pBoneFlexDriver( i ) : NULL; }
 
+#ifdef PLATFORM_64BITS
+	void* 				VirtualModel() const { return studiohdr2index ? (void *)( pStudioHdr2()->virtualModel ) : nullptr; }
+	void				SetVirtualModel( void* ptr ) { Assert( studiohdr2index ); if ( studiohdr2index ) { pStudioHdr2()->virtualModel = ptr; } }
+
+	void*				VertexBase() const { return studiohdr2index ? (void *)( pStudioHdr2()->pVertexBase ) : nullptr; }
+	void				SetVertexBase( void* pVertexBase ) const { Assert( studiohdr2index ); if ( studiohdr2index ) { pStudioHdr2()->pVertexBase = pVertexBase; } }
+	void*				IndexBase() const { return studiohdr2index ? ( void * ) ( pStudioHdr2()->pIndexBase ) : nullptr; }
+	void				SetIndexBase( void* pIndexBase ) const { Assert( studiohdr2index ); if ( studiohdr2index ) { pStudioHdr2()->pIndexBase  = pIndexBase; } }
+#else
+	void* 				VirtualModel() const { return virtualModel; }
+	void				SetVirtualModel( void* ptr ) { virtualModel = ptr; }
+
+	void*				VertexBase() const { return pVertexBase; }
+	void				SetVertexBase( void* _pVertexBase ) const { pVertexBase = _pVertexBase; }
+	void*				IndexBase() const { return pIndexBase; }
+	void				SetIndexBase( void* _pIndexBase ) const { pIndexBase = _pIndexBase; }
+#endif
+
 	// NOTE: No room to add stuff? Up the .mdl file format version 
 	// [and move all fields in studiohdr2_t into studiohdr_t and kill studiohdr2_t],
 	// or add your stuff to studiohdr2_t. See NumSrcBoneTransforms/SrcBoneTransform for the pattern to use.
 	int					unused2[1];
 
-	studiohdr_t() {}
+	studiohdr_t() = default;
 
 private:
 	// No copy constructors allowed
@@ -2354,12 +2472,12 @@ public:
 	inline const studiohdr_t	*GetRenderHdr( void ) const { return m_pStudioHdr; };
 	const studiohdr_t *pSeqStudioHdr( int sequence );
 	const studiohdr_t *pAnimStudioHdr( int animation );
+	const virtualmodel_t * ResetVModel( const virtualmodel_t *pVModel ) const;
 
 private:
 	mutable const studiohdr_t		*m_pStudioHdr;
 	mutable virtualmodel_t	*m_pVModel;
 
-	const virtualmodel_t * ResetVModel( const virtualmodel_t *pVModel ) const;
 	const studiohdr_t *GroupStudioHdr( int group );
 	mutable CUtlVector< const studiohdr_t * > m_pStudioHdrCache;
 
@@ -2493,6 +2611,7 @@ private:
 	CUtlVector< int >  m_boneParent;
 
 public:
+
 	// This class maps an activity to sequences allowed for that activity, accelerating the resolution
 	// of SelectWeightedSequence(), especially on PowerPC. Iterating through every sequence
 	// attached to a model turned out to be a very destructive cache access pattern on 360.
@@ -2508,8 +2627,10 @@ public:
 		// A tuple of a sequence and its corresponding weight. Lists of these correspond to activities.
 		struct SequenceTuple
 		{
-			short seqnum;
-			short weight; // the absolute value of the weight from the sequence header
+			short		seqnum;
+			short		weight; // the absolute value of the weight from the sequence header
+			CUtlSymbol	*pActivityModifiers;		// list of activity modifier symbols
+			int			iNumActivityModifiers;
 		};
 
 		// The type of the hash's stored data, a composite of both key and value
@@ -2579,9 +2700,13 @@ public:
 
 		// dtor -- not virtual because this class has no inheritors
 		~CActivityToSequenceMapping()
-		{
+		{	
 			if ( m_pSequenceTuples != NULL )
 			{
+				if ( m_pSequenceTuples->pActivityModifiers != NULL )
+				{
+					delete[] m_pSequenceTuples->pActivityModifiers;
+				}
 				delete[] m_pSequenceTuples;
 			}
 		}
@@ -2612,6 +2737,9 @@ public:
 		/// A more efficient version of the old SelectWeightedSequence() function in animation.cpp. 
 		int SelectWeightedSequence( CStudioHdr *pstudiohdr, int activity, int curSequence );
 
+		// selects the sequence with the most matching modifiers
+		int SelectWeightedSequenceFromModifiers( CStudioHdr *pstudiohdr, int activity, CUtlSymbol *pActivityModifiers, int iModifierCount );
+
 		// Actually a big array, into which the hash values index.
 		SequenceTuple *m_pSequenceTuples;
 		unsigned int m_iSequenceTuplesCount; // (size of the whole array)
@@ -2633,8 +2761,8 @@ public:
 		const void *m_expectedVModel;
 
 		// double-check that the data I point to hasn't changed
-		bool ValidateAgainst( const CStudioHdr * RESTRICT pstudiohdr );
-		void SetValidationPair( const CStudioHdr *RESTRICT pstudiohdr );
+		bool ValidateAgainst( const CStudioHdr * RESTRICT pstudiohdr ) RESTRICT;
+		void SetValidationPair( const CStudioHdr *RESTRICT pstudiohdr ) RESTRICT;
 
 		friend class CStudioHdr;
 	};
@@ -2654,6 +2782,19 @@ public:
 		}
 #endif
 		return m_ActivityToSequence.SelectWeightedSequence( this, activity, curSequence );
+	}
+
+	inline int SelectWeightedSequenceFromModifiers( int activity, CUtlSymbol *pActivityModifiers, int iModifierCount )
+	{
+#if STUDIO_SEQUENCE_ACTIVITY_LAZY_INITIALIZE
+		// We lazy-initialize the header on demand here, because CStudioHdr::Init() is
+		// called from the constructor, at which time the this pointer is illegitimate.
+		if ( !m_ActivityToSequence.IsInitialized() )
+		{
+			m_ActivityToSequence.Initialize( this );
+		}
+#endif
+		return m_ActivityToSequence.SelectWeightedSequenceFromModifiers( this, activity, pActivityModifiers, iModifierCount );
 	}
 
 	/// True iff there is at least one sequence for the given activity.
@@ -3165,6 +3306,12 @@ inline int Studio_LoadVertexes( const vertexFileHeader_t *pTempVvdHdr, vertexFil
 		{
 			// working bottom up, skip over copying higher detail lods
 			continue;
+		}
+
+		if ( ( pFixupTable[ i ].numVertexes < 0 ) || ( target + pFixupTable[ i ].numVertexes > numVertexes ) )
+		{
+			Assert( !"Malicious map attempting to write off the end of our fixup verts. Sad face." );
+			Error( "Unable to load corrupted map." );
 		}
 
 		// copy vertexes

@@ -62,10 +62,10 @@ _PS_EXTERN_CONST(am_pi_o_2, (float)(M_PI / 2.0));
 _PS_EXTERN_CONST(am_2_o_pi, (float)(2.0 / M_PI));
 _PS_EXTERN_CONST(am_pi_o_4, (float)(M_PI / 4.0));
 _PS_EXTERN_CONST(am_4_o_pi, (float)(4.0 / M_PI));
-_PS_EXTERN_CONST_TYPE(am_sign_mask, int32, 0x80000000);
-_PS_EXTERN_CONST_TYPE(am_inv_sign_mask, int32, ~0x80000000);
-_PS_EXTERN_CONST_TYPE(am_min_norm_pos,int32, 0x00800000);
-_PS_EXTERN_CONST_TYPE(am_mant_mask, int32, 0x7f800000);
+_PS_EXTERN_CONST_TYPE(am_sign_mask, uint32, 0x80000000);
+_PS_EXTERN_CONST_TYPE(am_inv_sign_mask, uint32, ~0x80000000);
+_PS_EXTERN_CONST_TYPE(am_min_norm_pos,uint32, 0x00800000);
+_PS_EXTERN_CONST_TYPE(am_mant_mask, uint32, 0x7f800000);
 _PS_EXTERN_CONST_TYPE(am_inv_mant_mask, int32, ~0x7f800000);
 
 _EPI32_CONST(1, 1);
@@ -204,7 +204,9 @@ float FASTCALL _SSE_VectorNormalize (Vector& vec)
 #endif
 
 	float *v = &vec[0];
+#ifdef _WIN32
 	float *r = &result[0];
+#endif
 
 	float	radius = 0.f;
 	// Blah, get rid of these comparisons ... in reality, if you have all 3 as zero, it shouldn't 
@@ -339,7 +341,7 @@ float _SSE_InvRSquared(const float* v)
 // #define _PS_CONST(Name, Val) static const ALIGN16 float _ps_##Name[4] ALIGN16_POST = { Val, Val, Val, Val }
 #define _PS_CONST_TYPE(Name, Type, Val) static const ALIGN16 Type _ps_##Name[4] ALIGN16_POST = { Val, Val, Val, Val }
 
-_PS_CONST_TYPE(sign_mask, int, 0x80000000);
+_PS_CONST_TYPE(sign_mask, int, (int)0x80000000);
 _PS_CONST_TYPE(inv_sign_mask, int, ~0x80000000);
 
 
@@ -740,6 +742,7 @@ float _SSE_cos( float x )
 //-----------------------------------------------------------------------------
 // SSE2 implementations of optimized routines:
 //-----------------------------------------------------------------------------
+#ifdef PLATFORM_WINDOWS_PC32
 void _SSE2_SinCos(float x, float* s, float* c)  // any x
 {
 #ifdef _WIN32
@@ -825,7 +828,9 @@ void _SSE2_SinCos(float x, float* s, float* c)  // any x
 	#error "Not Implemented"
 #endif
 }
+#endif // PLATFORM_WINDOWS_PC32
 
+#ifdef PLATFORM_WINDOWS_PC32
 float _SSE2_cos(float x)  
 {
 #ifdef _WIN32
@@ -883,7 +888,9 @@ float _SSE2_cos(float x)
 
 	return x;
 }
+#endif // PLATFORM_WINDOWS_PC32
 
+#if 0
 // SSE Version of VectorTransform
 void VectorTransformSSE(const float *in1, const matrix3x4_t& in2, float *out1)
 {
@@ -941,7 +948,9 @@ void VectorTransformSSE(const float *in1, const matrix3x4_t& in2, float *out1)
 	#error "Not Implemented"
 #endif
 }
+#endif
 
+#if 0
 void VectorRotateSSE( const float *in1, const matrix3x4_t& in2, float *out1 )
 {
 	Assert( s_bMathlibInitialized );
@@ -995,6 +1004,7 @@ void VectorRotateSSE( const float *in1, const matrix3x4_t& in2, float *out1 )
 	#error "Not Implemented"
 #endif
 }
+#endif
 
 #ifdef _WIN32
 void _declspec(naked) _SSE_VectorMA( const float *start, float scale, const float *direction, float *dest )

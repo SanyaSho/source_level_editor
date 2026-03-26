@@ -984,7 +984,7 @@ void CMapEntity::SetClass(LPCTSTR pszClass, bool bLoading)
 					((CMapSolid*)pobj)->SetTexture("tools/toolstrigger");
 				}
 
-				pobj->EnumChildren((ENUMMAPCHILDRENPROC)ApplyTextureToSolidClass, (DWORD)("tools/toolstrigger"), MAPCLASS_TYPE(CMapSolid));
+				pobj->EnumChildren((ENUMMAPCHILDRENPROC)ApplyTextureToSolidClass, (DWORD_PTR)("tools/toolstrigger"), MAPCLASS_TYPE(CMapSolid));
 			}
 		}
 		else if (!Q_strnicmp(GetClassName(), "func_areaportal", strlen("func_areaportal")))
@@ -998,7 +998,7 @@ void CMapEntity::SetClass(LPCTSTR pszClass, bool bLoading)
 					((CMapSolid*)pobj)->SetTexture("tools/toolsareaportal");
 				}
 
-				pobj->EnumChildren((ENUMMAPCHILDRENPROC)ApplyTextureToSolidClass, (DWORD)("tools/toolsareaportal"), MAPCLASS_TYPE(CMapSolid));
+				pobj->EnumChildren((ENUMMAPCHILDRENPROC)ApplyTextureToSolidClass, (DWORD_PTR)("tools/toolsareaportal"), MAPCLASS_TYPE(CMapSolid));
 			}
 		}
 		else if (!Q_strnicmp(GetClassName(), "func_viscluster", strlen("func_viscluster")))
@@ -1012,7 +1012,7 @@ void CMapEntity::SetClass(LPCTSTR pszClass, bool bLoading)
 					((CMapSolid*)pobj)->SetTexture("tools/toolstrigger");
 				}
 
-				pobj->EnumChildren((ENUMMAPCHILDRENPROC)ApplyTextureToSolidClass, (DWORD)("tools/toolstrigger"), MAPCLASS_TYPE(CMapSolid));
+				pobj->EnumChildren((ENUMMAPCHILDRENPROC)ApplyTextureToSolidClass, (DWORD_PTR)("tools/toolstrigger"), MAPCLASS_TYPE(CMapSolid));
 			}
 		}
 		else if (!Q_strnicmp(GetClassName(), "func_vehicleclip", strlen("func_viscluster")))
@@ -1026,7 +1026,7 @@ void CMapEntity::SetClass(LPCTSTR pszClass, bool bLoading)
 					((CMapSolid*)pobj)->SetTexture("tools/toolstrigger");
 				}
 
-				pobj->EnumChildren((ENUMMAPCHILDRENPROC)ApplyTextureToSolidClass, (DWORD)("tools/toolstrigger"), MAPCLASS_TYPE(CMapSolid));
+				pobj->EnumChildren((ENUMMAPCHILDRENPROC)ApplyTextureToSolidClass, (DWORD_PTR)("tools/toolstrigger"), MAPCLASS_TYPE(CMapSolid));
 			}
 		}
 	}
@@ -2052,7 +2052,7 @@ bool CMapEntity::GetTransformMatrix( VMatrix& matrix )
 		if ( gotMatrix )
 		{
 			// return ParentMatrix * OurMatrix
-			VMatrix tmpMat, animatorMat;
+			VMatrix animatorMat;
 			bool gotAnimMatrix = m_pAnimatorChild->GetTransformMatrix( animatorMat );
 			if ( !gotAnimMatrix )
 			{
@@ -2415,7 +2415,7 @@ void CMapEntity::Render2D(CRender2D *pRender)
 
 			CMapObjectList FoundEntitiesTarget;
 			FoundEntitiesTarget.RemoveAll();
-			pWorld->EnumChildren((ENUMMAPCHILDRENPROC)FindKeyValue, (DWORD)&kv, MAPCLASS_TYPE(CMapEntity));
+			pWorld->EnumChildren((ENUMMAPCHILDRENPROC)FindKeyValue, (DWORD_PTR)&kv, MAPCLASS_TYPE(CMapEntity));
 
 			Vector vCenter1,vCenter2;
 			GetBoundsCenter( vCenter1 );

@@ -37,7 +37,7 @@ BEGIN_SRC( VGUI_CONTROLS_SOURCE_FILES "Source Files" )
 			"FocusNavGroup.cpp"
 			"Frame.cpp"
 			"GraphPanel.cpp"
-			#"HTML.cpp" # SLE
+			"HTML.cpp"
 			"Image.cpp"
 			"ImageList.cpp"
 			"ImagePanel.cpp"
@@ -125,7 +125,7 @@ BEGIN_SRC( VGUI_CONTROLS_HEADER_FILES "Public Header Files" )
 			"${SRCDIR}/public/vgui_controls/FocusNavGroup.h"
 			"${SRCDIR}/public/vgui_controls/Frame.h"
 			"${SRCDIR}/public/vgui_controls/GraphPanel.h"
-			#"${SRCDIR}/public/vgui_controls/HTML.h" # SLE
+			"${SRCDIR}/public/vgui_controls/HTML.h"
 			"${SRCDIR}/public/vgui_controls/Image.h"
 			"${SRCDIR}/public/vgui_controls/ImageList.h"
 			"${SRCDIR}/public/vgui_controls/ImagePanel.h"

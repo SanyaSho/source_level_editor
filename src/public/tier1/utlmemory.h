@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -45,6 +45,8 @@
 template< class T, class I = int >
 class CUtlMemory
 {
+	template< class A, class B > friend class CUtlVector;
+	template< class A, size_t B > friend class CUtlVectorFixedGrowableCompat;
 public:
 	// constructor, destructor
 	CUtlMemory( int nGrowSize = 0, int nInitSize = 0 );
@@ -93,6 +95,8 @@ public:
 	void SetExternalBuffer( const T* pMemory, int numElements );
 	// Takes ownership of the passed memory, including freeing it when this buffer is destroyed.
 	void AssumeMemory( T *pMemory, int nSize );
+	T* Detach();
+	void* DetachMemory();
 
 	// Fast swap
 	void Swap( CUtlMemory< T, I > &mem );
@@ -129,6 +133,17 @@ public:
 protected:
 	void ValidateGrowSize()
 	{
+#ifdef _X360
+		if ( m_nGrowSize && m_nGrowSize != EXTERNAL_BUFFER_MARKER )
+		{
+			// Max grow size at 128 bytes on XBOX
+			const int MAX_GROW = 128;
+			if ( m_nGrowSize * sizeof(T) > MAX_GROW )
+			{
+				m_nGrowSize = max( 1, MAX_GROW / sizeof(T) );
+			}
+		}
+#endif
 	}
 
 	enum
@@ -531,6 +546,23 @@ void CUtlMemory<T,I>::AssumeMemory( T* pMemory, int numElements )
 	m_nAllocationCount = numElements;
 }
 
+template< class T, class I >
+void *CUtlMemory<T,I>::DetachMemory()
+{
+	if ( IsExternallyAllocated() )
+		return NULL;
+
+	void *pMemory = m_pMemory;
+	m_pMemory = 0;
+	m_nAllocationCount = 0;
+	return pMemory;
+}
+
+template< class T, class I >
+inline T* CUtlMemory<T,I>::Detach()
+{
+	return (T*)DetachMemory();
+}
 
 //-----------------------------------------------------------------------------
 // element access
@@ -541,7 +573,7 @@ inline T& CUtlMemory<T,I>::operator[]( I i )
 	// Avoid function calls in the asserts to improve debug build performance
 	Assert( m_nGrowSize != EXTERNAL_CONST_BUFFER_MARKER ); //Assert( !IsReadOnly() );
 	Assert( (uint32)i < (uint32)m_nAllocationCount );
-	return m_pMemory[i];
+	return m_pMemory[(uint32)i];
 }
 
 template< class T, class I >
@@ -549,7 +581,7 @@ inline const T& CUtlMemory<T,I>::operator[]( I i ) const
 {
 	// Avoid function calls in the asserts to improve debug build performance
 	Assert( (uint32)i < (uint32)m_nAllocationCount );
-	return m_pMemory[i];
+	return m_pMemory[(uint32)i];
 }
 
 template< class T, class I >
@@ -558,7 +590,7 @@ inline T& CUtlMemory<T,I>::Element( I i )
 	// Avoid function calls in the asserts to improve debug build performance
 	Assert( m_nGrowSize != EXTERNAL_CONST_BUFFER_MARKER ); //Assert( !IsReadOnly() );
 	Assert( (uint32)i < (uint32)m_nAllocationCount );
-	return m_pMemory[i];
+	return m_pMemory[(uint32)i];
 }
 
 template< class T, class I >
@@ -566,7 +598,7 @@ inline const T& CUtlMemory<T,I>::Element( I i ) const
 {
 	// Avoid function calls in the asserts to improve debug build performance
 	Assert( (uint32)i < (uint32)m_nAllocationCount );
-	return m_pMemory[i];
+	return m_pMemory[(uint32)i];
 }
 
 
@@ -656,23 +688,31 @@ inline int UtlMemory_CalcNewAllocationCount( int nAllocationCount, int nGrowSize
 	}
 	else 
 	{
-		if (!nAllocationCount || nAllocationCount == 0)
+		if ( !nAllocationCount )
 		{
 			// Compute an allocation which is at least as big as a cache line...
 			nAllocationCount = (31 + nBytesItem) / nBytesItem;
 
-#if 1 // new code copied from 2015
+#if defined( SLE ) // new code copied from 2015
 			// If the requested amount is larger then compute an allocation which
 			// is exactly the right size. Otherwise we can end up with wasted memory
 			// when CUtlVector::EnsureCount(n) is called.
 			if (nAllocationCount < nNewSize)
 				nAllocationCount = nNewSize;
-#endif
+#endif // SLE
 		}
 
 		while (nAllocationCount < nNewSize)
 		{
+#ifndef _X360
 			nAllocationCount *= 2;
+#else
+			int nNewAllocationCount = ( nAllocationCount * 9) / 8; // 12.5 %
+			if ( nNewAllocationCount > nAllocationCount )
+				nAllocationCount = nNewAllocationCount;
+			else
+				nAllocationCount *= 2;
+#endif
 		}
 	}
 

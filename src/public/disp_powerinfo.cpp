@@ -78,6 +78,7 @@ static int g_OrientationRotations[4][2][2] =
 	{1, 0}}
 };	   
 
+
 // ------------------------------------------------------------------------ //
 // Helper functions.
 // ------------------------------------------------------------------------ //
@@ -96,6 +97,7 @@ static CVertIndex Transform2D(
 	
 	return transformed + centerPoint;
 }
+
 
 // Rotate a given CVertIndex with a specified orientation.
 // Do this with a lookup table eventually!
@@ -123,11 +125,13 @@ static void GetEdgeVertIndex( int sideLength, int iEdge, int iVert, CVertIndex &
 	}
 }
 
+
 // Generate an index given a CVertIndex and the size of the displacement it resides in.
 static int VertIndex( CVertIndex const &vert, int iMaxPower )
 {
 	return vert.y * ((1 << iMaxPower) + 1) + vert.x;
 }
+ 
 
 static CVertIndex WrapVertIndex( CVertIndex const &in, int sideLength )
 {
@@ -146,6 +150,7 @@ static CVertIndex WrapVertIndex( CVertIndex const &in, int sideLength )
 	return CVertIndex( out[0], out[1] );
 }
 
+
 static int GetFreeDependency( CVertDependency *pDep, int nElements )
 {
 	for( int i=0; i < nElements; i++ )
@@ -157,6 +162,7 @@ static int GetFreeDependency( CVertDependency *pDep, int nElements )
 	Assert( false );
 	return 0;
 }
+
 
 static void AddDependency( 
 	CVertInfo *dependencies, 
@@ -201,6 +207,7 @@ static void AddDependency(
 	}
 }
 
+
 // --------------------------------------------------------------------------------- //
 // CTesselateWinding stuff.
 // --------------------------------------------------------------------------------- //
@@ -210,6 +217,7 @@ CTesselateVert::CTesselateVert( CVertIndex const &index, int iNode )
 {
 	m_iNode = iNode;
 }
+
 
 CVertInfo::CVertInfo()
 {
@@ -230,6 +238,7 @@ CVertInfo::CVertInfo()
 	m_iNodeLevel = -1;
 }
 
+
 CTesselateVert g_TesselateVerts[] =
 {
 	CTesselateVert( CVertIndex(1,-1),  CHILDNODE_LOWER_RIGHT),
@@ -248,6 +257,8 @@ CTesselateWinding g_TWinding =
 	g_TesselateVerts,
 	sizeof( g_TesselateVerts ) / sizeof( g_TesselateVerts[0] )
 };
+
+
 
 // --------------------------------------------------------------------------------- //
 // CPowerInfo stuff.
@@ -272,12 +283,14 @@ CTesselateWinding g_TWinding =
 
 #define POWERINFO_ENTRY( size )	\
 	(&g_PowerInfo_##size##x##size)
+
 #ifdef SLE //// SLE CHANGE - allow power 1 disps
 DECLARE_TABLES( 3 );
 #endif
 DECLARE_TABLES( 5 );	
 DECLARE_TABLES( 9 );	
 DECLARE_TABLES( 17 );	
+
 
 // Index by m_Power.
 CPowerInfo *g_PowerInfos[NUM_POWERINFOS] =
@@ -292,6 +305,7 @@ CPowerInfo *g_PowerInfos[NUM_POWERINFOS] =
 	POWERINFO_ENTRY(9),
 	POWERINFO_ENTRY(17)
 };
+
 
 CPowerInfo::CPowerInfo( 
 	CVertInfo *pVertInfo, 
@@ -361,6 +375,7 @@ static void InitPowerInfoTriInfos_R(
 		}
 	}
 }	
+
 
 static void InitPowerInfo_R( 
 	CPowerInfo *pPowerInfo, 
@@ -443,6 +458,7 @@ static void InitPowerInfo_R(
 		}
 	}
 }
+
 
 void InitPowerInfo( CPowerInfo *pInfo, int iMaxPower )
 {
@@ -550,12 +566,14 @@ public:
 
 static CPowerInfoInitializer g_PowerInfoInitializer;
 
+
 const CPowerInfo* GetPowerInfo( int iPower )
 {
 	Assert( iPower >= 0 && iPower < ARRAYSIZE( g_PowerInfos ) );
 	Assert( g_PowerInfos[iPower] );
 	return g_PowerInfos[iPower];
 }
+
 
 // ------------------------------------------------------------------------------------------------ //
 // CPowerInfo member function initialization.
@@ -566,3 +584,4 @@ const CVertIndex& CPowerInfo::GetCornerPointIndex( int iCorner ) const
 	Assert( iCorner >= 0 && iCorner < 4 );
 	return m_CornerPointIndices[iCorner];
 }
+

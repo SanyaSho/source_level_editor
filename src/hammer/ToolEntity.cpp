@@ -674,8 +674,6 @@ bool CToolEntity::OnLMouseDown3D(CMapView3D *pView, UINT nFlags, const Vector2D 
 						QAngle angles;
 						MatrixToAngles(entToWorld, angles);
 
-						VMatrix vmRotate, vmT1, vmT2;
-						//Vector vOrigin;
 						QAngle angAligned(angles.x, angles.y, angles.z);
 
 						pEntity->SetOrigin(vFinalHitPos);

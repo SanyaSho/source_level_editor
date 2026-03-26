@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -39,6 +39,10 @@ public:
 	// This will be called when the regenerator needs to be deleted
 	// which will happen when the texture is destroyed
 	virtual void Release() = 0;
+
+	// (erics): This should have a virtual destructor, but would be ABI breaking (non-versioned interface implemented
+	//          by the game)
+//	virtual ~ITextureRegenerator(){}
 };
 
 abstract_class ITexture
@@ -103,7 +107,12 @@ public:
 	virtual bool IsProcedural() const = 0;
 
 	virtual void DeleteIfUnreferenced() = 0;
-	
+
+#if defined( _X360 )
+	virtual bool ClearTexture( int r, int g, int b, int a ) = 0;
+	virtual bool CreateRenderTargetSurface( int width, int height, ImageFormat format, bool bSameAsTexture ) = 0;
+#endif
+
 	// swap everything except the name with another texture
 	virtual void SwapContents( ITexture *pOther ) = 0;
 
@@ -115,6 +124,16 @@ public:
 
 	// Save texture to a file.
 	virtual bool SaveToFile( const char *fileName ) = 0;
+
+	// Copy this texture, which must be a render target or a renderable texture, to the destination texture, 
+	// which must have been created with the STAGING bit.
+	virtual void CopyToStagingTexture( ITexture* pDstTex ) = 0;
+
+	// Set that this texture should return true for the call "IsError"
+	virtual void SetErrorTexture( bool bIsErrorTexture ) = 0;
+
+	// Download textures, except return true if we were successful and false if we were not.
+	virtual bool BDownload( Rect_t *pRect = 0, int nAdditionalCreationFlags = 0 ) = 0;
 };
 
 

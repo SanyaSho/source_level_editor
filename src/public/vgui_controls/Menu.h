@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -216,7 +216,7 @@ public:
 	virtual int GetActiveItem();		// returns the itemID (not the row) of the active item
 
 	// Return the number of items currently in the menu list
-	virtual int GetItemCount();
+	virtual int GetItemCount() const;
 
 	// return the menuID of the n'th item in the menu list, valid from [0, GetItemCount)
 	virtual int GetMenuID(int index);
@@ -295,8 +295,13 @@ protected:
 
 	void SetCurrentlySelectedItem(MenuItem *item);
 	void SetCurrentlySelectedItem(int itemID);
+#ifdef PLATFORM_64BITS
+	MESSAGE_FUNC_PTR( OnCursorEnteredMenuItem, "CursorEnteredMenuItem", VPanel );
+	MESSAGE_FUNC_PTR( OnCursorExitedMenuItem, "CursorExitedMenuItem", VPanel );
+#else
 	MESSAGE_FUNC_INT( OnCursorEnteredMenuItem, "CursorEnteredMenuItem", VPanel);
 	MESSAGE_FUNC_INT( OnCursorExitedMenuItem, "CursorExitedMenuItem", VPanel);
+#endif
 
 	void MoveAlongMenuItemList(int direction, int loopCount); 
 
@@ -349,6 +354,33 @@ private:
 	wchar_t			m_szTypeAheadBuf[TYPEAHEAD_BUFSIZE];
 	int				m_iNumTypeAheadChars;
 	double			m_fLastTypeAheadTime;
+};
+
+
+//-----------------------------------------------------------------------------
+// Helper class to create menu
+//-----------------------------------------------------------------------------
+class MenuBuilder
+{
+public:
+
+	MenuBuilder( Menu *pMenu, Panel *pActionTarget );
+
+	MenuItem* AddMenuItem( const char *pszButtonText, const char *pszCommand, const char *pszCategoryName );
+	MenuItem* AddMenuItem( const char *pszButtonText, KeyValues *kvUserData, const char *pszCategoryName );
+	MenuItem* AddMenuItem( const wchar_t *pwszButtonText, const char *pszCommand, const char *pszCategoryName );
+	MenuItem* AddMenuItem( const wchar_t *pwszButtonText, KeyValues *kvUserData, const char *pszCategoryName );
+
+	MenuItem* AddCascadingMenuItem( const char *pszButtonText, Menu *pSubMenu, const char *pszCategoryName );
+	MenuItem* AddCascadingMenuItem( const wchar_t *pwszButtonText, Menu *pSubMenu, const char *pszCategoryName );
+
+private:
+
+	void AddSepratorIfNeeded( const char *pszCategoryName );
+
+	Menu *m_pMenu;
+	Panel *m_pActionTarget;
+	const char *m_pszLastCategory;
 };
 
 } // namespace vgui

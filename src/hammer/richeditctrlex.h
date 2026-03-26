@@ -370,21 +370,21 @@ class RICHED_DECL CRTFBuilder
 };
 
 
-RICHED_DECL CControlManip	write		(CRichEditCtrl &);
-RICHED_DECL CIntManip		normal		(int = 0);
-RICHED_DECL CIntManip		push		(int = 0);
-RICHED_DECL CIntManip		pop			(int = 0);
-RICHED_DECL CIntManip		size		(int);
-RICHED_DECL CIntManip		color		(int);
-RICHED_DECL CIntManip		backColor	(int);
-RICHED_DECL CIntManip		addColor	(int);
-RICHED_DECL CIntManip		font		(int);
-RICHED_DECL CStringManip	font		(LPCTSTR);
-RICHED_DECL CStringManip	addFont		(LPCTSTR);
-RICHED_DECL CBoolManip		bold		(bool);
-RICHED_DECL CBoolManip		strike		(bool);
-RICHED_DECL CBoolManip		italic		(bool);
-RICHED_DECL CBoolManip		underline	(bool);
+RICHED_DECL CControlManip	write		(CRichEditCtrl &) throw();
+RICHED_DECL CIntManip		normal		(int = 0) throw();
+RICHED_DECL CIntManip		push		(int = 0) throw();
+RICHED_DECL CIntManip		pop			(int = 0) throw();
+RICHED_DECL CIntManip		size		(int) throw();
+RICHED_DECL CIntManip		color		(int) throw();
+RICHED_DECL CIntManip		backColor	(int) throw();
+RICHED_DECL CIntManip		addColor	(int) throw();
+RICHED_DECL CIntManip		font		(int) throw();
+RICHED_DECL CStringManip	font		(LPCTSTR) throw();
+RICHED_DECL CStringManip	addFont		(LPCTSTR) throw();
+RICHED_DECL CBoolManip		bold		(bool) throw();
+RICHED_DECL CBoolManip		strike		(bool) throw();
+RICHED_DECL CBoolManip		italic		(bool) throw();
+RICHED_DECL CBoolManip		underline	(bool) throw();
 
 RICHED_DECL CRTFBuilder & operator<<(CRTFBuilder &, RTFSM_PFUNC);
 RICHED_DECL CRTFBuilder & operator<<(CRTFBuilder &, CManip & m);

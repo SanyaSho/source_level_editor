@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -37,11 +37,13 @@ public:
 	
 	// Returns true if we hit something and it wasn't the world.
 	bool DidHitNonWorldEntity() const;
+	
 #ifdef DARKINTERVAL // used for example for rain tracing
 	bool DidHitNodrawSurface() const;
 
 	bool DidHitSkybox() const; 
 #endif
+
 	// Gets the entity's network index if the trace has hit an entity.
 	// If not, returns -1.
 	int GetEntityIndex() const;
@@ -76,7 +78,7 @@ public:
 	// Otherwise, this is the hitbox index.
 	int			hitbox;					// box hit by trace in studio
 
-	CGameTrace() {}
+	CGameTrace() = default;
 
 private:
 	// No copy constructors allowed
@@ -100,7 +102,11 @@ typedef CGameTrace trace_t;
 #define TLD_DEF_LEAF_MAX	256
 #define TLD_DEF_ENTITY_MAX	1024
 
-class CTraceListData : public IPartitionEnumerator
+// misyl: Made final to workaround the warning:
+//   "deleting object of polymorphic class type 'CTraceListData' which has non-virtual destructor might cause undefined behavior [-Wdelete-non-virtual-dtor]"
+// We can't change the ABI of IPartitionEnumerator, so...
+// Feel free to make a version of this class that's non final, and a final version for existing code and do your own thing in your own mod, if this breaks your usage.
+class CTraceListData final : public IPartitionEnumerator
 {
 public:
 

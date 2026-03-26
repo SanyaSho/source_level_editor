@@ -34,6 +34,7 @@ public:
 
 // Helper functions.
 public:
+
 	int					GetPower() const;
 	int					GetSideLength() const;
 	const CVertIndex&	GetCornerPointIndex( int iCorner ) const;
@@ -41,11 +42,13 @@ public:
 	CVertIndex			GetEdgeMidPoint( int iEdge ) const;
 };
 
+
 // Use this to walk along two neighboring displacements and touch all the
 // common vertices.
 class CDispSubEdgeIterator
 {
-public:						
+public:
+						
 						CDispSubEdgeIterator();
 
 	// Normally, this will iterate all shared verts along the edge except the corners.
@@ -59,7 +62,8 @@ public:
 
 	// Returns true if you're on the last vert (ie: the next Next() call will return false).ssssss
 	bool				IsLastVert() const;
-	
+
+
 private:
 	CDispUtilsHelper	*m_pNeighbor;	// The neighbor to the edge we were setup on.
 
@@ -72,6 +76,7 @@ private:
 	int					m_End;
 	int					m_FreeDim;
 };
+
 
 // Use this to walk along the edge of a displacement, touching the points in common
 // between the two neighbors. Note: this won't hit the corner points of any of the displacements.
@@ -89,7 +94,8 @@ public:
 
 	// What is the current neighbor?
 	CDispUtilsHelper*	GetCurrentNeighbor() const	{ return m_It.GetNeighbor(); }
-	
+
+
 private:
 	CDispUtilsHelper		*m_pDisp;
 	int						m_iEdge;
@@ -97,6 +103,7 @@ private:
 
 	CDispSubEdgeIterator	m_It;
 };
+
 
 // Use this to walk all the corners and edge verts in the displacement.
 // It walks the edges in the order of the NEIGHBOREDGE_ defines.
@@ -113,12 +120,14 @@ public:
 	bool				Next();
 
 	const CVertIndex&	GetVertIndex() const	{ return m_VertIndex; }
-	
+
+
 private:
 	int					m_SideLengthM1;
 	int					m_iCurEdge;
 	CVertIndex			m_VertIndex;
 };
+
 
 // These store info about how to scale and shift coordinates between neighbors
 // of different relations (in g_ShiftInfos).	
@@ -140,9 +149,11 @@ public:
 // Globals.
 // ----------------------------------------------------------------------------- //
 
+
 extern int			g_EdgeDims[4];		// This tells which dimension (0 or 1) is locked on an edge for each NEIGHBOREDGE_ enum.
 extern CShiftInfo	g_ShiftInfos[3][3];	// See CShiftInfo.
 extern int			g_EdgeSideLenMul[4];// Multiply these by the side length to get the index of the edge.
+
 
 // ----------------------------------------------------------------------------- //
 // Helper functions.
@@ -236,6 +247,7 @@ bool DoesPointHaveAnyNeighbors(
 	CDispUtilsHelper *pDisp,
 	const CVertIndex &index );
 
+
 void FindNeighboringDispSurfs( CCoreDispInfo **ppListBase, int nListSize );
 void SetupAllowedVerts( CCoreDispInfo **ppListBase, int nListSize );
 void GetDispBox( CCoreDispInfo *pDisp, CDispBox &box );
@@ -245,5 +257,6 @@ void GetDispBox( CCoreDispInfo *pDisp, CDispBox &box );
 // ----------------------------------------------------------------------------- //
 
 #include "disp_powerinfo.h"
+
 
 #endif // DISP_COMMON_H

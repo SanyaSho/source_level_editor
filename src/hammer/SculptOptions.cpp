@@ -577,7 +577,6 @@ bool CSculptTool::DoPaintSmoothOneOverExp( const Vector &vNewCenter, Vector &vPa
 							flFactor *= 1.0f / ( m_SpatialData.m_flScalar * 2.0f );
 						}
 
-						Vector vProjectVert;
 						float flProjectDist = DotProduct( vVert, m_SpatialData.m_vPaintAxis ) - flPaintDist;
 						flSmoothDist += ( flProjectDist * flFactor );
 						flWeight += flFactor;
@@ -633,7 +632,7 @@ bool CSculptTool::GetStartingSpot( CMapView3D *pView, const Vector2D &vPoint )
 //-----------------------------------------------------------------------------
 void CSculptTool::DrawDirection( CRender3D *pRender, Vector Direction, Color Towards, Color Away )
 {
-	Vector		ViewPoint, ViewDir;
+	Vector		ViewDir;
 	Vector2D	ViewVert;
 
 	VMatrix  Matrix;

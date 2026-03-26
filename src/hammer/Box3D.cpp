@@ -110,9 +110,9 @@ void Box3D::RenderHandles2D(CRender2D *pRender, const Vector &mins, const Vector
 	if ( m_pDocument && m_pDocument->m_use_rotation_pivot_bool )
 	{
 		pRender->SetHandleStyle(HANDLE_RADIUS, CRender::HANDLE_CIRCLE);
-		pRender->DrawHandle(m_pDocument->m_rotation_pivot_vec, &( Vector2D(0, 0) ));
+		pRender->DrawHandle(m_pDocument->m_rotation_pivot_vec, NULL);
 		pRender->SetHandleStyle(HANDLE_RADIUS, CRender::HANDLE_CROSS);
-		pRender->DrawHandle(m_pDocument->m_rotation_pivot_vec, &( Vector2D(0, 0) ));
+		pRender->DrawHandle(m_pDocument->m_rotation_pivot_vec, NULL);
 	}
 #endif
 }

@@ -15,8 +15,10 @@
 #include "ScenePreviewDlg.h"
 #include "soundchars.h"
 #ifdef HAMMER2013_PORT_FMOD
+#include "valve_minmax_off.h"
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_errors.h"
+#include "valve_minmax_on.h"
 #endif
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>

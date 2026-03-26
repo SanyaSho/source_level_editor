@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -33,4 +33,5 @@ const TableVector g_localBumpBasis[NUM_BUMP_VECTS] =
 
 void GetBumpNormals( const Vector& sVect, const Vector& tVect, const Vector& flatNormal, 
 					 const Vector& phongNormal, Vector bumpNormals[NUM_BUMP_VECTS] );
+
 #endif // BUMPVECTS_H

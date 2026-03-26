@@ -26,10 +26,10 @@ BEGIN_SRC( TIER1_SOURCE_FILES "Source Files" )
 			"ilocalize.cpp"
 			"interface.cpp"
 			"KeyValues.cpp"
-			#"keyvaluesjson.cpp"
+			"keyvaluesjson.cpp"
 			"kvpacker.cpp"
 			"lzmaDecoder.cpp"
-			#"lzss.cpp"
+			"lzss.cpp"
 			"mempool.cpp"
 			"memstack.cpp"
 			"NetAdr.cpp"
@@ -42,7 +42,7 @@ BEGIN_SRC( TIER1_SOURCE_FILES "Source Files" )
 			"reliabletimer.cpp"
 			"stringpool.cpp"
 			"strtools.cpp"
-			#"strtools_unicode.cpp"
+			"strtools_unicode.cpp"
 			"tier1.cpp"
 			"tokenreader.cpp"
 			"sparsematrix.cpp"
@@ -51,7 +51,7 @@ BEGIN_SRC( TIER1_SOURCE_FILES "Source Files" )
 			"utlbufferutil.cpp"
 			"utlstring.cpp"
 			"utlsymbol.cpp"
-			#"utlbinaryblock.cpp"
+			"utlbinaryblock.cpp"
 			"$<${IS_LINUX}:pathmatch.cpp>"
 			"snappy.cpp"
 			"snappy-sinksource.cpp"
@@ -67,16 +67,16 @@ if( ${IS_WINDOWS} )
 	)
 endif()
 
-#BEGIN_SRC( TIER1_SOURCE_FILES "LZMA Decompression Support" )
-#	SRC_GRP(
-#		SOURCES
-#		#{
-#			"${SRCDIR}/utils/lzma/C/LzmaDec.h"
-#			"${SRCDIR}/utils/lzma/C/LzmaDec.c"
-#			"${SRCDIR}/utils/lzma/C/7zTypes.h"
-#		#}
-#	)
-#END_SRC( TIER1_SOURCE_FILES "LZMA Decompression Support" )
+BEGIN_SRC( TIER1_SOURCE_FILES "LZMA Decompression Support" )
+	SRC_GRP(
+		SOURCES
+		#{
+			"${SRCDIR}/utils/lzma/C/LzmaDec.h"
+			"${SRCDIR}/utils/lzma/C/LzmaDec.c"
+			"${SRCDIR}/utils/lzma/C/7zTypes.h"
+		#}
+	)
+END_SRC( TIER1_SOURCE_FILES "LZMA Decompression Support" )
 
 set( TIER1_HEADER_FILES )
 BEGIN_SRC( TIER1_HEADER_FILES "Header Files" )
@@ -145,7 +145,7 @@ BEGIN_SRC( TIER1_HEADER_FILES "Header Files" )
 			"${SRCDIR}/public/tier1/utlsymbol.h"
 			"${SRCDIR}/public/tier1/utlsymbollarge.h"
 			"${SRCDIR}/public/tier1/utlvector.h"
-			#"${SRCDIR}/public/tier1/utlbinaryblock.h"
+			"${SRCDIR}/public/tier1/utlbinaryblock.h"
 			"$<${IS_WINDOWS}:${SRCDIR}/common/xbox/xboxstubs.h>"
 		#}
 	)

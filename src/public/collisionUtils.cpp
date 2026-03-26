@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Common collision utility methods
 //
@@ -228,7 +228,7 @@ int IntersectTriangleWithPlaneBarycentric( const Vector& org, const Vector& edge
 	{
 		pIntersection[ptIdx].x = - ( orgDotNormal - plane.w + edgeVDotNormal) / 
 			( edgeUDotNormal - edgeVDotNormal);
-		pIntersection[ptIdx].y = 1.0f - pIntersection[ptIdx].x;;
+		pIntersection[ptIdx].y = 1.0f - pIntersection[ptIdx].x;
 		if ((pIntersection[ptIdx].x >= 0.0f) && (pIntersection[ptIdx].x <= 1.0f) &&
 			 (pIntersection[ptIdx].y >= 0.0f) && (pIntersection[ptIdx].y <= 1.0f))
 			++ptIdx;
@@ -240,7 +240,7 @@ int IntersectTriangleWithPlaneBarycentric( const Vector& org, const Vector& edge
 
 
 //-----------------------------------------------------------------------------
-// Returns true if a sphere intersects with a sphere
+// Returns true if a box intersects with a sphere
 //-----------------------------------------------------------------------------
 bool IsSphereIntersectingSphere( const Vector& center1, float radius1, 
 								 const Vector& center2, float radius2 )
@@ -541,7 +541,13 @@ bool IsPointInBox( const Vector& pt, const Vector& boxMin, const Vector& boxMax 
 	Assert( boxMin[0] <= boxMax[0] );
 	Assert( boxMin[1] <= boxMax[1] );
 	Assert( boxMin[2] <= boxMax[2] );
-	
+
+	// on x360, force use of SIMD version.
+	if (IsX360())
+	{
+		return IsPointInBox( LoadUnaligned3SIMD(pt.Base()), LoadUnaligned3SIMD(boxMin.Base()), LoadUnaligned3SIMD(boxMax.Base()) ) ;
+	}
+
 	if ( (pt[0] > boxMax[0]) || (pt[0] < boxMin[0]) )
 		return false;
 	if ( (pt[1] > boxMax[1]) || (pt[1] < boxMin[1]) )
@@ -628,7 +634,7 @@ bool IsOBBIntersectingOBB( const Vector &vecOrigin1, const QAngle &vecAngles1, c
 	return (bFoundPlane == false);
 }
 
-// NOTE: This is only very slightly faster on high end PCs
+// NOTE: This is only very slightly faster on high end PCs and x360
 #define USE_SIMD_RAY_CHECKS 1
 //-----------------------------------------------------------------------------
 // returns true if there's an intersection between box and ray
@@ -687,7 +693,19 @@ bool FASTCALL IsBoxIntersectingRay( const Vector& boxMin, const Vector& boxMax,
 	fltx4 separation = CmpGtSIMD(lastIn, firstOut);
 
 	return IsAllZeros(separation);
-#else	
+#else
+	// On the x360, we force use of the SIMD functions.
+#if defined(_X360) 
+	if (IsX360())
+	{
+		fltx4 delta = LoadUnaligned3SIMD(vecDelta.Base());
+		return IsBoxIntersectingRay( 
+			LoadUnaligned3SIMD(boxMin.Base()), LoadUnaligned3SIMD(boxMax.Base()),
+			LoadUnaligned3SIMD(origin.Base()), delta, ReciprocalSIMD(delta), // ray parameters
+			ReplicateX4(flTolerance) ///< eg from ReplicateX4(flTolerance)
+			);
+	}
+#endif
 	Assert( boxMin[0] <= boxMax[0] );
 	Assert( boxMin[1] <= boxMax[1] );
 	Assert( boxMin[2] <= boxMax[2] );
@@ -801,6 +819,18 @@ bool FASTCALL IsBoxIntersectingRay( const Vector& boxMin, const Vector& boxMax,
 
 	return IsAllZeros(separation);
 #else
+	// On the x360, we force use of the SIMD functions.
+#if defined(_X360) && !defined(PARANOID_SIMD_ASSERTING)
+	if (IsX360())
+	{
+		return IsBoxIntersectingRay( 
+			LoadUnaligned3SIMD(boxMin.Base()), LoadUnaligned3SIMD(boxMax.Base()),
+			LoadUnaligned3SIMD(origin.Base()), LoadUnaligned3SIMD(vecDelta.Base()), LoadUnaligned3SIMD(vecInvDelta.Base()), // ray parameters
+			ReplicateX4(flTolerance) ///< eg from ReplicateX4(flTolerance)
+			);
+	}
+#endif
+
 	Assert( boxMin[0] <= boxMax[0] );
 	Assert( boxMin[1] <= boxMax[1] );
 	Assert( boxMin[2] <= boxMax[2] );
@@ -862,6 +892,16 @@ bool FASTCALL IsBoxIntersectingRay( const Vector& boxMin, const Vector& boxMax,
 //-----------------------------------------------------------------------------
 bool FASTCALL IsBoxIntersectingRay( const Vector& vecBoxMin, const Vector& vecBoxMax, const Ray_t& ray, float flTolerance )
 {
+	// On the x360, we force use of the SIMD functions.
+#if defined(_X360) 
+	if (IsX360())
+	{
+		return IsBoxIntersectingRay( 
+			LoadUnaligned3SIMD(vecBoxMin.Base()), LoadUnaligned3SIMD(vecBoxMax.Base()),
+			ray, flTolerance);
+	}
+#endif
+
 	if ( !ray.m_IsSwept )
 	{
 		Vector rayMins, rayMaxs;
@@ -885,16 +925,31 @@ bool FASTCALL IsBoxIntersectingRay( const Vector& vecBoxMin, const Vector& vecBo
 //-----------------------------------------------------------------------------
 // returns true if there's an intersection between box and ray (SIMD version)
 //-----------------------------------------------------------------------------
+
+
+#ifdef _X360
+bool FASTCALL IsBoxIntersectingRay( fltx4 boxMin, fltx4 boxMax, 
+								    fltx4 origin, fltx4 delta, fltx4 invDelta, // ray parameters
+									fltx4 vTolerance ///< eg from ReplicateX4(flTolerance)
+									)
+#else
 bool FASTCALL IsBoxIntersectingRay( const fltx4 &inBoxMin, const fltx4 & inBoxMax, 
 								   const fltx4 & origin, const fltx4 & delta, const fltx4 & invDelta, // ray parameters
 								   const fltx4 & vTolerance ///< eg from ReplicateX4(flTolerance)
 								   )
+#endif
 {
 	// Load the unaligned ray/box parameters into SIMD registers
 	// compute the mins/maxs of the box expanded by the ray extents
 	// relocate the problem so that the ray start is at the origin.
+
+#ifdef _X360
+	boxMin = SubSIMD(boxMin, origin);
+	boxMax = SubSIMD(boxMax, origin);
+#else
 	fltx4 boxMin = SubSIMD(inBoxMin, origin);
 	fltx4 boxMax = SubSIMD(inBoxMax, origin);
+#endif
 
 	// Check to see if the origin (start point) and the end point (delta) are on the same side
 	// of any of the box sides - if so there can be no intersection
@@ -1315,7 +1370,6 @@ bool IntersectRayWithOBB( const Vector &vecRayStart, const Vector &vecRayDelta,
 
 	// delta was prescaled by the current t, so no need to see if this intersection
 	// is closer
-	trace_t boxTrace;
 	if ( !IntersectRayWithBox( start, extent, vecOBBMins, vecOBBMaxs, flTolerance, pTrace ) )
 		return false;
 
@@ -1611,8 +1665,11 @@ bool IntersectRayWithOBB( const Ray_t &ray, const matrix3x4_t &matOBBToWorld,
 		}
 		temp.type = 3;
 
-	//	MatrixITransformPlane( matOBBToWorld, temp, pTrace->plane );
+#if defined( DARKINTERVAL )
 		MatrixTransformPlane( matOBBToWorld, temp, pTrace->plane );
+#else
+		MatrixITransformPlane( matOBBToWorld, temp, pTrace->plane );
+#endif // DARKINTERVAL
 		return true;
 	}
 

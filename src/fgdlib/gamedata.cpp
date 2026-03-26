@@ -18,9 +18,12 @@
 
 #pragma warning(disable:4244)
 
+
 const int MAX_ERRORS = 5;
 
+
 static GameDataMessageFunc_t g_pMsgFunc = NULL;
+
 
 //-----------------------------------------------------------------------------
 // Sets the function used for emitting error messages while loading gamedata files.
@@ -29,6 +32,7 @@ void GDSetMessageFunc(GameDataMessageFunc_t pFunc)
 {
 	g_pMsgFunc = pFunc;
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Fetches the next token from the file.
@@ -129,6 +133,7 @@ static bool DoGetToken(TokenReader &tr, char **ppszStore, int nSize, trtoken_t t
 	return true;
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : tr - 
@@ -163,6 +168,7 @@ bool GDError(TokenReader &tr, const char *error, ...)
 	return true;
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Fetches the next token from the file.
 // Input  : tr - The token reader object with which to fetch the token.
@@ -185,6 +191,7 @@ bool GDGetToken(TokenReader &tr, char *pszStore, int nSize, trtoken_t ttexpectin
 	return false;
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Fetches the next token from the file.
 // Input  : tr - The token reader object with which to fetch the token.
@@ -206,6 +213,7 @@ bool GDSkipToken(TokenReader &tr, trtoken_t ttexpecting, const char *pszExpectin
 	return DoGetToken(tr, &pszDiscardBuf, sizeof(szDiscardBuf), ttexpecting, pszExpecting);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Fetches the next token from the file, allocating a buffer exactly
 //			large enough to hold the token.
@@ -226,6 +234,7 @@ bool GDGetTokenDynamic(TokenReader &tr, char **ppszStore, trtoken_t ttexpecting,
 	return DoGetToken(tr, ppszStore, -1, ttexpecting, pszExpecting);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Constructor.
 //-----------------------------------------------------------------------------
@@ -236,6 +245,7 @@ GameData::GameData(void)
 	m_InstanceClass = NULL;
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Destructor.
 //-----------------------------------------------------------------------------
@@ -243,6 +253,7 @@ GameData::~GameData(void)
 {
 	ClearData();
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -258,6 +269,7 @@ void GameData::ClearData(void)
 	}
 	m_Classes.RemoveAll();
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Loads a gamedata (FGD) file into this object.
@@ -463,6 +475,7 @@ BOOL GameData::Load(const char *pszFilename)
 	return TRUE;
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Parses the "mapsize" specifier, which should be of the form:
 //
@@ -512,6 +525,7 @@ bool GameData::ParseMapSize(TokenReader &tr)
 	return true;
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : pszName - 
@@ -534,6 +548,8 @@ GDclass *GameData::ClassForName(const char *pszName, int *piIndex)
 
 	return NULL;
 }
+
+
 #if 0 //def SLE //// SLE NEW - ported from 2015
 void GameData::BeginInstancing(int nPass)
 {
@@ -552,6 +568,7 @@ void GameData::BeginMapInstance()
 	m_NodeRemap.RemoveAll();
 }
 #endif
+
 // These are 'standard' keys that every entity uses, but they aren't specified that way in the .fgd
 static const char *RequiredKeys[] =
 {
@@ -614,6 +631,7 @@ GDclass *GameData::BeginInstanceRemap( const char *pszClassName, const char *psz
 	return m_InstanceClass;
 }
 
+
 enum tRemapOperation
 {
 	REMAP_NAME = 0,
@@ -626,7 +644,9 @@ enum tRemapOperation
 #endif
 };
 
+
 static CUtlMap< GDIV_TYPE, tRemapOperation > RemapOperation;
+
 
 //-----------------------------------------------------------------------------
 // Purpose: function to sort the class type for the RemapOperations map
@@ -638,6 +658,7 @@ static bool CUtlType_LessThan( const GDIV_TYPE &type1, const GDIV_TYPE &type2 )
 {
 	return ( type1 < type2 );
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: this function will attempt to remap a key's value
@@ -793,6 +814,7 @@ bool GameData::RemapKeyValue( const char *pszKey, const char *pszInValue, char *
 	return ( strcmpi( pszInValue, pszOutValue ) != 0 );
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: this function will attempt to remap a name field.
 // Input  : pszInvalue - the original value
@@ -821,6 +843,8 @@ bool GameData::RemapNameField( const char *pszInValue, char *pszOutValue, TNameF
 
 	return ( strcmpi( pszInValue, pszOutValue ) != 0 );
 }
+
+
 #if 0 //def SLE //// SLE NEW - ported from 2015
 //-----------------------------------------------------------------------------
 // Purpose: this function will attempt to remap a instance field.
@@ -860,6 +884,8 @@ bool GameData::RemapInstanceField(const char *pszInValue, char *pszOutValue, TNa
 	return ( strcmpi(pszInValue, pszOutValue) != 0 );
 }
 #endif
+
+
 //-----------------------------------------------------------------------------
 // Purpose: Gathers any FGD-defined material directory exclusions
 // Input  : 

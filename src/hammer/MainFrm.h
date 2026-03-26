@@ -123,7 +123,7 @@ protected:
 	afx_msg void OnClose();
 	afx_msg void OnDestroy();
 	afx_msg void OnPaint();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 #ifdef SLE
 	afx_msg void On3DVoidColor(); //// SLE NEW - selectable void colour setting - open colour picker dialogue
 	afx_msg void OnSelectionColor(); //// SLE NEW - configure tint on selected objects

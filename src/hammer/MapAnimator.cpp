@@ -362,7 +362,7 @@ void CMapAnimator::UpdateAnimation( float animTime )
 	Quaternion newAngles;
 	GetAnimationAtTime( animTime, newOrigin, newAngles );
 
-	VMatrix mat, tmpMat;
+	VMatrix mat;
 	Vector ourOrigin;
 	GetOrigin( ourOrigin );
 

@@ -69,13 +69,13 @@ class CAnchorMgr
 {
 public:
 	CAnchorMgr();
-	void Init( HWND hParentWnd, CAnchorMgr::CAnchorDef *pAnchors, int nAnchors );
+	void Init( HWND hParentWnd, CAnchorDef *pAnchors, int nAnchors );
 
 	// Call this when the parent window's size changes and it'll resize all the subcontrols.
 	void OnSize();
 	
 private:
-	CUtlVector<CAnchorMgr::CAnchorDef> m_Anchors;	
+	CUtlVector<CAnchorDef> m_Anchors;	
 	HWND m_hParentWnd;
 	int m_OriginalParentSize[2];	// wide, tall
 };

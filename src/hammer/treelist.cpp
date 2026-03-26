@@ -87,7 +87,7 @@ void CTreeList::AddItem(void *pItem, void *pParent, const char *pText, bool bHas
 	HTREEITEM hItem = InsertItem(pText, hParent, TVI_LAST);
 	if (hItem != NULL)
 	{
-		SetItemData(hItem, (DWORD)pItem);
+		SetItemData(hItem, (DWORD_PTR)pItem);
 		m_Items.AddToTail(pItem);
 
 		if (bHasCheckBox)
@@ -587,7 +587,7 @@ void CTreeList::Drop(DropType_t eDropType, UINT nFlags, CPoint point)
 // Purpose: 
 // Input  : nIDEvent - 
 //-----------------------------------------------------------------------------
-void CTreeList::OnTimer(UINT nIDEvent)
+void CTreeList::OnTimer(UINT_PTR nIDEvent)
 {
 	//DBG("OnTimer\n");
 	switch (nIDEvent)

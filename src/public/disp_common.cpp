@@ -91,6 +91,7 @@ int g_EdgeSideLenMul[4] =
 	0
 };
 
+
 // --------------------------------------------------------------------------------- //
 // Helper functions.
 // --------------------------------------------------------------------------------- //
@@ -156,6 +157,7 @@ static inline void RotateVertIncrement(
 	}
 }
 
+
 // --------------------------------------------------------------------------------- //
 // CDispHelper functions.
 // --------------------------------------------------------------------------------- //
@@ -175,6 +177,7 @@ int GetEdgeIndexFromPoint( CVertIndex const &index, int iMaxPower )
 	else
 		return -1;
 }
+
 
 int GetCornerIndexFromPoint( CVertIndex const &index, int iPower )
 {
@@ -196,6 +199,7 @@ int GetCornerIndexFromPoint( CVertIndex const &index, int iPower )
 		return -1;
 }
 
+
 int GetNeighborEdgePower( CDispUtilsHelper *pDisp, int iEdge, int iSub )
 {
 	CDispNeighbor *pEdge = pDisp->GetEdgeNeighbor( iEdge );
@@ -210,6 +214,7 @@ int GetNeighborEdgePower( CDispUtilsHelper *pDisp, int iEdge, int iSub )
 
 	return pNeighbor->GetPower() + pInfo->m_PowerShiftAdd;
 }
+
 
 CDispUtilsHelper* SetupEdgeIncrements(
 	CDispUtilsHelper *pDisp,
@@ -257,7 +262,8 @@ CDispUtilsHelper* SetupEdgeIncrements(
 	const CPowerInfo *pPowerInfo = pDisp->GetPowerInfo();
 	myIndex[iEdgeDim] = g_EdgeSideLenMul[iEdge] * pPowerInfo->m_SideLengthM1;
 	myIndex[iFreeDim] = pPowerInfo->m_MidPoint * iSub;
-	TransformIntoSubNeighbor(pDisp, iEdge, iSub, myIndex, nbIndex);
+	TransformIntoSubNeighbor( pDisp, iEdge, iSub, myIndex, nbIndex );
+	
 	int myPower = pDisp->GetPowerInfo()->m_Power;
 	int nbPower = pNeighbor->GetPowerInfo()->m_Power + pShiftInfo->m_PowerShiftAdd;
 	
@@ -282,6 +288,7 @@ CDispUtilsHelper* SetupEdgeIncrements(
 
 	return pNeighbor;
 }
+
 
 int GetSubNeighborIndex( 
 	CDispUtilsHelper *pDisp,
@@ -331,6 +338,7 @@ int GetSubNeighborIndex(
 	return iSub;
 }
 
+
 void SetupSpan( int iPower, int iEdge, NeighborSpan span, CVertIndex &viStart, CVertIndex &viEnd )
 {
 	int iFreeDim = !g_EdgeDims[iEdge];
@@ -358,6 +366,7 @@ void SetupSpan( int iPower, int iEdge, NeighborSpan span, CVertIndex &viStart, C
 			viStart[iFreeDim] = pPowerInfo->GetMidPoint();
 	}
 }
+
 
 CDispUtilsHelper* TransformIntoSubNeighbor( 
 	CDispUtilsHelper *pDisp,
@@ -394,7 +403,8 @@ CDispUtilsHelper* TransformIntoSubNeighbor(
 	
 	CVertIndex viDestStart, viDestEnd;
 	SetupSpan( pNeighbor->GetPower(), iNBEdge, pSub->GetNeighborSpan(), viDestEnd, viDestStart );
-	
+
+
 	// Now map the one into the other.
 	int iFreeDim = !g_EdgeDims[iEdge];
 	int fixedPercent = ((nodeIndex[iFreeDim] - viSrcStart[iFreeDim]) * (1<<16)) / (viSrcEnd[iFreeDim] - viSrcStart[iFreeDim]);
@@ -409,6 +419,7 @@ CDispUtilsHelper* TransformIntoSubNeighbor(
 
 	return pNeighbor;
 }
+
 
 CDispUtilsHelper* TransformIntoNeighbor( 
 	CDispUtilsHelper *pDisp,
@@ -452,6 +463,7 @@ CDispUtilsHelper* TransformIntoNeighbor(
 	return pRet;
 }
 
+
 bool DoesPointHaveAnyNeighbors( 
 	CDispUtilsHelper *pDisp,
 	const CVertIndex &index )
@@ -481,6 +493,7 @@ bool DoesPointHaveAnyNeighbors(
 	return false;
 }
 
+
 // ------------------------------------------------------------------------------------ //
 // CDispSubEdgeIterator.
 // ------------------------------------------------------------------------------------ //
@@ -490,6 +503,7 @@ CDispSubEdgeIterator::CDispSubEdgeIterator()
 	m_pNeighbor = 0;
 	m_FreeDim = m_Index.x = m_Inc.x = m_End = 0;	// Setup so Next returns false.
 }
+
 
 void CDispSubEdgeIterator::Start( CDispUtilsHelper *pDisp, int iEdge, int iSub, bool bTouchCorners )
 {
@@ -512,6 +526,7 @@ void CDispSubEdgeIterator::Start( CDispUtilsHelper *pDisp, int iEdge, int iSub, 
 	}
 }
 
+
 bool CDispSubEdgeIterator::Next()
 {
 	m_Index += m_Inc;
@@ -521,10 +536,12 @@ bool CDispSubEdgeIterator::Next()
 	return m_Index[m_FreeDim] < m_End;
 }
 
+
 bool CDispSubEdgeIterator::IsLastVert() const
 {
 	return (m_Index[m_FreeDim] + m_Inc[m_FreeDim]) >= m_End;
 }
+
 
 // ------------------------------------------------------------------------------------ //
 // CDispEdgeIterator.
@@ -536,6 +553,7 @@ CDispEdgeIterator::CDispEdgeIterator( CDispUtilsHelper *pDisp, int iEdge )
 	m_iEdge = iEdge;
 	m_iCurSub = -1;
 }
+
 
 bool CDispEdgeIterator::Next()
 {
@@ -551,6 +569,7 @@ bool CDispEdgeIterator::Next()
 	return true;
 }
 
+
 // ------------------------------------------------------------------------------------ //
 // CDispCircumferenceIterator.
 // ------------------------------------------------------------------------------------ //
@@ -560,6 +579,7 @@ CDispCircumferenceIterator::CDispCircumferenceIterator( int sideLength )
 	m_iCurEdge = -1;
 	m_SideLengthM1 = sideLength - 1;
 }
+
 
 bool CDispCircumferenceIterator::Next()
 {
@@ -608,6 +628,8 @@ bool CDispCircumferenceIterator::Next()
 	return true;
 }
 
+
+
 // Helper function to setup an index either on the edges or the center
 // of the box defined by [bottomleft,topRight].
 static inline void SetupCoordXY( CNodeVert &out, CNodeVert const &bottomLeft, CNodeVert const &topRight, CNodeVert const &info )
@@ -622,6 +644,7 @@ static inline void SetupCoordXY( CNodeVert &out, CNodeVert const &bottomLeft, CN
 			out[i] = topRight[i];
 	}
 }
+
 
 static unsigned short* DispCommon_GenerateTriIndices_R( 
 	CNodeVert const &bottomLeft, 
@@ -678,6 +701,7 @@ static unsigned short* DispCommon_GenerateTriIndices_R(
 	return indices;
 }
 
+
 // ------------------------------------------------------------------------------------------- //
 // CDispUtilsHelper functions.
 // ------------------------------------------------------------------------------------------- //
@@ -728,6 +752,7 @@ int DispCommon_GetNumTriIndices( int power )
 {
 	return (1<<power) * (1<<power) * 2 * 3;
 }
+
 
 void DispCommon_GenerateTriIndices( int power, unsigned short *indices )
 {

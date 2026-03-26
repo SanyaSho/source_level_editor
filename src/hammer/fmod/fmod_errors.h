@@ -1,25 +1,25 @@
 /* ==============================================================================================  */
 /* FMOD Core / Studio API - Error string header file.                                              */
-/* Copyright (c), Firelight Technologies Pty, Ltd. 2004-2019.                                      */
+/* Copyright (c), Firelight Technologies Pty, Ltd. 2004-2022.                                      */
 /*                                                                                                 */
 /* Use this header if you want to store or display a string version / english explanation          */
 /* of the FMOD error codes.                                                                        */
 /*                                                                                                 */
 /* For more detail visit:                                                                          */
-/* https://fmod.com/resources/documentation-api?version=2.0&page=core-api-common.html#fmod_result  */
+/* https://fmod.com/docs/2.02/api/core-api-common.html#fmod_result                                 */
 /* =============================================================================================== */
 #ifndef _FMOD_ERRORS_H
 #define _FMOD_ERRORS_H
 
-#include "fmod_common.h"
+#include "fmod.h"
 
 #ifdef __GNUC__ 
-static const char* FMOD_ErrorString( FMOD_RESULT errcode ) __attribute__((unused));
+static const char *FMOD_ErrorString(FMOD_RESULT errcode) __attribute__((unused));
 #endif
 
-static const char* FMOD_ErrorString( FMOD_RESULT errcode )
+static const char *FMOD_ErrorString(FMOD_RESULT errcode)
 {
-    switch ( errcode )
+    switch (errcode)
     {
         case FMOD_OK:                            return "No errors.";
         case FMOD_ERR_BADCOMMAND:                return "Tried to call a function on a data type that does not allow this type of functionality (ie calling Sound::lock on a streaming sound).";
@@ -76,7 +76,7 @@ static const char* FMOD_ErrorString( FMOD_RESULT errcode )
         case FMOD_ERR_OUTPUT_NODRIVERS:          return "The output device has no drivers installed.  If pre-init, FMOD_OUTPUT_NOSOUND is selected as the output mode.  If post-init, the function just fails.";
         case FMOD_ERR_PLUGIN:                    return "An unspecified error has been returned from a plugin.";
         case FMOD_ERR_PLUGIN_MISSING:            return "A requested output, dsp unit type or codec was not available.";
-        case FMOD_ERR_PLUGIN_RESOURCE:           return "A resource that the plugin requires cannot be found. (ie the DLS file for MIDI playback)";
+        case FMOD_ERR_PLUGIN_RESOURCE:           return "A resource that the plugin requires cannot be allocated or found. (ie the DLS file for MIDI playback)";
         case FMOD_ERR_PLUGIN_VERSION:            return "A plugin was built with an unsupported SDK version.";
         case FMOD_ERR_RECORD:                    return "An error occurred trying to initialize the recording device.";
         case FMOD_ERR_REVERB_CHANNELGROUP:       return "Reverb properties cannot be set on this channel because a parent channelgroup owns the reverb connection.";
@@ -103,7 +103,7 @@ static const char* FMOD_ErrorString( FMOD_RESULT errcode )
         case FMOD_ERR_NOT_LOCKED:                return "The specified resource is not locked, so it can't be unlocked.";
         case FMOD_ERR_RECORD_DISCONNECTED:       return "The specified recording driver has been disconnected.";
         case FMOD_ERR_TOOMANYSAMPLES:            return "The length provided exceeds the allowable limit.";
-        default:                                 return "Unknown error.";
+        default :                                return "Unknown error.";
     };
 }
 

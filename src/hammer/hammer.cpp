@@ -898,7 +898,7 @@ void CHammer::Help(const char *pszTopic)
 	if (hResult <= (HINSTANCE)32)
 	{
 		char szError[MAX_PATH];
-		sprintf(szError, "The help system could not be launched. The following error was returned:\n%s (0x%X)", GetErrorString(), hResult);
+		sprintf(szError, "The help system could not be launched. The following error was returned:\n%s (0x%X)", GetErrorString(), (unsigned int)(intp)hResult);
 		AfxMessageBox(szError);
 	}
 #endif
@@ -2570,7 +2570,7 @@ struct AutoSaveData
 	CMapDoc* pDoc;
 };
 
-unsigned CHammer::DoAutosave( void* _data )
+uintp CHammer::DoAutosave( void* _data )
 {
 	auto data = static_cast<AutoSaveData*>( _data );
 	auto pDoc = data->pDoc;

@@ -711,11 +711,7 @@ void CToolEntitySprinkle::CreateMapObject( Vector &vOrigin, Vector &vSurfaceNorm
 		QAngle angles;
 		MatrixToAngles(entToWorld, angles);
 
-		VMatrix vmRotate, vmT1, vmT2;
-		Vector vOrigin;
 		QAngle angAligned(angles.x, angles.y, angles.z);
-
-	//	pEntity->SetOrigin(vOrigin);
 
 		char szAngles[80];
 		sprintf(szAngles, "%.1f %.1f %.1f", (double)angAligned[PITCH], (double)angAligned[YAW], (double)angAligned[ROLL]);
@@ -732,8 +728,6 @@ void CToolEntitySprinkle::CreateMapObject( Vector &vOrigin, Vector &vSurfaceNorm
 		m_pDocument->AddObjectToWorld( pEntity );
 	
 		GetHistory()->KeepNew( pEntity );
-
-	//	RemoveMapObjects( vOrigin, pSprinkleType, nMode, 0, NULL, pEntity );
 	}
 }
 

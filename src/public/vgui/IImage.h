@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -12,14 +12,14 @@
 #pragma once
 #endif
 
-#include <vgui/vgui.h>
+#include <vgui/VGUI.h>
 
 class Color;
 
 namespace vgui
 {
 
-typedef unsigned long HTexture;
+typedef uint32 HTexture;
 
 enum iimage_rotation_t
 {

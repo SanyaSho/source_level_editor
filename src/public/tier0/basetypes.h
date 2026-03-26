@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -17,11 +17,12 @@
 #pragma once
 #endif
 
+
 // This is a trick to get the DLL extension off the -D option on the command line.
-#define _DLL_EXT .dll
 #define DLLExtTokenPaste(x) #x
 #define DLLExtTokenPaste2(x) DLLExtTokenPaste(x)
 #define DLL_EXT_STRING DLLExtTokenPaste2( _DLL_EXT )
+
 
 #include "protected_things.h"
 
@@ -41,9 +42,7 @@
 #define NULL 0
 #endif
 
-#ifdef POSIX
 #include <stdint.h>
-#endif
 
 #define ExecuteNTimes( nTimes, x )	\
 	{								\
@@ -55,13 +54,16 @@
 		}							\
 	}
 
+
 #define ExecuteOnce( x )			ExecuteNTimes( 1, x )
+
 
 template <typename T>
 inline T AlignValue( T val, uintptr_t alignment )
 {
 	return (T)( ( (uintptr_t)val + alignment - 1 ) & ~( alignment - 1 ) );
 }
+
 
 // Pad a number so it lies on an N byte boundary.
 // So PAD_NUMBER(0,4) is 0 and PAD_NUMBER(1,4) is 4
@@ -121,24 +123,31 @@ T Max( T const &val1, T const &val2 )
 
 #endif
 
+#ifndef USE_DXVK_NATIVE
+#ifndef DONT_DEFINE_BOOL // Needed for Cocoa stuff to compile.
+typedef int BOOL;
+#endif
+typedef unsigned char BYTE;
+#else
+#include <windows.h>
+#endif
+typedef int qboolean;
+typedef unsigned char byte;
+typedef unsigned short word;
+
+#ifdef _WIN32
+typedef wchar_t ucs2; // under windows wchar_t is ucs2
+#else
+typedef unsigned short ucs2;
+#endif
+
 #ifndef FALSE
 #define FALSE 0
 #define TRUE (!FALSE)
 #endif
 
-#ifndef DONT_DEFINE_BOOL // Needed for Cocoa stuff to compile.
-typedef int BOOL;
-#endif
-
-typedef int qboolean;
-typedef unsigned long ULONG;
-typedef unsigned char BYTE;
-typedef unsigned char byte;
-typedef unsigned short word;
-#ifdef _WIN32
-typedef wchar_t ucs2; // under windows wchar_t is ucs2
-#else
-typedef unsigned short ucs2;
+#ifdef POSIX
+#include <stdint.h>
 #endif
 
 enum ThreeState_t
@@ -153,26 +162,35 @@ typedef float vec_t;
 #if defined(__GNUC__)
 #define fpmin __builtin_fminf
 #define fpmax __builtin_fmaxf
-#else
-#define fpmin min
-#define fpmax max
+#elif !defined(_X360)
+static inline float fpmin( float a, float b )
+{
+	return a > b  ? b : a;
+}
+
+static inline float fpmax( float a, float b )
+{
+	return a >= b ? a : b;
+}
 #endif
+
 
 //-----------------------------------------------------------------------------
 // look for NANs, infinities, and underflows. 
 // This assumes the ANSI/IEEE 754-1985 standard
 //-----------------------------------------------------------------------------
-inline unsigned long& FloatBits( vec_t& f )
+
+inline unsigned int& FloatBits( vec_t& f )
 {
-	return *reinterpret_cast<unsigned long*>(&f);
+	return *reinterpret_cast<unsigned int*>(&f);
 }
 
-inline unsigned long const& FloatBits( vec_t const& f )
+inline unsigned int const& FloatBits( vec_t const& f )
 {
-	return *reinterpret_cast<unsigned long const*>(&f);
+	return *reinterpret_cast<unsigned int const*>(&f);
 }
 
-inline vec_t BitsToFloat( unsigned long i )
+inline vec_t BitsToFloat( unsigned int i )
 {
 	return *reinterpret_cast<vec_t*>(&i);
 }
@@ -182,7 +200,7 @@ inline bool IsFinite( vec_t f )
 	return ((FloatBits(f) & 0x7F800000) != 0x7F800000);
 }
 
-inline unsigned long FloatAbsBits( vec_t f )
+inline unsigned int FloatAbsBits( vec_t f )
 {
 	return FloatBits(f) & 0x7FFFFFFF;
 }
@@ -193,7 +211,7 @@ inline unsigned long FloatAbsBits( vec_t f )
 #ifndef _In_
 #define _In_
 #endif
-extern "C" float fabsf(_In_ float);
+extern "C" _Check_return_ __inline float __CRTDECL fabsf(_In_ float _X);
 #else
 #include <math.h>
 #endif
@@ -213,10 +231,13 @@ inline float FloatNegate( vec_t f )
 	return -f;
 }
 
+
 #define FLOAT32_NAN_BITS     (unsigned long)0x7FC00000	// not a number!
 #define FLOAT32_NAN          BitsToFloat( FLOAT32_NAN_BITS )
 
 #define VEC_T_NAN FLOAT32_NAN
+
+
 
 // FIXME: why are these here?  Hardly anyone actually needs them.
 struct color24
@@ -241,6 +262,7 @@ struct colorVec
 	unsigned r, g, b, a;
 };
 
+
 #ifndef NOTE_UNUSED
 #define NOTE_UNUSED(x)	(void)(x)	// for pesky compiler / lint warnings
 #endif
@@ -251,6 +273,7 @@ struct vrect_t
 	vrect_t			*pnext;
 };
 
+
 //-----------------------------------------------------------------------------
 // MaterialRect_t struct - used for DrawDebugText
 //-----------------------------------------------------------------------------
@@ -260,6 +283,7 @@ struct Rect_t
 	int width, height;
 };
 
+
 //-----------------------------------------------------------------------------
 // Interval, used by soundemittersystem + the game
 //-----------------------------------------------------------------------------
@@ -268,6 +292,7 @@ struct interval_t
 	float start;
 	float range;
 };
+
 
 //-----------------------------------------------------------------------------
 // Declares a type-safe handle type; you can't assign one handle to the next
@@ -314,6 +339,7 @@ protected:
 	}
 };
 
+
 template< class DummyType >
 class CIntHandle32 : public CBaseIntHandle< unsigned long >
 {
@@ -331,6 +357,7 @@ protected:
 		m_Handle = val;
 	}
 };
+
 
 // NOTE: This macro is the same as windows uses; so don't change the guts of it
 #define DECLARE_HANDLE_16BIT(name)	typedef CIntHandle16< struct name##__handle * > name;

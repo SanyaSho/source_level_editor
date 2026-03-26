@@ -10,6 +10,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Constructor.
 //-----------------------------------------------------------------------------
@@ -51,6 +52,7 @@ GDclass::GDclass(void)
 		m_bmaxs[i] = 8;
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Destructor. Frees variable and helper lists.
@@ -106,6 +108,7 @@ GDclass::~GDclass(void)
 //	delete m_szSequentialNamingBase;
 #endif
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Adds the base class's variables to our variable list. Acquires the
@@ -173,6 +176,7 @@ void GDclass::AddBase(GDclass *pBase)
 		m_bGotColor = true;
 	}	
 }
+
 
 #if 1 //def SLE // extend class for fgd
 void GDclass::AppendClass(GDclass *pAppend)
@@ -353,6 +357,7 @@ BOOL GDclass::AddVariable(GDinputvariable *pVar, GDclass *pBase, int iBaseIndex,
 	return(true);
 }
 
+
 //-----------------------------------------------------------------------------
 // Finds an input by name.
 //-----------------------------------------------------------------------------
@@ -371,6 +376,7 @@ CClassInput *GDclass::FindInput(const char *szName)
 	return(NULL);
 }
 
+
 //-----------------------------------------------------------------------------
 // Finds an output by name.
 //-----------------------------------------------------------------------------
@@ -388,6 +394,7 @@ CClassOutput *GDclass::FindOutput(const char *szName)
 
 	return(NULL);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Gets the mins and maxs of the class's bounding box as read from the
@@ -413,6 +420,7 @@ BOOL GDclass::GetBoundBox(Vector& pfMins, Vector& pfMaxs)
 	return(m_bGotSize);
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 CHelperInfo *GDclass::GetHelper(int nIndex)
@@ -428,12 +436,14 @@ CClassInput *GDclass::GetInput(int nIndex)
 	return m_Inputs.Element(nIndex);
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 CClassOutput *GDclass::GetOutput(int nIndex)
 {
 	return m_Outputs.Element(nIndex);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -529,6 +539,7 @@ BOOL GDclass::InitFromTokens(TokenReader& tr, GameData *pGD)
 	return(TRUE);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : &tr - 
@@ -575,6 +586,7 @@ bool GDclass::ParseBase(TokenReader &tr)
 
 	return(true);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -626,6 +638,7 @@ bool GDclass::ParseColor(TokenReader &tr)
 	
 	return(true);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Parses a helper from the FGD file. Helpers are of the following format:
@@ -685,6 +698,7 @@ bool GDclass::ParseHelper(TokenReader &tr, char *pszHelperName)
 
 	return(true);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -749,6 +763,8 @@ bool GDclass::ParseSize(TokenReader &tr)
 
 	return(true);
 }
+
+
 #ifdef SLE //// SLE NEW - fgd-driven sequential naming
 bool GDclass::ParseSequentialNaming(TokenReader &tr)
 {	
@@ -843,6 +859,8 @@ bool GDclass::ParseSequentialNaming(TokenReader &tr)
 	*/
 }
 #endif
+
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : &tr - 
@@ -914,6 +932,7 @@ bool GDclass::ParseSpecifiers(TokenReader &tr)
 	return(true);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Reads an input using a given token reader. If the input is
 //			read successfully, the input is added to this class. If not, a
@@ -944,6 +963,7 @@ bool GDclass::ParseInput(TokenReader &tr)
 
 	return(bReturn);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Reads an input or output using a given token reader.
@@ -1015,6 +1035,7 @@ bool GDclass::ParseInputOutput(TokenReader &tr, CClassInputOutputBase *pInputOut
 	return(true);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Reads an output using a given token reader. If the output is
 //			read successfully, the output is added to this class. If not, a
@@ -1045,6 +1066,7 @@ bool GDclass::ParseOutput(TokenReader &tr)
 
 	return(bReturn);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1119,6 +1141,7 @@ bool GDclass::ParseVariables(TokenReader &tr)
 	return(true);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : iIndex - 
@@ -1140,6 +1163,7 @@ GDinputvariable *GDclass::GetVariableAt(int iIndex)
 	// find var in pVarClass
 	return pVarClass->GetVariableAt(m_VariableMap[iIndex][1]);
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1175,3 +1199,6 @@ void GDclass::GetHelperForGDVar( GDinputvariable *pVar, CUtlVector<const char *>
 		}
 	}
 }
+
+
+

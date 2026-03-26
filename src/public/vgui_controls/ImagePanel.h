@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -12,7 +12,7 @@
 #pragma once
 #endif
 
-#include <vgui/vgui.h>
+#include <vgui/VGUI.h>
 #include <vgui_controls/Panel.h>
 
 namespace vgui
@@ -78,6 +78,7 @@ private:
 	bool m_bPositionImage;
 	bool m_bCenterImage;
 	bool m_bScaleImage;
+	int m_nScaleProportional = 0;
 	bool m_bTileImage;
 	bool m_bTileHorizontally;
 	bool m_bTileVertically;

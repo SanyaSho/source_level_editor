@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -77,7 +77,7 @@ class Vector;
 #define VERTEX_USERDATA_SIZE( _n )			((_n) << USER_DATA_SIZE_BIT)
 #define VERTEX_TEXCOORD_MASK( _coord )		(( 0x7ULL ) << ( TEX_COORD_SIZE_BIT + 3 * (_coord) ))
 
-inline const VertexFormat_t VERTEX_TEXCOORD_SIZE( int nIndex, int nNumCoords )
+inline VertexFormat_t VERTEX_TEXCOORD_SIZE( int nIndex, int nNumCoords )
 {
 	uint64 n64=nNumCoords;
 	uint64 nShift=TEX_COORD_SIZE_BIT + (3*nIndex);
@@ -132,7 +132,7 @@ enum VertexElement_t
 {
 	VERTEX_ELEMENT_NONE = -1,
 
-	// Deliberately explicitly numbered so it's a pain in the ass to change, so you read this:
+	// Deliberately explicitly numbered so it's a pain to change, so you read this:
 	// #!#!#NOTE#!#!# update GetVertexElementSize, VertexElementToDeclType and
 	//                CVBAllocTracker (elementTable) when you update this!
 	VERTEX_ELEMENT_POSITION		= 0,
@@ -481,7 +481,7 @@ public:
 	// This is how game code affects how a material is rendered.
 	// The game code must know about the params that are used by
 	// the shader for the material that it is trying to affect.
-	virtual IMaterialVar *	FindVar( const char *varName, bool *found, bool complain = false ) = 0;
+	virtual IMaterialVar *	FindVar( const char *varName, bool *found, bool complain = true ) = 0;
 
 	// The user never allocates or deallocates materials.  Reference counting is
 	// used instead.  Garbage collection is done upon a call to 

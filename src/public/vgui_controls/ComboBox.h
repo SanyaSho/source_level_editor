@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -14,7 +14,7 @@
 
 #include <vgui_controls/TextEntry.h>
 #include <vgui_controls/Menu.h>
-#include <vgui_controls/button.h>
+#include <vgui_controls/Button.h>
 
 namespace vgui
 {
@@ -63,7 +63,7 @@ public:
 	virtual int AddItem(const char *itemText, const KeyValues *userData);
 	virtual int AddItem(const wchar_t *itemText, const KeyValues *userData);
 
-	virtual int GetItemCount();
+	virtual int GetItemCount() const;
 	int GetItemIDFromRow( int row );
 
 	// update the item
@@ -147,6 +147,9 @@ protected:
 	// custom message handlers
 	MESSAGE_FUNC_WCHARPTR( OnSetText, "SetText", text );
 	virtual void OnSetFocus();						// called after the panel receives the keyboard focus
+#ifdef _X360
+	virtual void OnKeyCodePressed(KeyCode code);
+#endif
     virtual void OnKeyCodeTyped(KeyCode code);
 	virtual void OnKeyTyped(wchar_t unichar);
 
@@ -160,6 +163,17 @@ private:
 	Menu 				*m_pDropDown;
 	ComboBoxButton 		*m_pButton;
 	bool				m_bPreventTextChangeMessage;
+
+//=============================================================================
+// HPE_BEGIN:
+// [pfreese] This member variable is never initialized and not used correctly
+//=============================================================================
+
+// 	bool 				m_bAllowEdit;
+
+//=============================================================================
+// HPE_END
+//=============================================================================
 	bool 				m_bHighlight;
 	Menu::MenuDirection_e 	m_iDirection;
 	int 				m_iOpenOffsetY;

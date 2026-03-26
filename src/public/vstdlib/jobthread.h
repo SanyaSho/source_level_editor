@@ -45,10 +45,6 @@
 #undef GetJob
 #endif
 
-#ifdef Yield  // windows.h print function collisions
-#undef Yield
-#endif
-
 #ifdef VSTDLIB_DLL_EXPORT
 #define JOB_INTERFACE	DLL_EXPORT
 #define JOB_OVERLOAD	DLL_GLOBAL_EXPORT
@@ -107,7 +103,7 @@ struct ThreadPoolStartParams_t
 	{
 		bExecOnThreadPoolThreadsOnly = false;
 
-		bUseAffinityTable = ( pAffinities != NULL ) && ( fDistribute == TRS_TRUE ) && ( nThreads != -1 );
+		bUseAffinityTable = ( pAffinities != NULL ) && ( fDistribute == TRS_TRUE ) && ( nThreads != (unsigned)-1 );
 		if ( bUseAffinityTable )
 		{
 			// user supplied an optional 1:1 affinity mapping to override normal distribute behavior
@@ -1244,7 +1240,7 @@ private:
 // Raw thread launching
 //-----------------------------------------------------------------------------
 
-inline unsigned FunctorExecuteThread( void *pParam )
+inline uintp FunctorExecuteThread( void *pParam )
 {
 	CFunctor *pFunctor = (CFunctor *)pParam;
 	(*pFunctor)();

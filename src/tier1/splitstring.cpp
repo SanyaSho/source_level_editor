@@ -52,7 +52,7 @@ void CSplitString::Construct( const char *pString, const char **pSeparators, int
 		if ( pFirstSeparator )
 		{
 			// Split on this separator and continue on.
-			int separatorLen = strlen( pSeparators[iFirstSeparator] );
+			int separatorLen = V_strlen( pSeparators[iFirstSeparator] );
 			if ( pFirstSeparator > pCurPos )
 			{
 				//////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,8 @@ void CSplitString::Construct( const char *pString, const char **pSeparators, int
 		else
 		{
 			// Copy the rest of the string
-			if ( int nTokenLength = strlen( pCurPos ) )
+			int nTokenLength = V_strlen( pCurPos );
+			if ( nTokenLength )
 			{
 				//////////////////////////////////////////////////////////////////////////
 				// There's no need to cut this token, because there's no separator after it.

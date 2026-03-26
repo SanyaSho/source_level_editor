@@ -866,7 +866,7 @@ CMapClass *CMapClass::PrepareSelection(SelectMode_t eSelectMode)
 //			Type - Unless NULL, only objects of the given type will be enumerated.
 // Output : Returns FALSE if the enumeration was terminated early, TRUE if it completed.
 //-----------------------------------------------------------------------------
-BOOL CMapClass::EnumChildren(ENUMMAPCHILDRENPROC pfn, unsigned int dwParam, MAPCLASSTYPE Type)
+BOOL CMapClass::EnumChildren(ENUMMAPCHILDRENPROC pfn, DWORD_PTR dwParam, MAPCLASSTYPE Type)
 {
 	FOR_EACH_OBJ( m_Children, pos )
 	{
@@ -893,7 +893,7 @@ BOOL CMapClass::EnumChildren(ENUMMAPCHILDRENPROC pfn, unsigned int dwParam, MAPC
 	return TRUE;
 }
 #ifdef SLE //// SLE NEW - inform entities of their instances
-BOOL CMapClass::EnumChildrenOfInstance(ENUMMAPCHILDRENPROC pfn, unsigned int dwParam, MAPCLASSTYPE Type, const char* instanceName)
+BOOL CMapClass::EnumChildrenOfInstance(ENUMMAPCHILDRENPROC pfn, DWORD_PTR dwParam, MAPCLASSTYPE Type, const char* instanceName)
 {
 	FOR_EACH_OBJ(m_Children, pos)
 	{
@@ -934,7 +934,7 @@ BOOL CMapClass::EnumChildrenOfInstance(ENUMMAPCHILDRENPROC pfn, unsigned int dwP
 //			Type - Unless NULL, only objects of the given type will be enumerated.
 // Output : Returns FALSE if the enumeration was terminated early, TRUE if it completed.
 //-----------------------------------------------------------------------------
-BOOL CMapClass::EnumChildrenRecurseGroupsOnly(ENUMMAPCHILDRENPROC pfn, unsigned int dwParam, MAPCLASSTYPE Type)
+BOOL CMapClass::EnumChildrenRecurseGroupsOnly(ENUMMAPCHILDRENPROC pfn, DWORD_PTR dwParam, MAPCLASSTYPE Type)
 {
 	FOR_EACH_OBJ( m_Children, pos )
 	{
@@ -968,7 +968,7 @@ BOOL CMapClass::EnumChildrenRecurseGroupsOnly(ENUMMAPCHILDRENPROC pfn, unsigned 
 //			Type - Unless NULL, only objects of the given type will be enumerated.
 // Output : Returns FALSE if the enumeration was terminated early, TRUE if it completed.
 //-----------------------------------------------------------------------------
-BOOL CMapClass::EnumChildrenAndInstances(ENUMMAPCHILDRENPROC pfn, unsigned int dwParam, MAPCLASSTYPE Type)
+BOOL CMapClass::EnumChildrenAndInstances(ENUMMAPCHILDRENPROC pfn, DWORD_PTR dwParam, MAPCLASSTYPE Type)
 {
 #if 1
 	FOR_EACH_OBJ(m_Children, pos)

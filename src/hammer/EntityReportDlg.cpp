@@ -375,7 +375,7 @@ void CEntityReportDlg::OnProperties()
 	}
 }
 
-void CEntityReportDlg::OnTimer(UINT nIDEvent) 
+void CEntityReportDlg::OnTimer(UINT_PTR nIDEvent) 
 {
 	CDialog::OnTimer(nIDEvent);
 
@@ -436,9 +436,9 @@ BOOL AddEntityToList(CMapEntity *pEntity, CEntityReportDlg *pDlg)
 			{
 				CMapWorld	*pWorld = pMapDoc->GetMapWorld();
 #ifdef SLE
-				pWorld->EnumChildrenOfInstance(ENUMMAPCHILDRENPROC(AddEntityToList), DWORD(pDlg), MAPCLASS_TYPE(CMapEntity), pEntity->GetKeyValue("file"));
+				pWorld->EnumChildrenOfInstance(ENUMMAPCHILDRENPROC(AddEntityToList), DWORD_PTR(pDlg), MAPCLASS_TYPE(CMapEntity), pEntity->GetKeyValue("file"));
 #else
-				pWorld->EnumChildren(ENUMMAPCHILDRENPROC(AddEntityToList), DWORD(pDlg), MAPCLASS_TYPE(CMapEntity));
+				pWorld->EnumChildren(ENUMMAPCHILDRENPROC(AddEntityToList), DWORD_PTR(pDlg), MAPCLASS_TYPE(CMapEntity));
 #endif
 			}
 		}
@@ -573,7 +573,7 @@ void CEntityReportDlg::UpdateEntityList(void)
 
 	// add items to list
 	CMapWorld *pWorld = m_pDoc->GetMapWorld();
-	pWorld->EnumChildren(ENUMMAPCHILDRENPROC(AddEntityToList), DWORD(this), MAPCLASS_TYPE(CMapEntity));
+	pWorld->EnumChildren(ENUMMAPCHILDRENPROC(AddEntityToList), DWORD_PTR(this), MAPCLASS_TYPE(CMapEntity));
 
 	m_cEntities.SetRedraw(TRUE);
 	m_cEntities.Invalidate();

@@ -117,7 +117,7 @@ struct MapError
 {
 	CMapClass *pObjects[3];
 	MapErrorType Type;
-	DWORD dwExtra;
+	DWORD_PTR dwExtra;
 	FIXCODE Fix;
 };
 
@@ -668,7 +668,7 @@ static void AddErrorToListBox(CListBox *pList, MapError *pError)
 //			dwExtra - 
 //			... - 
 //-----------------------------------------------------------------------------
-static void AddError(CListBox *pList, MapErrorType Type, DWORD dwExtra, ...)
+static void AddError(CListBox *pList, MapErrorType Type, DWORD_PTR dwExtra, ...)
 {
 	MapError *pError = new MapError;
 	memset(pError, 0, sizeof(MapError));
@@ -724,7 +724,7 @@ static void AddError(CListBox *pList, MapErrorType Type, DWORD dwExtra, ...)
 		case ErrorKillInputRaceCondition:
 		{
 			pError->pObjects[0] = va_arg(vl, CMapClass *);
-			pError->dwExtra = (DWORD)va_arg(vl, CEntityConnection *);
+			pError->dwExtra = (DWORD_PTR)va_arg(vl, CEntityConnection *);
 			break;
 		}
 #ifdef SLE		
@@ -874,7 +874,7 @@ static BOOL _CheckMixedFaces(CMapSolid *pSolid, CListBox *pList)
 
 static void CheckMixedFaces(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckMixedFaces, (DWORD)pList, MAPCLASS_TYPE(CMapSolid));
+	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckMixedFaces, (DWORD_PTR)pList, MAPCLASS_TYPE(CMapSolid));
 }
 
 //-----------------------------------------------------------------------------
@@ -923,7 +923,7 @@ static void CheckDuplicateNodeIDs(CListBox *pList, CMapWorld *pWorld)
 		{
 			if (FindDuplicateNodeID(pEntity, pWorld))
 			{
-				AddError(pList, ErrorDuplicateNodeIDs, (DWORD)pWorld, pEntity);
+				AddError(pList, ErrorDuplicateNodeIDs, (DWORD_PTR)pWorld, pEntity);
 			}
 		}
 		
@@ -987,7 +987,7 @@ static BOOL _CheckDuplicatePlanes(CMapSolid *pSolid, CListBox *pList)
 
 static void CheckDuplicatePlanes(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckDuplicatePlanes, (DWORD)pList, MAPCLASS_TYPE(CMapSolid));
+	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckDuplicatePlanes, (DWORD_PTR)pList, MAPCLASS_TYPE(CMapSolid));
 }
 
 struct FindDuplicateFaceIDs_t
@@ -1038,12 +1038,12 @@ static void CheckDuplicateFaceIDs(CListBox *pList, CMapWorld *pWorld)
 	Lists.All.SetGrowSize(128);
 	Lists.Duplicates.SetGrowSize(128);
 
-	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckDuplicateFaceIDs, (DWORD)&Lists, MAPCLASS_TYPE(CMapSolid));
+	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckDuplicateFaceIDs, (DWORD_PTR)&Lists, MAPCLASS_TYPE(CMapSolid));
 
 	for (int i = 0; i < Lists.Duplicates.Count(); i++)
 	{
 		CMapFace *pFace = Lists.Duplicates.Element(i);
-		AddError(pList, ErrorDuplicateFaceIDs, (DWORD)pFace, (CMapSolid *)pFace->GetParent());
+		AddError(pList, ErrorDuplicateFaceIDs, (DWORD_PTR)pFace, (CMapSolid *)pFace->GetParent());
 	}
 }
 
@@ -1077,7 +1077,7 @@ static void CheckValidTarget(CMapEntity *pEntity, const char *pFieldName, const 
 	if (!bFound)
 	{
 		// No dice, flag it as an error.
-		AddError(pList, ErrorMissingTarget, (DWORD)pFieldName, pEntity);
+		AddError(pList, ErrorMissingTarget, (DWORD_PTR)pFieldName, pEntity);
 	}
 }
 
@@ -1119,7 +1119,7 @@ static BOOL _CheckMissingTargets(CMapEntity *pEntity, CListBox *pList)
 
 static void CheckMissingTargets(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckMissingTargets, (DWORD)pList, MAPCLASS_TYPE(CMapEntity));
+	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckMissingTargets, (DWORD_PTR)pList, MAPCLASS_TYPE(CMapEntity));
 }
 
 //-----------------------------------------------------------------------------
@@ -1160,7 +1160,7 @@ static BOOL _CheckSolidIntegrity(CMapSolid *pSolid, CListBox *pList)
 
 static void CheckSolidIntegrity(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckSolidIntegrity, (DWORD)pList, MAPCLASS_TYPE(CMapSolid));
+	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckSolidIntegrity, (DWORD_PTR)pList, MAPCLASS_TYPE(CMapSolid));
 }
 
 //-----------------------------------------------------------------------------
@@ -1243,7 +1243,7 @@ static BOOL _CheckInvalidTextures(CMapSolid *pSolid, CListBox *pList)
 		IEditorTexture *pTex = pFace->GetTexture();
 		if (pTex->IsDummy())
 		{
-			AddError(pList, ErrorInvalidTexture, (DWORD)pFace->texture.texture, pSolid);
+			AddError(pList, ErrorInvalidTexture, (DWORD_PTR)pFace->texture.texture, pSolid);
 			return TRUE;
 		}
 
@@ -1259,7 +1259,7 @@ static BOOL _CheckInvalidTextures(CMapSolid *pSolid, CListBox *pList)
 
 static void CheckInvalidTextures(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckInvalidTextures, (DWORD)pList, MAPCLASS_TYPE(CMapSolid));
+	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckInvalidTextures, (DWORD_PTR)pList, MAPCLASS_TYPE(CMapSolid));
 }
 
 //-----------------------------------------------------------------------------
@@ -1284,7 +1284,7 @@ static BOOL _CheckUnusedKeyvalues(CMapEntity *pEntity, CListBox *pList)
 	{
 		if (pClass->VarForName(pEntity->GetKey(i)) == NULL)
 		{
-			AddError(pList, ErrorUnusedKeyvalues, (DWORD)pEntity->GetKey(i), pEntity);
+			AddError(pList, ErrorUnusedKeyvalues, (DWORD_PTR)pEntity->GetKey(i), pEntity);
 			return(TRUE);
 		}
 	}
@@ -1294,7 +1294,7 @@ static BOOL _CheckUnusedKeyvalues(CMapEntity *pEntity, CListBox *pList)
 
 static void CheckUnusedKeyvalues(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckUnusedKeyvalues, (DWORD)pList, MAPCLASS_TYPE(CMapEntity));
+	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckUnusedKeyvalues, (DWORD_PTR)pList, MAPCLASS_TYPE(CMapEntity));
 }
 
 //-----------------------------------------------------------------------------
@@ -1310,7 +1310,7 @@ static BOOL _CheckEmptyEntities(CMapEntity *pEntity, CListBox *pList)
 
 	if(!pEntity->IsPlaceholder() && !pEntity->GetChildCount())
 	{
-		AddError(pList, ErrorEmptyEntity, (DWORD)pEntity->GetClassName(), pEntity);
+		AddError(pList, ErrorEmptyEntity, (DWORD_PTR)pEntity->GetClassName(), pEntity);
 	}
 	
 	return(TRUE);
@@ -1318,7 +1318,7 @@ static BOOL _CheckEmptyEntities(CMapEntity *pEntity, CListBox *pList)
 
 static void CheckEmptyEntities(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckEmptyEntities, (DWORD)pList, MAPCLASS_TYPE(CMapEntity));
+	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckEmptyEntities, (DWORD_PTR)pList, MAPCLASS_TYPE(CMapEntity));
 }
 
 //-----------------------------------------------------------------------------
@@ -1334,7 +1334,7 @@ static BOOL _CheckBadConnections(CMapEntity *pEntity, CListBox *pList)
 
 	if (CEntityConnection::ValidateOutputConnections(pEntity, (Options.general.bCheckVisibleMapErrors == TRUE)) == CONNECTION_BAD)
 	{
-		AddError(pList, ErrorBadConnections, (DWORD)pEntity->GetClassName(), pEntity);
+		AddError(pList, ErrorBadConnections, (DWORD_PTR)pEntity->GetClassName(), pEntity);
 	}
 
 	// TODO: Check for a "Kill" input with the same output, target, and delay as another input. This
@@ -1353,7 +1353,7 @@ static BOOL _CheckBadConnections(CMapEntity *pEntity, CListBox *pList)
 
 static void CheckBadConnections(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckBadConnections, (DWORD)pList, MAPCLASS_TYPE(CMapEntity));
+	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckBadConnections, (DWORD_PTR)pList, MAPCLASS_TYPE(CMapEntity));
 }
 
 static bool HasVisGroupHiddenChildren(CMapClass *pObject)
@@ -1442,7 +1442,7 @@ static BOOL _CheckVisGroups(CMapClass *pObject, CListBox *pList)
 
 static void CheckVisGroups(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildrenRecurseGroupsOnly((ENUMMAPCHILDRENPROC)_CheckVisGroups, (DWORD)pList);
+	pWorld->EnumChildrenRecurseGroupsOnly((ENUMMAPCHILDRENPROC)_CheckVisGroups, (DWORD_PTR)pList);
 }
 
 //-----------------------------------------------------------------------------
@@ -1477,7 +1477,7 @@ static BOOL _CheckOverlayFaceList( CMapEntity *pEntity, CListBox *pList )
 //-----------------------------------------------------------------------------
 static void CheckOverlayFaceList( CListBox *pList, CMapWorld *pWorld )
 {
-	pWorld->EnumChildren( ( ENUMMAPCHILDRENPROC )_CheckOverlayFaceList, ( DWORD )pList, MAPCLASS_TYPE( CMapEntity ));
+	pWorld->EnumChildren( ( ENUMMAPCHILDRENPROC )_CheckOverlayFaceList, ( DWORD_PTR )pList, MAPCLASS_TYPE( CMapEntity ));
 }
 #ifdef SLE
 //-----------------------------------------------------------------------------
@@ -1492,7 +1492,7 @@ static BOOL _CheckDisplacementsTiedToEntity(CMapEntity *pObject, CListBox *pList
 		CMapSolid *pMapSolid = assert_cast<CMapSolid*>(pChildren->Element(pos));
 		if (pMapSolid && pMapSolid->HasDisp())
 		{
-			AddError(pList, ErrorDisplacementTiedToEntity, (DWORD)pObject->GetClassName(), pObject);
+			AddError(pList, ErrorDisplacementTiedToEntity, (DWORD_PTR)pObject->GetClassName(), pObject);
 			return TRUE;
 		}
 	}
@@ -1502,7 +1502,7 @@ static BOOL _CheckDisplacementsTiedToEntity(CMapEntity *pObject, CListBox *pList
 
 static void CheckDisplacementsTiedToEntity(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckDisplacementsTiedToEntity, (DWORD)pList, MAPCLASS_TYPE(CMapEntity));
+	pWorld->EnumChildren((ENUMMAPCHILDRENPROC)_CheckDisplacementsTiedToEntity, (DWORD_PTR)pList, MAPCLASS_TYPE(CMapEntity));
 }
 
 static BOOL _CheckDisplacementsNodraw(CMapSolid *pSolid, CListBox *pList)
@@ -1552,7 +1552,7 @@ static BOOL _CheckAmbientGenericSoundName (CMapEntity *pEntity, CListBox *pList)
 
 static void CheckAmbientGenericSoundName(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildren( ( ENUMMAPCHILDRENPROC )_CheckAmbientGenericSoundName, ( DWORD )pList, MAPCLASS_TYPE( CMapEntity ));
+	pWorld->EnumChildren( ( ENUMMAPCHILDRENPROC )_CheckAmbientGenericSoundName, ( DWORD_PTR )pList, MAPCLASS_TYPE( CMapEntity ));
 }
 
 // Check fog controllers that have low FarZ (but over -1 as that is the default)
@@ -1576,7 +1576,7 @@ static BOOL _CheckShortFogFarZ (CMapEntity *pEntity, CListBox *pList)
 
 static void CheckShortFogFarZ(CListBox *pList, CMapWorld *pWorld)
 {
-	pWorld->EnumChildren( ( ENUMMAPCHILDRENPROC )_CheckShortFogFarZ, ( DWORD )pList, MAPCLASS_TYPE( CMapEntity ));
+	pWorld->EnumChildren( ( ENUMMAPCHILDRENPROC )_CheckShortFogFarZ, ( DWORD_PTR )pList, MAPCLASS_TYPE( CMapEntity ));
 }
 #endif //// SLE
 //

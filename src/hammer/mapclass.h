@@ -63,7 +63,7 @@ struct MapObjectPair_t
 typedef struct HitInfo_s
 {
 	CMapClass *pObject;		// Pointer to the CMapAtom that was clicked on.
-	unsigned int uData;		// Additional data provided by the CMapAtom object.
+	uintp uData;			// Additional data provided by the CMapAtom object.
 	unsigned int nDepth;	// Depth value of the object that was clicked on.
 	VMatrix m_LocalMatrix;
 } HitInfo_t;
@@ -89,7 +89,7 @@ enum VisGroupSelection
 	for( int iteratorName=0; iteratorName<(listName).Count(); iteratorName++)
 
 typedef const char * MAPCLASSTYPE;
-typedef BOOL (*ENUMMAPCHILDRENPROC)(CMapClass *, unsigned int dwParam);
+typedef BOOL (*ENUMMAPCHILDRENPROC)(CMapClass *, unsigned long long dwParam);
 typedef CUtlVector<CMapClass*> CMapObjectList;
 
 #define MAX_ENUM_CHILD_DEPTH	16
@@ -341,20 +341,20 @@ public:
     
 	virtual const char* GetDescription() { return ""; }
 
-	BOOL EnumChildren(ENUMMAPCHILDRENPROC pfn, unsigned int dwParam = 0, MAPCLASSTYPE Type = NULL);
-	BOOL EnumChildrenRecurseGroupsOnly(ENUMMAPCHILDRENPROC pfn, unsigned int dwParam, MAPCLASSTYPE Type = NULL);
+	BOOL EnumChildren(ENUMMAPCHILDRENPROC pfn, unsigned long long dwParam = 0, MAPCLASSTYPE Type = NULL);
+	BOOL EnumChildrenRecurseGroupsOnly(ENUMMAPCHILDRENPROC pfn, unsigned long long dwParam, MAPCLASSTYPE Type = NULL);
 #ifdef SLE //// SLE NEW - inform entities of their instances
-	BOOL EnumChildrenOfInstance(ENUMMAPCHILDRENPROC pfn, unsigned int dwParam = 0, MAPCLASSTYPE Type = NULL, const char *instanceName = "");
+	BOOL EnumChildrenOfInstance(ENUMMAPCHILDRENPROC pfn, unsigned long long dwParam = 0, MAPCLASSTYPE Type = NULL, const char *instanceName = "");
 #endif
 	
 #ifdef HAMMER2013_PORT_CORDONS
 	template <typename T>
 	FORCEINLINE BOOL EnumChildrenAndInstances(BOOL(*pfn)(CMapClass*, T*), T* dwParam, MAPCLASSTYPE Type = NULL)
 	{
-		static_assert(sizeof(unsigned int) == sizeof(T*));
-		return EnumChildrenAndInstances((ENUMMAPCHILDRENPROC)pfn, reinterpret_cast<unsigned int>(dwParam), Type);
+		static_assert(sizeof(unsigned long long) == sizeof(T*));
+		return EnumChildrenAndInstances((ENUMMAPCHILDRENPROC)pfn, reinterpret_cast<unsigned long long>(dwParam), Type);
 	}
-	BOOL EnumChildrenAndInstances(ENUMMAPCHILDRENPROC pfn, unsigned int dwParam, MAPCLASSTYPE Type = NULL);
+	BOOL EnumChildrenAndInstances(ENUMMAPCHILDRENPROC pfn, unsigned long long dwParam, MAPCLASSTYPE Type = NULL);
 #endif
 
 	BOOL IsChildOf(CMapAtom *pObject);

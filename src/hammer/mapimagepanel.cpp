@@ -211,16 +211,6 @@ void CImagePanelHelper::ComputeCornerVertices( Vector* pVerts, float flBloat ) c
 	pVerts[3] = pVerts[0] - ViewUp * imageheight;
 }
 
-inline Vector VectorMin( const Vector &a, const Vector &b )
-{
-	return Vector( fpmin(a.x, b.x), fpmin(a.y, b.y), fpmin(a.z, b.z) );
-}
-
-inline Vector VectorMax( const Vector &a, const Vector &b )
-{
-	return Vector( fpmax(a.x, b.x), fpmax(a.y, b.y), fpmax(a.z, b.z) );
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: Calculates our bounding box based on the sprite dimensions.
 // Input  : bFullUpdate - Whether we should recalculate our childrens' bounds.
@@ -624,7 +614,7 @@ void CImagePanelHelper::Render2D( CRender2D* pRender )
 	if ( m_show2D_bool )
 	{
 		CString str;
-		str.Format("%s", m_pFilename);
+		str.Format("%s", m_pFilename.Get());
 		RenderImagePanel(pRender, NULL, str);
 	}
 }
@@ -637,7 +627,7 @@ void CImagePanelHelper::Render3D( CRender3D* pRender )
 	if ( m_show3D_bool )
 	{
 		CString str;
-		str.Format("%s", m_pFilename);
+		str.Format("%s", m_pFilename.Get());
 		RenderImagePanel(NULL, pRender, str);
 	}
 	pRender->EndRenderHitTarget();

@@ -46,7 +46,7 @@ using namespace vgui;
 char *strrchrcount(char *string, int character, int count )
 {
 	int j = count;
-	int numChars = strlen( string );
+	int numChars = V_strlen( string );
 	for( int i = numChars; i > 0; i-- )
 	{
 		if( string[i-1] == character )
@@ -292,6 +292,10 @@ const char *ParseKeyvalue( const char *pBuffer, char *key, char *value )
 //-----------------------------------------------------------------------------
 CQCGenerator::CQCGenerator( vgui::Panel *pParent, const char *pszPath, const char *pszScene ) : BaseClass( pParent, "QCGenerator" )
 {	
+	m_szTargetField[0] = 0;
+	m_nSelectedSequence = 0;
+	m_nSelectedColumn = 0;
+
 	m_QCInfo_t.Init( this );
 
 	SetMinimumSize(846, 770);
@@ -448,7 +452,7 @@ void CQCGenerator::BrowseFile( KeyValues *data )
 
 void CQCGenerator::OnFileSelected( KeyValues *data ) 
 {
-	if ( m_szTargetField )
+	if ( *m_szTargetField )
 	{
 		vgui::Panel *pTargetField = FindChildByName( m_szTargetField );
 		((TextEntry *)pTargetField)->SetText( data->GetString( "fullpath" ) );
@@ -458,7 +462,7 @@ void CQCGenerator::OnFileSelected( KeyValues *data )
 
 void CQCGenerator::OnDirectorySelected( KeyValues *data ) 
 {
-	if ( m_szTargetField )
+	if ( *m_szTargetField )
 	{
 		vgui::Panel *pTargetField = FindChildByName( m_szTargetField );
 		((TextEntry *)pTargetField)->SetText( data->GetString( "dir" ) );

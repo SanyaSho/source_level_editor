@@ -1,2 +1,2 @@
-cmake -S . -B build -A Win32
+cmake -S . -B build -A x64 %*
 pause

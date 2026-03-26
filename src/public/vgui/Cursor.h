@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Holds the enumerated list of default cursors
 //
@@ -12,7 +12,7 @@
 #pragma once
 #endif
 
-#include <vgui/vgui.h>
+#include <vgui/VGUI.h>
 
 namespace vgui
 {
@@ -40,7 +40,7 @@ enum CursorCode
 	dc_alwaysvisible_pop,
 };
 
-typedef unsigned long HCursor;
+typedef uint32 HCursor;
 
 }
 

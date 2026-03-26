@@ -1760,7 +1760,7 @@ void CRender::SetRenderMode(EditorRenderMode_t eRenderMode, bool bForce)
 		if (Q_stristr(faceShaderName, "UnlitTwoTexture")) bDoShading = false;
 		if (Q_stristr(faceShaderName, "Sky")) bDoShading = false;
 		if(m_pCurrentMaterial && m_pCurrentMaterial->GetMaterialVarFlag(MATERIAL_VAR_DECAL)) bDoShading = false;
-		if (m_pCurrentMaterial && m_pCurrentMaterial->GetTextureGroupName() == "TEXTURE_GROUP_SKYBOX") bDoShading = false;
+		if (m_pCurrentMaterial && !V_strcmp( m_pCurrentMaterial->GetTextureGroupName(), "TEXTURE_GROUP_SKYBOX" )) bDoShading = false;
 
 		if ( bDoShading )
 #endif

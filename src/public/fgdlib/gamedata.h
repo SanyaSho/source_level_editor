@@ -28,6 +28,7 @@ class KeyValues;
 
 enum TEXTUREFORMAT;
 
+
 typedef void (*GameDataMessageFunc_t)(int level, PRINTF_FORMAT_STRING const char *fmt, ...);
 
 // FGD-based AutoMaterialExclusion data
@@ -53,6 +54,7 @@ struct FGDAutoVisGroups_s
 };
 
 #define MAX_DIRECTORY_SIZE	32
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Contains the set of data that is loaded from a single FGD file.
@@ -120,12 +122,14 @@ class GameData
 #endif
 };
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline int GameData::GetClassCount()
 {
 	return m_Classes.Count();
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -137,6 +141,7 @@ inline GDclass *GameData::GetClass(int nIndex)
 	return m_Classes.Element(nIndex);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -144,6 +149,7 @@ int GameData::GetMinMapCoord(void)
 {
 	return m_nMinMapCoord;
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -153,10 +159,12 @@ int GameData::GetMaxMapCoord(void)
 	return m_nMaxMapCoord;
 }
 
+
 void GDSetMessageFunc(GameDataMessageFunc_t pFunc);
 bool GDError(TokenReader &tr, PRINTF_FORMAT_STRING const char *error, ...);
 bool GDSkipToken(TokenReader &tr, trtoken_t ttexpecting = TOKENNONE, const char *pszExpecting = NULL);
 bool GDGetToken(TokenReader &tr, char *pszStore, int nSize, trtoken_t ttexpecting = TOKENNONE, const char *pszExpecting = NULL);
 bool GDGetTokenDynamic(TokenReader &tr, char **pszStore, trtoken_t ttexpecting, const char *pszExpecting = NULL);
+
 
 #endif // GAMEDATA_H

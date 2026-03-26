@@ -10,7 +10,7 @@
 
 #define MAX_PACKETS 1000
 
-#if 1
+#ifdef SLE_WINTAB_ENABLE //// SLE NEW - Tablet support w/ Wintab
 static LOGCONTEXT LogContext;
 static HCTX hGlobalContext;
 static AXIS NormalAxis;

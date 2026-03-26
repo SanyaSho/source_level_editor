@@ -10,12 +10,14 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
+
 typedef struct
 {
 	GDIV_TYPE eType;		// The enumeration of this type.
 	char *pszName;			// The name of this type.
 	trtoken_t eStoreAs;		// How this type is stored (STRING, INTEGER, etc).
 } TypeMap_t;
+
 
 //-----------------------------------------------------------------------------
 // Maps type names to type enums and parsing logic for values.
@@ -49,6 +51,8 @@ static TypeMap_t TypeMap[] =
 	{ ivVecLine,			"vecline",				STRING },
 	{ ivPointEntityClass,	"pointentityclass",		STRING },
 	{ ivNodeDest,			"node_dest",			INTEGER },
+	{ ivScript,				"script",				STRING },
+	{ ivScriptList,			"scriptlist",			STRING },
 	{ ivInstanceFile,		"instance_file",		STRING },
 	{ ivAngleNegativePitch,	"angle_negative_pitch",	STRING },
 	{ ivInstanceVariable,	"instance_variable",	STRING },
@@ -61,13 +65,13 @@ static TypeMap_t TypeMap[] =
 	{ ivSkyMat,				"sky",					STRING }, // to open material browser to skybox/ and strip sky side suffixes
 	{ ivSoundscape,			"soundscape",			STRING }, // to open list of soundscapes
 	{ ivActbusy,			"actbusy",				STRING }, // to open list of actbusies
-	{ ivScript,				"script",				STRING }, // backported from 2015, for VScript
-	{ ivScriptList,			"scriptlist",			STRING }, // ditto
 	{ ivSoundchoices,		"soundchoices",			STRING }, // for button sounds which are a choices list but hardcoded
 #endif
 };
 
+
 char *GDinputvariable::m_pszEmpty = "";
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -80,6 +84,7 @@ GDinputvariable::GDinputvariable(void)
 	m_bReadOnly = false;
 	m_pszDescription = NULL;
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: construct generally used for creating a temp instance parm type
@@ -99,6 +104,7 @@ GDinputvariable::GDinputvariable( const char *szType, const char *szName )
 	strcpy( m_szName, szName );
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Destructor.
 //-----------------------------------------------------------------------------
@@ -107,6 +113,7 @@ GDinputvariable::~GDinputvariable(void)
 	delete [] m_pszDescription;
 	m_Items.RemoveAll();
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Implements the copy operator.
@@ -147,6 +154,7 @@ GDinputvariable &GDinputvariable::operator =(GDinputvariable &Other)
 	return(*this);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Returns the storage format of a given variable type.
 // Input  : pszToken - Sting containing the token.
@@ -167,6 +175,7 @@ trtoken_t GDinputvariable::GetStoreAsFromType(GDIV_TYPE eType)
 	return(STRING);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Returns the enumerated type of a string token.
 // Input  : pszToken - Sting containing the token.
@@ -186,6 +195,7 @@ GDIV_TYPE GDinputvariable::GetTypeFromToken(const char *pszToken)
 	return(ivBadType);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Returns a string representing the type of this variable, eg. "integer".
 //-----------------------------------------------------------------------------
@@ -201,6 +211,7 @@ const char *GDinputvariable::GetTypeText(void)
 
 	return("unknown");
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -268,6 +279,20 @@ BOOL GDinputvariable::InitFromTokens(TokenReader& tr)
 	{
 		tr.NextToken(szToken, sizeof(szToken));
 		m_bReadOnly = true;
+
+		//
+		// Look ahead at the next token.
+		//
+		ttype = tr.PeekTokenType(szToken,sizeof(szToken));
+	}
+
+	//
+	// Check for the "report" specifier.
+	//
+	if ((ttype == IDENT) && IsToken(szToken, "report"))
+	{
+		tr.NextToken(szToken, sizeof(szToken));
+		m_bReportable = true;
 
 		//
 		// Look ahead at the next token.
@@ -413,6 +438,42 @@ BOOL GDinputvariable::InitFromTokens(TokenReader& tr)
 			GDError(tr, "no %s specified", m_eType == ivFlags ? "flags" : "choices");
 			return(FALSE);
 		}
+		
+		// For boolean values, we construct it as if it were a choices dialog
+		if ( m_eType == ivBoolean )
+		{
+			m_eType = ivChoices;
+
+			GDIVITEM ivi;
+			
+			// Yes
+			strncpy( ivi.szValue, "1", MAX_STRING );
+			strncpy( ivi.szCaption, "Yes", MAX_STRING );
+			m_Items.AddToTail(ivi);
+			
+			// No
+			strncpy( ivi.szValue, "0", MAX_STRING );
+			strncpy( ivi.szCaption, "No", MAX_STRING );
+			m_Items.AddToTail(ivi);
+
+			// Clean up string usages!
+			if ( stricmp( m_szDefault, "no" ) == 0 )
+			{
+				strncpy( m_szDefault, "0", MAX_STRING );
+			}
+			else if ( stricmp( m_szDefault, "yes" ) == 0 )
+			{
+				strncpy( m_szDefault, "1", MAX_STRING );
+			}
+			
+			// Sanity check it!
+			if ( strcmp( m_szDefault, "0" ) && strcmp( m_szDefault, "1" ) )
+			{
+				GDError(tr, "boolean type specified with nonsensical default value: %s", m_szDefault );
+				return(FALSE);
+			}
+		}
+
 		return(TRUE);
 	}
 
@@ -541,6 +602,7 @@ BOOL GDinputvariable::InitFromTokens(TokenReader& tr)
 	return TRUE;
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Decodes a key value from a string.
 // Input  : pkv - Pointer to the key value object containing string encoded value.
@@ -559,6 +621,7 @@ void GDinputvariable::FromKeyValue(MDkeyvalue *pkv)
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Determines whether the given flag is set (assuming this is an ivFlags).
 // Input  : uCheck - Flag to check.
@@ -569,6 +632,7 @@ BOOL GDinputvariable::IsFlagSet(unsigned int uCheck)
 	Assert(m_eType == ivFlags);
 	return (((unsigned int)m_nValue & uCheck) == uCheck) ? TRUE : FALSE;
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Combines the flags or choices items from another variable into our
@@ -614,6 +678,7 @@ void GDinputvariable::Merge(GDinputvariable &Other)
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Determines whether the given flag is set (assuming this is an ivFlags).
 // Input  : uFlags - Flags to set.
@@ -631,6 +696,7 @@ void GDinputvariable::SetFlag(unsigned int uFlags, BOOL bSet)
 		m_nValue &= ~uFlags;
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Sets this keyvalue to its default value.
@@ -660,6 +726,7 @@ void GDinputvariable::ResetDefaults(void)
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Encodes a key value as a string.
 // Input  : pkv - Pointer to the key value object to receive the encoded string.
@@ -676,9 +743,10 @@ void GDinputvariable::ToKeyValue(MDkeyvalue *pkv)
 	}
 	else if (eStoreAs == INTEGER)
 	{
-		itoa(m_nValue, pkv->szValue, 10);
+		Q_snprintf(pkv->szValue, sizeof(pkv->szValue), "%d", m_nValue);
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns the description string that corresponds to a value string
@@ -700,6 +768,7 @@ const char *GDinputvariable::ItemStringForValue(const char *szValue)
 	return(NULL);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Returns the value string that corresponds to a description string
 //			for a choices list.
@@ -720,6 +789,7 @@ const char *GDinputvariable::ItemValueForString(const char *szString)
 	return(NULL);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: this function will let you iterate through the text names of the variable types
 // Input  : eType - the type to get the text of
@@ -729,3 +799,5 @@ const char *GDinputvariable::GetVarTypeName( GDIV_TYPE eType )
 {
 	return TypeMap[ eType ].pszName;
 }
+
+

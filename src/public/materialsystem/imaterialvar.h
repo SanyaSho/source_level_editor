@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -27,7 +27,7 @@ class ITexture;
 // This fourcc is reserved.
 #define FOURCC_UNKNOWN	MAKE_MATERIALVAR_FOURCC('U','N','K','N')
 
-#undef FAST_MATERIALVAR_ACCESS
+
 //-----------------------------------------------------------------------------
 // Various material var types
 //-----------------------------------------------------------------------------
@@ -239,7 +239,7 @@ private:
 		m_nTempIndex = nIndex;
 	}
 
-	friend void EnableThreadedMaterialVarAccess( bool bEnable, IMaterialVar **ppParams, int nVarCount );
+	friend void EnableThreadedMaterialVarAccess( bool bEnable );
 };
 
 #endif // IMATERIALVAR_H

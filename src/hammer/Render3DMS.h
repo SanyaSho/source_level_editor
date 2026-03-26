@@ -194,7 +194,7 @@ public:
 	void ResetFocus();
 
 	// Picking functions.
-	void BeginRenderHitTarget(CMapAtom *pObject, unsigned int uHandle = 0);
+	void BeginRenderHitTarget(CMapAtom *pObject, uintp uHandle = 0);
 	void EndRenderHitTarget(void);
 
 	void Render(void);

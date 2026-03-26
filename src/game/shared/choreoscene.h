@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -325,6 +325,8 @@ private:
 
 	// Current simulation time
 	float			m_flCurrentTime;
+
+	float			m_flStartLoopTime;
 
 	float			m_flStartTime;
 	float			m_flEndTime;

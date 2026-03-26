@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -10,7 +10,7 @@
 #pragma once
 #endif
 
-#include "appframework/iappsystem.h"
+#include "appframework/IAppSystem.h"
 #include "tier1/iconvar.h"
 
 class ConCommandBase;
@@ -87,9 +87,9 @@ public:
 	// Install a console printer
 	virtual void			InstallConsoleDisplayFunc( IConsoleDisplayFunc* pDisplayFunc ) = 0;
 	virtual void			RemoveConsoleDisplayFunc( IConsoleDisplayFunc* pDisplayFunc ) = 0;
-	virtual void			ConsoleColorPrintf( const Color& clr, PRINTF_FORMAT_STRING const char *pFormat, ... ) const = 0;
-	virtual void			ConsolePrintf( PRINTF_FORMAT_STRING const char *pFormat, ... ) const = 0;
-	virtual void			ConsoleDPrintf( PRINTF_FORMAT_STRING const char *pFormat, ... ) const = 0;
+	virtual void			ConsoleColorPrintf( const Color& clr, PRINTF_FORMAT_STRING const char *pFormat, ... ) const FMTFUNCTION( 3, 4 ) = 0;
+	virtual void			ConsolePrintf( PRINTF_FORMAT_STRING const char *pFormat, ... ) const FMTFUNCTION( 2, 3 ) = 0;
+	virtual void			ConsoleDPrintf( PRINTF_FORMAT_STRING const char *pFormat, ... ) const FMTFUNCTION( 2, 3 ) = 0;
 
 	// Reverts cvars which contain a specific flag
 	virtual void			RevertFlaggedConVars( int nFlag ) = 0;
@@ -99,6 +99,9 @@ public:
 	// well after ICVar, so we can't use the standard connect pattern
 	virtual void			InstallCVarQuery( ICvarQuery *pQuery ) = 0;
 
+#if defined( _X360 )
+	virtual void			PublishToVXConsole( ) = 0;
+#endif
 	virtual bool			IsMaterialThreadSetAllowed( ) const = 0;
 	virtual void			QueueMaterialThreadSetValue( ConVar *pConVar, const char *pValue ) = 0;
 	virtual void			QueueMaterialThreadSetValue( ConVar *pConVar, int nValue ) = 0;
@@ -111,7 +114,7 @@ public:
 	/// Iteration over all cvars. 
 	/// (THIS IS A SLOW OPERATION AND YOU SHOULD AVOID IT.)
 	/// usage: 
-	/// { ICVar::Iterator iter(g_pCVar); 
+	/// { ICvar::Iterator iter(g_pCVar); 
 	///   for ( iter.SetFirst() ; iter.IsValid() ; iter.Next() )
 	///   {  
 	///       ConCommandBase *cmd = iter.Get();

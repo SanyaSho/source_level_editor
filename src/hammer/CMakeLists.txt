@@ -642,6 +642,8 @@ target_include_directories(
 	"${SRCDIR}/utils/common"
 	"${SRCDIR}/hammer"
 	"${SRCDIR}/public/wintab/include"
+
+	"fmod"
 )
 
 target_compile_definitions(

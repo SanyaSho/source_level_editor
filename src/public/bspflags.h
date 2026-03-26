@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -75,6 +75,7 @@
 #define	CONTENTS_LADDER			0x20000000
 #define CONTENTS_HITBOX			0x40000000	// use accurate hitboxes on trace
 
+
 // NOTE: These are stored in a short in the engine now.  Don't use more than 16 bits
 #define	SURF_LIGHT		0x0001		// value will hold the light strength
 #define	SURF_SKY2D		0x0002		// don't draw, indicates we should skylight + draw 2d sky but not draw the 3D skybox
@@ -94,6 +95,8 @@
 #define SURF_NODECALS	0x2000	// Don't receive decals
 #define SURF_NOCHOP		0x4000	// Don't subdivide patches on this surface 
 #define SURF_HITBOX		0x8000	// surface is part of a hitbox
+
+
 
 // -----------------------------------------------------
 // spatial content masks - used for spatial queries (traceline,etc.)

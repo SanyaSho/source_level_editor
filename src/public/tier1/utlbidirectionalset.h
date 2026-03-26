@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Bi-directional set. A Bucket knows about the elements that lie
 // in it, and the elements know about the buckets they lie in.
@@ -52,8 +52,13 @@ public:
 	typedef S& (*FirstElementFunc_t)(CBucketHandle);
 	typedef S& (*FirstBucketFunc_t)(CElementHandle);
 
+#ifdef _X360
+	typedef uint32 CBucketHandlePram;
+	typedef uint32 CElementHandlePram;
+#else
 	typedef CBucketHandle  CBucketHandlePram;
 	typedef CElementHandle CElementHandlePram;
+#endif
 
 	// Constructor
 	CBidirectionalSet();

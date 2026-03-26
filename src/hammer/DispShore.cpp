@@ -129,10 +129,10 @@ public:
 	void		Shutdown( void );
 
 	int			GetShorelineCount( void );
-	Shoreline_t *GetShoreline( int nShorelineId );
-	void		AddShoreline( int nShorelineId );
-	void		RemoveShoreline( int nShorelineId );
-	void		BuildShoreline( int nShorelineId, CUtlVector<CMapFace*> &aFaces, CUtlVector<CMapFace*> &aWaterFaces );
+	Shoreline_t *GetShoreline( intp nShorelineId );
+	void		AddShoreline( intp nShorelineId );
+	void		RemoveShoreline( intp nShorelineId );
+	void		BuildShoreline( intp nShorelineId, CUtlVector<CMapFace*> &aFaces, CUtlVector<CMapFace*> &aWaterFaces );
        
 	void		Draw( CRender3D *pRender );
 	void		DebugDraw( CRender3D *pRender );
@@ -218,7 +218,7 @@ int	CDispShoreManager::GetShorelineCount( void )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-Shoreline_t *CDispShoreManager::GetShoreline( int nShorelineId )
+Shoreline_t *CDispShoreManager::GetShoreline( intp nShorelineId )
 {
 	int nShorelineCount = m_aShorelines.Count();
 	for ( int iShoreline = 0; iShoreline < nShorelineCount; ++iShoreline )
@@ -233,7 +233,7 @@ Shoreline_t *CDispShoreManager::GetShoreline( int nShorelineId )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CDispShoreManager::AddShoreline( int nShorelineId )
+void CDispShoreManager::AddShoreline( intp nShorelineId )
 {
 	// Check to see if the id is already taken, if so remove it and re-add it.
 	RemoveShoreline( nShorelineId );
@@ -245,7 +245,7 @@ void CDispShoreManager::AddShoreline( int nShorelineId )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CDispShoreManager::RemoveShoreline( int nShorelineId )
+void CDispShoreManager::RemoveShoreline( intp nShorelineId )
 {
 	int nShorelineCount = m_aShorelines.Count();
 	for ( int iShoreline = ( nShorelineCount - 1 ); iShoreline >= 0; --iShoreline )
@@ -260,7 +260,7 @@ void CDispShoreManager::RemoveShoreline( int nShorelineId )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CDispShoreManager::BuildShoreline( int nShorelineId, CUtlVector<CMapFace*> &aFaces, CUtlVector<CMapFace*> &aWaterFaces )
+void CDispShoreManager::BuildShoreline( intp nShorelineId, CUtlVector<CMapFace*> &aFaces, CUtlVector<CMapFace*> &aWaterFaces )
 {
 	// Verify faces to build a shoreline.
 	if ( ( aFaces.Count() == 0 ) ||( aWaterFaces.Count() == 0 ) )

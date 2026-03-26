@@ -38,6 +38,7 @@ enum RenderParamVector_t
 	MAX_VECTOR_RENDER_PARMS = 20
 };
 
+
 #define MAX_FLOAT_RENDER_PARMS 20
 
 enum RenderParamInt_t

@@ -263,7 +263,7 @@ void CMapKeyFrame::Render3D( CRender3D *pRender )
 			GetOrigin( o1 );
 			m_pNextKeyFrame->GetOrigin( o2 );
 			
-			IMaterial *ropeMaterial;
+			IMaterial *ropeMaterial = NULL;
 			CMeshBuilder meshBuilder;
 			CMatRenderContextPtr pRenderContext( materials );
 

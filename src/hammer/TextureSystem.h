@@ -102,7 +102,7 @@ struct TextureContext_t
 class CMaterialFileChangeWatcher : private CFileChangeWatcher::ICallbacks
 {
 public:
-	void Init( CTextureSystem *pSystem, int context );
+	void Init( CTextureSystem *pSystem, intp context );
 	void Update();	// Call this periodically to update.
 
 private:
@@ -177,7 +177,7 @@ public:
 	void InformPaletteChanged(void);
 
 	// IMaterialEnumerator interface, Used to add all the world materials into the material list.
-	bool EnumMaterial( const char *pMaterialName, int nContext );
+	bool EnumMaterial( const char *pMaterialName, intp nContext );
 
 	// Used to lazily load in all the textures during app idle.
 	void LazyLoadTextures();

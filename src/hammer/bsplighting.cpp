@@ -186,7 +186,7 @@ CBSPLighting::CFaceMaterial* CBSPLighting::FindOrAddMaterial(CBSPInfo &file, int
 	else
 	{
 #ifdef SLE
-		IMaterial *pMaterial;
+		IMaterial *pMaterial = NULL;
 		CMatRenderContextPtr pRenderContext(materials);
 		char *pMaterialName = &file.texDataStringData[file.texDataStringTable[stringTableID]];
 		if (pMaterialName)

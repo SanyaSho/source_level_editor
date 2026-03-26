@@ -1,19 +1,20 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
 //=============================================================================
-#include "vgui/Ivgui.h"
+#include "vgui/IVGui.h"
 #include "vgui_controls/Controls.h"
 
 #include "vgui_controls/AnimatingImagePanel.h"
 #include "vgui_controls/BitmapImagePanel.h"
 #include "vgui_controls/ExpandButton.h"
 #include "vgui_controls/TreeViewListControl.h"
-//#include "vgui_controls/HTML.h"
+#include "vgui_controls/HTML.h"
 
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
+
 
 using namespace vgui;
 
@@ -27,7 +28,7 @@ USING_BUILD_FACTORY( AnimatingImagePanel );
 USING_BUILD_FACTORY( CBitmapImagePanel );
 USING_BUILD_FACTORY( CheckButton );
 USING_BUILD_FACTORY( ComboBox );
-USING_BUILD_FACTORY_ALIAS( CvarToggleCheckButton<ConVarRef>, CvarToggleCheckButton );
+USING_BUILD_FACTORY_ALIAS( CvarToggleCheckButton<UIConVarRef>, CvarToggleCheckButton );
 USING_BUILD_FACTORY( Divider );
 USING_BUILD_FACTORY( ExpandButton );
 USING_BUILD_FACTORY( GraphPanel );

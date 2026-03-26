@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -36,7 +36,7 @@ private:
 #define LOG2_BITS_PER_INT	5
 #define BITS_PER_INT		32
 
-#if _WIN32
+#if _WIN32 && !defined(_X360)
 #include <intrin.h>
 #pragma intrinsic(_BitScanForward)
 #endif
@@ -46,9 +46,17 @@ inline int FirstBitInWord( unsigned int elem, int offset )
 #if _WIN32
 	if ( !elem )
 		return -1;
+#if defined( _X360 )
+	// this implements CountTrailingZeros() / BitScanForward()
+	unsigned int mask = elem-1;
+	unsigned int comp = ~elem;
+	elem = mask & comp;
+	return (32 - _CountLeadingZeros(elem)) + offset;
+#else
 	unsigned long out;
 	_BitScanForward(&out, elem);
 	return out + offset;
+#endif
 
 #else
 	static unsigned firstBitLUT[256] = 
@@ -193,8 +201,13 @@ inline int GetBitForBitnumByte( int bitNum )
 
 inline int CalcNumIntsForBits( int numBits )	{ return (numBits + (BITS_PER_INT-1)) / BITS_PER_INT; }
 
+#ifdef _X360
+#define BitVec_Bit( bitNum ) GetBitForBitnum( bitNum )
+#define BitVec_BitInByte( bitNum ) GetBitForBitnumByte( bitNum )
+#else
 #define BitVec_Bit( bitNum ) ( 1 << ( (bitNum) & (BITS_PER_INT-1) ) )
 #define BitVec_BitInByte( bitNum ) ( 1 << ( (bitNum) & 7 ) )
+#endif
 #define BitVec_Int( bitNum ) ( (bitNum) >> LOG2_BITS_PER_INT )
 
 
@@ -253,8 +266,8 @@ public:
 	void	SetDWord(int i, uint32 val);
 
 	CBitVecT<BASE_OPS>&	operator=(const CBitVecT<BASE_OPS> &other)	{ other.CopyTo( this ); return *this; }
-	bool			operator==(const CBitVecT<BASE_OPS> &other)		{ return Compare( other ); }
-	bool			operator!=(const CBitVecT<BASE_OPS> &other)		{ return !operator==( other ); }
+	bool			operator==(const CBitVecT<BASE_OPS> &other) const { return Compare( other ); }
+	bool			operator!=(const CBitVecT<BASE_OPS> &other) const { return !operator==( other ); }
 
 	static void GetOffsetMaskForBit( uint32 bitNum, uint32 *pOffset, uint32 *pMask )	{ *pOffset = BitVec_Int( bitNum ); *pMask = BitVec_Bit( bitNum ); }
 };
@@ -1052,14 +1065,18 @@ inline int CFixedBitVecBase<NUM_BITS>::FindNextSetBit( int startBit ) const
 			const uint32 * RESTRICT pCurElem = Base() + wordIndex;
 			unsigned int elem = *pCurElem;
 			elem &= startMask;
-			do 
+			while ( wordIndex < NUM_INTS )
 			{
 				if ( elem )
+				{
 					return FirstBitInWord(elem, wordIndex << 5);
-				++pCurElem;
-				elem = *pCurElem;
-				++wordIndex;
-			} while( wordIndex <= NUM_INTS-1);
+				}
+				else if ( ++wordIndex < NUM_INTS )
+				{
+					++pCurElem;
+					elem = *pCurElem;
+				}
+			}
 		}
 
 	}

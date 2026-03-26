@@ -6,7 +6,7 @@
 namespace vgui
 {
 	class EditablePanel;
-	typedef unsigned long HCursor;
+	typedef uint32 HCursor;
 }
 
 // Hammer-2013 port
@@ -52,7 +52,7 @@ public:
 #endif
 protected:
 	void DrawVGuiPanel();  // overridden to draw this view
-	long WindowProcVGui( UINT message, WPARAM wParam, LPARAM lParam ); //
+	LRESULT WindowProcVGui( UINT message, WPARAM wParam, LPARAM lParam ); //
 	
 	vgui::EditablePanel	*m_pMainPanel;
 	CWnd		*m_pParentWnd;

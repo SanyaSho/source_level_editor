@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -18,17 +18,17 @@
 #define GAMMA 2.2f
 #define TEXGAMMA 2.2f
 
-#include "tier1/interface.h"
-#include "tier1/refcount.h"
+#include "tier0/icommandline.h"
 #include "mathlib/vector.h"
 #include "mathlib/vector4d.h"
 #include "mathlib/vmatrix.h"
-#include "appframework/iappsystem.h"
+#include "tier1/interface.h"
+#include "tier1/refcount.h"
+#include "appframework/IAppSystem.h"
 #include "bitmap/imageformat.h"
 #include "texture_group_names.h"
 #include "vtf/vtf.h"
 #include "materialsystem/deformations.h"
-#include "materialsystem/imaterialsystemhardwareconfig.h"
 #include "materialsystem/IColorCorrection.h"
 
 
@@ -43,7 +43,7 @@ struct MaterialSystem_Config_t;
 class VMatrix;
 struct matrix3x4_t;
 class ITexture;
-class ITextureCompositor; //// backported from 2013
+class ITextureCompositor;
 struct MaterialSystemHardwareIdentifier_t;
 class KeyValues;
 class IShader;
@@ -66,13 +66,28 @@ typedef uint64 VertexFormat_t;
 
 // NOTE NOTE NOTE!!!!  If you up this, grep for "NEW_INTERFACE" to see if there is anything
 // waiting to be enabled during an interface revision.
-#define MATERIAL_SYSTEM_INTERFACE_VERSION "VMaterialSystem080"
+
+// V081 - 10/25/2016 - Added new Suspend/Resume texture streaming interfaces. Might also have added more calls here due
+//                     to the streaming work that didn't get bumped, but we're not guarding versions on the TF branch
+//                     very judiciously since we need to audit them when merging to SDK branch either way.
+//
+// misyl: unfrogged this interface to be compatible, added MATERIAL_SYSTEM_INTERFACE_VERSION_OLD for sdk 2013 compat.
+#define MATERIAL_SYSTEM_INTERFACE_VERSION "VMaterialSystem082"
+#define MATERIAL_SYSTEM_INTERFACE_VERSION_OLD "VMaterialSystem080"
 
 #ifdef POSIX
 #define ABSOLUTE_MINIMUM_DXLEVEL 90
 #else
 #define ABSOLUTE_MINIMUM_DXLEVEL 80
 #endif
+
+// HDRFIXME NOTE: must match common_ps_fxc.h
+enum HDRType_t
+{
+	HDR_TYPE_NONE,
+	HDR_TYPE_INTEGER,
+	HDR_TYPE_FLOAT,
+};
 
 enum ShaderParamType_t 
 { 
@@ -89,6 +104,7 @@ enum ShaderParamType_t
 	SHADER_PARAM_TYPE_MATRIX,
 	SHADER_PARAM_TYPE_MATERIAL,
 	SHADER_PARAM_TYPE_STRING,
+	SHADER_PARAM_TYPE_MATRIX4X2
 };
 
 enum MaterialMatrixMode_t
@@ -129,7 +145,7 @@ enum MaterialPrimitiveType_t
 	MATERIAL_LINE_LOOP,	// a single line loop
 	MATERIAL_POLYGON,	// this is a *single* polygon
 	MATERIAL_QUADS,
-	MATERIAL_INSTANCED_QUADS, //like MATERIAL_QUADS, but uses vertex instancing
+	MATERIAL_INSTANCED_QUADS, // (X360) like MATERIAL_QUADS, but uses vertex instancing
 
 	// This is used for static meshes that contain multiple types of
 	// primitive types.	When calling draw, you'll need to specify
@@ -290,12 +306,12 @@ private:
 #define CREATERENDERTARGETFLAGS_NOEDRAM			0x00000008 // inhibit allocation in 360 EDRAM
 #define CREATERENDERTARGETFLAGS_TEMP			0x00000010 // only allocates memory upon first resolve, destroyed at level end
 
-
 //-----------------------------------------------------------------------------
 // allowed stencil operations. These match the d3d operations
 //-----------------------------------------------------------------------------
 enum StencilOperation_t 
 {
+#if !defined( _X360 )
 	STENCILOPERATION_KEEP = 1,
 	STENCILOPERATION_ZERO = 2,
 	STENCILOPERATION_REPLACE = 3,
@@ -304,11 +320,22 @@ enum StencilOperation_t
 	STENCILOPERATION_INVERT = 6,
 	STENCILOPERATION_INCR = 7,
 	STENCILOPERATION_DECR = 8,
+#else
+	STENCILOPERATION_KEEP = D3DSTENCILOP_KEEP,
+	STENCILOPERATION_ZERO = D3DSTENCILOP_ZERO,
+	STENCILOPERATION_REPLACE = D3DSTENCILOP_REPLACE,
+	STENCILOPERATION_INCRSAT = D3DSTENCILOP_INCRSAT,
+	STENCILOPERATION_DECRSAT = D3DSTENCILOP_DECRSAT,
+	STENCILOPERATION_INVERT = D3DSTENCILOP_INVERT,
+	STENCILOPERATION_INCR = D3DSTENCILOP_INCR,
+	STENCILOPERATION_DECR = D3DSTENCILOP_DECR,
+#endif
 	STENCILOPERATION_FORCE_DWORD = 0x7fffffff
 };
 
 enum StencilComparisonFunction_t 
 {
+#if !defined( _X360 )
 	STENCILCOMPARISONFUNCTION_NEVER = 1,
 	STENCILCOMPARISONFUNCTION_LESS = 2,
 	STENCILCOMPARISONFUNCTION_EQUAL = 3,
@@ -317,6 +344,17 @@ enum StencilComparisonFunction_t
 	STENCILCOMPARISONFUNCTION_NOTEQUAL = 6,
 	STENCILCOMPARISONFUNCTION_GREATEREQUAL = 7,
 	STENCILCOMPARISONFUNCTION_ALWAYS = 8,
+#else
+	STENCILCOMPARISONFUNCTION_NEVER = D3DCMP_NEVER,
+	STENCILCOMPARISONFUNCTION_LESS = D3DCMP_LESS,
+	STENCILCOMPARISONFUNCTION_EQUAL = D3DCMP_EQUAL,
+	STENCILCOMPARISONFUNCTION_LESSEQUAL = D3DCMP_LESSEQUAL,
+	STENCILCOMPARISONFUNCTION_GREATER = D3DCMP_GREATER,
+	STENCILCOMPARISONFUNCTION_NOTEQUAL = D3DCMP_NOTEQUAL,
+	STENCILCOMPARISONFUNCTION_GREATEREQUAL = D3DCMP_GREATEREQUAL,
+	STENCILCOMPARISONFUNCTION_ALWAYS = D3DCMP_ALWAYS,
+#endif
+
 	STENCILCOMPARISONFUNCTION_FORCE_DWORD = 0x7fffffff
 };
 
@@ -400,10 +438,18 @@ struct FlashlightState_t
 	{
 		m_bEnableShadows = false;						// Provide reasonable defaults for shadow depth mapping parameters
 		m_bDrawShadowFrustum = false;
-		m_nShadowMapResolution = 1024.0f;
+		m_flShadowMapResolution = 1024.0f;
+#if defined( DARKINTERVAL )
 		m_flShadowFilterSize = 0.5f; // DI change
-		m_flShadowSlopeScaleDepthBias = 16;
+#else
+		m_flShadowFilterSize = 3.0f;
+#endif // DARKINTERVAL
+		m_flShadowSlopeScaleDepthBias = 16.0f;
+#if defined( DARKINTERVAL )
 		m_flShadowDepthBias = 0.00005f;
+#else
+		m_flShadowDepthBias = 0.0005f;
+#endif // DARKINTERVAL
 		m_flShadowJitterSeed = 0.0f;
 		m_flShadowAtten = 0.0f;
 		m_bScissor = false; 
@@ -433,7 +479,6 @@ struct FlashlightState_t
 	float m_fQuadraticAtten;
 	float m_fLinearAtten;
 	float m_fConstantAtten;
-//	float m_FarZAtten;
 	float m_Color[4];
 	ITexture *m_pSpotlightTexture;
 	int m_nSpotlightTextureFrame;
@@ -441,7 +486,7 @@ struct FlashlightState_t
 	// Shadow depth mapping parameters
 	bool  m_bEnableShadows;
 	bool  m_bDrawShadowFrustum;
-	int   m_nShadowMapResolution;
+	float m_flShadowMapResolution;
 	float m_flShadowFilterSize;
 	float m_flShadowSlopeScaleDepthBias;
 	float m_flShadowDepthBias;
@@ -481,21 +526,21 @@ private:
 	int m_nBottom;
 };
 
-//// backported from 2013
 // Passed as the callback object to Async functions in the material system
 // so that callers don't have to worry about memory going out of scope before the 
 // results return.
 abstract_class IAsyncTextureOperationReceiver : public IRefCounted
 {
 public:
-	virtual void OnAsyncCreateComplete(ITexture* pTex, void* pExtraArgs) = 0;
-	virtual void OnAsyncFindComplete(ITexture* pTex, void* pExtraArgs) = 0;
-	virtual void OnAsyncMapComplete(ITexture* pTex, void* pExtraArgs, void* pMemory, int nPitch) = 0;
-	virtual void OnAsyncReadbackBegin(ITexture* pDst, ITexture* pSrc, void* pExtraArgs) = 0;
+	virtual void OnAsyncCreateComplete( ITexture* pTex, void* pExtraArgs ) = 0;
+	virtual void OnAsyncFindComplete( ITexture* pTex, void* pExtraArgs ) = 0;
+	virtual void OnAsyncMapComplete( ITexture* pTex, void* pExtraArgs, void* pMemory, int nPitch ) = 0;
+	virtual void OnAsyncReadbackBegin( ITexture* pDst, ITexture* pSrc, void* pExtraArgs ) = 0;
 
 	virtual int GetRefCount() const = 0;
 };
-////
+
+
 //-----------------------------------------------------------------------------
 // Flags to be used with the Init call
 //-----------------------------------------------------------------------------
@@ -543,7 +588,9 @@ enum RenderTargetSizeMode_t
 	RT_SIZE_OFFSCREEN=5,			// Target of specified size, don't mess with dimensions
 	RT_SIZE_FULL_FRAME_BUFFER_ROUNDED_UP=6, // Same size as the frame buffer, rounded up if necessary for systems that can't do non-power of two textures.
 	RT_SIZE_REPLAY_SCREENSHOT = 7,	// Rounded down to power of 2, essentially...
-	RT_SIZE_LITERAL = 8				// Use the size passed in. Don't clamp it to the frame buffer size. Really.
+	RT_SIZE_LITERAL = 8,			// Use the size passed in. Don't clamp it to the frame buffer size. Really.
+	RT_SIZE_LITERAL_PICMIP = 9		// Use the size passed in, don't clamp to the frame buffer size, but do apply picmip restrictions.
+
 };
 
 typedef void (*MaterialBufferReleaseFunc_t)( );
@@ -562,6 +609,68 @@ class IMaterialSystemHardwareConfig;
 class CShadowMgr;
 
 DECLARE_POINTER_HANDLE( MaterialLock_t );
+
+enum RenderBackend_t
+{
+	RENDER_BACKEND_UNKNOWN,
+	RENDER_BACKEND_D3D9,
+	RENDER_BACKEND_TOGL,
+	RENDER_BACKEND_VULKAN,
+	RENDER_BACKEND_NULL,
+};
+
+FORCEINLINE const char* GetRenderBackendName( RenderBackend_t eBackend )
+{
+	switch ( eBackend )
+	{
+		default:
+#ifdef ALLOW_NOSHADERAPI
+		case RENDER_BACKEND_UNKNOWN: return "Unknown";
+		case RENDER_BACKEND_NULL:    return "Null";
+#endif
+		case RENDER_BACKEND_D3D9:    return "Direct3D 9";
+		case RENDER_BACKEND_TOGL:    return "OpenGL";
+		case RENDER_BACKEND_VULKAN:  return "Vulkan";
+	}
+}
+
+FORCEINLINE const char* GetRenderBackendShaderAPI( RenderBackend_t eBackend )
+{
+	switch ( eBackend )
+	{
+		default:
+#ifdef ALLOW_NOSHADERAPI
+		case RENDER_BACKEND_UNKNOWN:
+		case RENDER_BACKEND_NULL:   return "shaderapiempty";
+#endif
+		case RENDER_BACKEND_D3D9:   return "shaderapidx9";
+		case RENDER_BACKEND_TOGL:   return "shaderapidx9";
+		case RENDER_BACKEND_VULKAN: return "shaderapivk";
+	}
+}
+
+FORCEINLINE RenderBackend_t DetermineRenderBackend()
+{
+#ifdef ALLOW_NOSHADERAPI
+	if ( CommandLine()->FindParm( "-noshaderapi" ) )
+		return RENDER_BACKEND_NULL;
+#endif
+
+	if ( CommandLine()->FindParm( "-vulkan" ) )
+		return RENDER_BACKEND_VULKAN;
+
+	if ( CommandLine()->FindParm( "-gl" ) )
+		return RENDER_BACKEND_TOGL;
+
+	if ( CommandLine()->FindParm( "-dx9" ) )
+		return RENDER_BACKEND_D3D9;
+
+#if defined( PLATFORM_WINDOWS_PC )
+	return RENDER_BACKEND_D3D9;
+#else
+	return RENDER_BACKEND_VULKAN;
+#endif
+}
 
 //-----------------------------------------------------------------------------
 // 
@@ -967,7 +1076,25 @@ public:
 
 
 	virtual void				ClearBuffers( bool bClearColor, bool bClearDepth, bool bClearStencil = false ) = 0;
-	
+
+	// -----------------------------------------------------------
+	// X360 specifics
+	// -----------------------------------------------------------
+
+#if defined( _X360 )
+	virtual void				ListUsedMaterials( void ) = 0;
+	virtual HXUIFONT			OpenTrueTypeFont( const char *pFontname, int tall, int style ) = 0;
+	virtual void				CloseTrueTypeFont( HXUIFONT hFont ) = 0;
+	virtual bool				GetTrueTypeFontMetrics( HXUIFONT hFont, XUIFontMetrics *pFontMetrics, XUICharMetrics charMetrics[256] ) = 0;
+	// Render a sequence of characters and extract the data into a buffer
+	// For each character, provide the width+height of the font texture subrect,
+	// an offset to apply when rendering the glyph, and an offset into a buffer to receive the RGBA data
+	virtual bool				GetTrueTypeGlyphs( HXUIFONT hFont, int numChars, wchar_t *pWch, int *pOffsetX, int *pOffsetY, int *pWidth, int *pHeight, unsigned char *pRGBA, int *pRGBAOffset ) = 0;
+	virtual void				PersistDisplay() = 0;
+	virtual void				*GetD3DDevice() = 0;
+	virtual bool				OwnGPUResources( bool bEnable ) = 0;
+#endif
+
 	// -----------------------------------------------------------
 	// Access the render contexts
 	// -----------------------------------------------------------
@@ -1040,30 +1167,56 @@ public:
 	// returns the display device name that matches the adapter index we were started with
 	virtual char *GetDisplayDeviceName() const = 0;
 
-//// backported 2013
-// creates a texture suitable for use with materials from a raw stream of bits.
-// The bits will be retained by the material system and can be freed upon return.
+	// creates a texture suitable for use with materials from a raw stream of bits.
+	// The bits will be retained by the material system and can be freed upon return.
 	virtual ITexture*			CreateTextureFromBits(int w, int h, int mips, ImageFormat fmt, int srcBufferSize, byte* srcBits) = 0;
 
 	// Lie to the material system to pretend to be in render target allocation mode at the beginning of time.
 	// This was a thing that mattered a lot to old hardware, but doesn't matter at all to new hardware,
 	// where new is defined to be "anything from the last decade." However, we want to preserve legacy behavior
 	// for the old games because it's easier than testing them.
-	virtual void				OverrideRenderTargetAllocation(bool rtAlloc) = 0;
+	virtual void				OverrideRenderTargetAllocation( bool rtAlloc ) = 0;
 
 	// creates a texture compositor that will attempt to composite a new textuer from the steps of the specified KeyValues.
-	virtual ITextureCompositor*	NewTextureCompositor(int w, int h, const char* pCompositeName, int nTeamNum, uint64 randomSeed, KeyValues* stageDesc, uint32 texCompositeCreateFlags = 0) = 0;
+	virtual ITextureCompositor*	NewTextureCompositor( int w, int h, const char* pCompositeName, int nTeamNum, uint64 randomSeed, KeyValues* stageDesc, uint32 texCompositeCreateFlags = 0 ) = 0;
 
 	// Loads the texture with the specified name, calls pRecipient->OnAsyncFindComplete with the result from the main thread.
 	// once the texture load is complete. If the texture cannot be found, the returned texture will return true for IsError().
-	virtual void AsyncFindTexture(const char* pFilename, const char *pTextureGroupName, IAsyncTextureOperationReceiver* pRecipient, void* pExtraArgs, bool bComplain = true, int nAdditionalCreationFlags = 0) = 0;
+	virtual void AsyncFindTexture( const char* pFilename, const char *pTextureGroupName, IAsyncTextureOperationReceiver* pRecipient, void* pExtraArgs, bool bComplain = true, int nAdditionalCreationFlags = 0 ) = 0;
 
 	// creates a texture suitable for use with materials from a raw stream of bits.
 	// The bits will be retained by the material system and can be freed upon return.
-	virtual ITexture*			CreateNamedTextureFromBitsEx(const char* pName, const char *pTextureGroupName, int w, int h, int mips, ImageFormat fmt, int srcBufferSize, byte* srcBits, int nFlags) = 0;
-////
+	virtual ITexture*			CreateNamedTextureFromBitsEx( const char* pName, const char *pTextureGroupName, int w, int h, int mips, ImageFormat fmt, int srcBufferSize, byte* srcBits, int nFlags ) = 0;
+
+	// Creates a texture compositor template for use in later code. 
+	virtual bool				AddTextureCompositorTemplate( const char* pName, KeyValues* pTmplDesc, int nTexCompositeTemplateFlags = 0 ) = 0;
+
+	// Performs final verification of all compositor templates (after they've all been initially loaded).
+	virtual bool				VerifyTextureCompositorTemplates( ) = 0;
+
+	virtual RenderBackend_t		GetRenderBackend() const = 0;
+
+	// Stop attempting to stream in textures in response to usage.  Useful for phases such as loading or other explicit
+	// operations that shouldn't take usage of textures as a signal to stream them in at full rez.
+	virtual void				SuspendTextureStreaming() = 0;
+	virtual void				ResumeTextureStreaming() = 0;
 };
 
+extern IMaterialSystem *materials;
+extern IMaterialSystem *g_pMaterialSystem;
+
+FORCEINLINE bool IsOpenGL( void )
+{
+#ifndef DX_TO_GL_ABSTRACTION
+	return false;
+#endif
+	return g_pMaterialSystem->GetRenderBackend() == RENDER_BACKEND_TOGL;
+}
+
+FORCEINLINE bool IsVulkan( void )
+{
+	return g_pMaterialSystem->GetRenderBackend() == RENDER_BACKEND_VULKAN;
+}
 
 //-----------------------------------------------------------------------------
 // 
@@ -1467,6 +1620,12 @@ public:
 
 	virtual void				FogMaxDensity( float flMaxDensity ) = 0;
 
+#if defined( _X360 )
+	//Seems best to expose GPR allocation to scene rendering code. 128 total to split between vertex/pixel shaders (pixel will be set to 128 - vertex). Minimum value of 16. More GPR's = more threads.
+	virtual void				PushVertexShaderGPRAllocation( int iVertexShaderCount = 64 ) = 0;
+	virtual void				PopVertexShaderGPRAllocation( void ) = 0;
+#endif
+
 	virtual IMaterial *GetCurrentMaterial() = 0;
 	virtual int  GetCurrentNumBones() const = 0;
 	virtual void *GetCurrentProxy() = 0;
@@ -1517,6 +1676,14 @@ public:
 	virtual void OverrideColorWriteEnable( bool bOverrideEnable, bool bColorWriteEnable ) = 0;
 
 	virtual void ClearBuffersObeyStencilEx( bool bClearColor, bool bClearAlpha, bool bClearDepth ) = 0;
+
+	// Create a texture from the specified src render target, then call pRecipient->OnAsyncCreateComplete from the main thread.
+	// The texture will be created using the destination format, and will optionally have mipmaps generated.
+	// In case of error, the provided callback function will be called with the error texture.
+	virtual void AsyncCreateTextureFromRenderTarget( ITexture* pSrcRt, const char* pDstName, ImageFormat dstFmt, bool bGenMips, int nAdditionalCreationFlags, IAsyncTextureOperationReceiver* pRecipient, void* pExtraArgs ) = 0;
+
+	virtual void FogRadial( bool bRadial ) = 0;
+	virtual bool GetFogRadial() = 0;
 };
 
 template< class E > inline E* IMatRenderContext::LockRenderDataTyped( int nCount, const E* pSrcData )
@@ -1780,7 +1947,6 @@ static void DoMatSysQueueMark( IMaterialSystem *pMaterialSystem, const char *psz
 
 //-----------------------------------------------------------------------------
 
-extern IMaterialSystem *materials;
-extern IMaterialSystem *g_pMaterialSystem;
+#include "materialsystem/imaterialsystemhardwareconfig.h"
 
 #endif // IMATERIALSYSTEM_H
