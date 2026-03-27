@@ -115,6 +115,19 @@ void CMessageWnd::AddMsg(MWMSGTYPE type, TCHAR* msg)
 		return;
 
 	CalculateScrollSize();
+
+#if defined( SLE )
+	int maxPos = GetScrollLimit( SB_VERT );
+	int curPos = GetScrollPos( SB_VERT );
+
+	if ( curPos >= maxPos - 25 )
+	{
+		int delta = maxPos - curPos;
+		SetScrollPos( SB_VERT, maxPos );
+		ScrollWindow( 0, -delta );
+	}
+#endif // SLE
+
 	Invalidate();
 }
 
@@ -189,13 +202,22 @@ void CMessageWnd::CalculateScrollSize()
 		if(iTmp > iHorz)
 			iHorz = iTmp;
 	}
+#if !defined( SLE )
 	Invalidate();
+#endif // !SLE
 
 	SCROLLINFO si;
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL;
 	si.nMin = 0; 
+#if !defined( SLE )
 	si.nPos = 0;
+#endif // !SLE
+
+#if defined( SLE )
+	int oldPosH = GetScrollPos( SB_HORZ );
+	int oldPosV = GetScrollPos( SB_VERT );
+#endif // SLE
 
 	CRect clientrect;
 	GetClientRect(clientrect);
@@ -203,11 +225,17 @@ void CMessageWnd::CalculateScrollSize()
 	// horz
 	si.nMax = iHorz;
 	si.nPage = clientrect.Width();
+#if defined( SLE )
+	si.nPos = oldPosH;
+#endif // SLE
 	SetScrollInfo(SB_HORZ, &si);
 
 	// vert
 	si.nMax = iVert;
 	si.nPage = clientrect.Height();
+#if defined( SLE )
+	si.nPos = oldPosV;
+#endif // SLE
 	SetScrollInfo(SB_VERT, &si);
 }
 
