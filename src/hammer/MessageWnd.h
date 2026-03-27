@@ -10,6 +10,9 @@
 
 #include <afxtempl.h>
 #include "GlobalFunctions.h"
+#if defined( SLE )
+#include "Color.h"
+#endif // SLE
 
 const int MAX_MESSAGE_WND_LINES = 5000;
 
@@ -41,6 +44,9 @@ protected:
 	struct MWMSGSTRUCT
 	{
 		MWMSGTYPE type;
+#if defined( SLE )
+		Color clr;
+#endif // SLE
 		TCHAR szMsg[MESSAGE_WND_MESSAGE_LENGTH];
 		int MsgLen;	// length of message w/o 0x0
 	} ;
@@ -48,6 +54,10 @@ protected:
 // Attributes
 public:
 	void AddMsg(MWMSGTYPE type, TCHAR* msg);
+#if defined( SLE )
+	void AddSpewMsg(SpewType_t spewType, TCHAR* msg);
+	void AddColorMsg(MWMSGTYPE type, Color clr, TCHAR* msg);
+#endif // SLE
 
 // Operations
 public:

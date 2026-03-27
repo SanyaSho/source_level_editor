@@ -915,8 +915,7 @@ static SpewRetval_t HammerDbgOutput( SpewType_t spewType, char const *pMsg )
 #if defined( SLE )
 	if ( g_pwndMessage )
 	{
-		bool bIsError = spewType == SPEW_WARNING || spewType == SPEW_ASSERT || spewType == SPEW_ERROR;
-		g_pwndMessage->AddMsg( bIsError ? mwError : mwStatus, (TCHAR *)pMsg );
+		g_pwndMessage->AddSpewMsg( spewType, (TCHAR *)pMsg );
 	}
 #endif // SLE
 

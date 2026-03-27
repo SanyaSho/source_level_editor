@@ -10,6 +10,9 @@
 #include "MessageWnd.h"
 #include "mainfrm.h"
 #include "GlobalFunctions.h"
+#if defined( SLE )
+#include "Color.h"
+#endif // SLE
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -84,7 +87,54 @@ void CMessageWnd::CreateMessageWindow( CMDIFrameWnd *pwndParent, CRect &rect )
 // Emit a message to our messages array.
 // NOTE: During startup the window itself might not exist yet!
 //-----------------------------------------------------------------------------
+#if defined( SLE )
 void CMessageWnd::AddMsg(MWMSGTYPE type, TCHAR* msg)
+{
+	Color clr = Color( 0, 0, 0, 255 );
+
+	switch ( type )
+	{
+	case mwWarning:
+		clr = Color( 255, 90, 90, 255 );
+		break;
+	case mwError:
+		//clr = Color( 20, 70, 255, 255 ); // Why is it blue?
+		clr = Color( 255, 70, 20, 255 );
+		break;
+	}
+
+	AddColorMsg( type, clr, msg );
+}
+
+void CMessageWnd::AddSpewMsg( SpewType_t spewType, TCHAR *msg )
+{
+	MWMSGTYPE type = mwStatus;
+	Color clr = Color( 0, 0, 0, 255 );
+
+	switch ( spewType )
+	{
+	case SPEW_WARNING:
+		type = mwWarning;
+		clr = Color( 255, 90, 90, 255 );
+		break;
+	case SPEW_ASSERT:
+		type = mwError;
+		clr = Color( 255, 20, 20, 255 );
+		break;
+	case SPEW_ERROR:
+		type = mwError;
+		//clr = Color( 20, 70, 255, 255 ); // Why is it blue?
+		clr = Color( 255, 70, 20, 255 );
+		break;
+	}
+
+	AddColorMsg( type, clr, msg );
+}
+
+void CMessageWnd::AddColorMsg(MWMSGTYPE type, Color clr, TCHAR* msg)
+#else
+void CMessageWnd::AddMsg(MWMSGTYPE type, TCHAR* msg)
+#endif // SLE
 {
 	int iAddAt = iNumMsgs;
 
@@ -104,6 +154,9 @@ void CMessageWnd::AddMsg(MWMSGTYPE type, TCHAR* msg)
 	MWMSGSTRUCT mws;	
 	mws.MsgLen = strlen(msg);
 	mws.type = type;
+#if defined( SLE )
+	mws.clr = clr;
+#endif // SLE
 	Assert(mws.MsgLen <= (sizeof(mws.szMsg) / sizeof(TCHAR)));
 	_tcscpy(mws.szMsg, msg);
 
@@ -278,6 +331,9 @@ void CMessageWnd::OnPaint()
 			break;
 
 		// color of msg
+#if defined( SLE )
+		dc.SetTextColor(mws.clr.GetRawColor() & 0xFFFFFF);
+#else
 		switch(mws.type)
 		{
 		case mwError:
@@ -287,6 +343,7 @@ void CMessageWnd::OnPaint()
 			dc.SetTextColor(RGB(0, 0, 0));
 			break;
 		}
+#endif // SLE
 
 		// draw text
 		dc.TextOut(r.left, r.top, mws.szMsg, mws.MsgLen);
