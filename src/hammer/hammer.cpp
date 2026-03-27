@@ -912,6 +912,14 @@ static SpewRetval_t HammerDbgOutput( SpewType_t spewType, char const *pMsg )
 	// are ones that we really don't care much about.
 	// I'm disabling this for now, we need to decide about what to do with this
 
+#if defined( SLE )
+	if ( g_pwndMessage )
+	{
+		bool bIsError = spewType == SPEW_WARNING || spewType == SPEW_ASSERT || spewType == SPEW_ERROR;
+		g_pwndMessage->AddMsg( bIsError ? mwError : mwStatus, (TCHAR *)pMsg );
+	}
+#endif // SLE
+
 	switch( spewType )
 	{
 	case SPEW_ERROR:
