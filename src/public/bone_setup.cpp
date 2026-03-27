@@ -33,21 +33,6 @@ class CBoneSetup
 public:
 	CBoneSetup( const CStudioHdr *pStudioHdr, int boneMask, const float poseParameter[], IPoseDebugger *pPoseDebugger = NULL );
 	void InitPose( Vector pos[], Quaternion q[] );
-#ifdef DARKINTERVAL
-	// DI NEW
-	void CalcPose(
-		const CStudioHdr *pStudioHdr,
-		CIKContext *pIKContext,
-		Vector pos[],
-		Quaternion q[],
-		int sequence,
-		float cycle,
-		const float poseParameter[],
-		int boneMask,
-		float flWeight,
-		float flTime
-	);
-#endif
 	void AccumulatePose( Vector pos[], Quaternion q[], int sequence, float cycle, float flWeight, float flTime, CIKContext *pIKContext );
 	void CalcAutoplaySequences(	Vector pos[], Quaternion q[], float flRealTime, CIKContext *pIKContext );
 private:
@@ -1849,9 +1834,9 @@ inline bool PoseIsAllZeros(
 // Returns: returns the animination indices and barycentric coordinates of a triangle
 //			the triangle is a right triangle, and the diagonal is between elements [0] and [2]
 //-----------------------------------------------------------------------------
-#ifndef DARKINTERVAL // reducing amount of convars
+
 static ConVar anim_3wayblend( "anim_3wayblend", "1", FCVAR_REPLICATED, "Toggle the 3-way animation blending code." );
-#endif
+
 void Calc3WayBlendIndices( int i0, int i1, float s0, float s1, const mstudioseqdesc_t &seqdesc, int *pAnimIndices, float *pWeight )
 {
 	// Figure out which bi-section direction we are using to make triangles.
@@ -2078,7 +2063,6 @@ bool CalcPoseSingle(
 			CalcAnimation( pStudioHdr, pos2, q2, seqdesc, sequence, seqdesc.anim( i0+1,i1+1  ), cycle, boneMask );
 			BlendBones( pStudioHdr, q, pos, seqdesc, sequence, q2, pos2, s0, boneMask );
 		}
-#ifndef DARKINTERVAL
 		else if ( !anim_3wayblend.GetBool() )
 		{
 			CalcAnimation( pStudioHdr, pos,  q,  seqdesc, sequence, seqdesc.anim( i0  ,i1  ), cycle, boneMask );
@@ -2091,7 +2075,6 @@ bool CalcPoseSingle(
 
 			BlendBones( pStudioHdr, q, pos, seqdesc, sequence, q2, pos2, s1, boneMask );
 		}
-#endif
 		else
 		{
 			int		iAnimIndices[3];
@@ -2324,57 +2307,10 @@ void IBoneSetup::InitPose( Vector pos[], Quaternion q[] )
 	::InitPose( m_pBoneSetup->m_pStudioHdr, pos, q, m_pBoneSetup->m_boneMask );
 }
 
-void IBoneSetup::InitPose(
-	const CStudioHdr *pStudioHdr,
-	Vector pos[],
-	Quaternion q[],
-	int boneMask
-)
-{
-	::InitPose(pStudioHdr, pos, q, boneMask);
-}
-
-#ifdef DARKINTERVAL
-// DI NEW
-void IBoneSetup::CalcPose(
-	const CStudioHdr *pStudioHdr,
-	CIKContext *pIKContext,
-	Vector pos[],
-	Quaternion q[],
-	int sequence,
-	float cycle,
-	const float poseParameter[],
-	int boneMask,
-	float flWeight,
-	float flTime
-)
-{
-	m_pBoneSetup->CalcPose(pStudioHdr, pIKContext, pos, q, sequence, cycle, poseParameter, boneMask, flWeight, flTime);
-}
-#endif // DARKINTERVAL
-
 void IBoneSetup::AccumulatePose( Vector pos[], Quaternion q[], int sequence, float cycle, float flWeight, float flTime, CIKContext *pIKContext )
 {
 	m_pBoneSetup->AccumulatePose( pos, q, sequence, cycle, flWeight, flTime, pIKContext );
 }
-
-#ifdef DARKINTERVAL
-void IBoneSetup::AccumulatePose(
-	const CStudioHdr *pStudioHdr,
-	CIKContext *pIKContext,			//optional
-	Vector pos[],
-	Quaternion q[],
-	int sequence,
-	float cycle,
-	const float poseParameter[],
-	int boneMask,
-	float flWeight,
-	float flTime
-)
-{
-	m_pBoneSetup->AccumulatePose(pos, q, sequence, cycle, flWeight, flTime, pIKContext);
-}
-#endif
 
 void IBoneSetup::CalcAutoplaySequences(	Vector pos[], Quaternion q[], float flRealTime, CIKContext *pIKContext )
 {
@@ -2402,12 +2338,12 @@ CBoneSetup::CBoneSetup( const CStudioHdr *pStudioHdr, int boneMask, const float 
 	m_pPoseDebugger = pPoseDebugger;
 }
 
-#ifdef DARKINTERVAL
+#if 0
 //-----------------------------------------------------------------------------
 // Purpose: calculate a pose for a single sequence
 //			adds autolayers, runs local ik rukes
 //-----------------------------------------------------------------------------
-void CBoneSetup::CalcPose(
+void CalcPose(
 	const CStudioHdr *pStudioHdr,
 	CIKContext *pIKContext,
 	Vector pos[], 
@@ -2440,9 +2376,8 @@ void CBoneSetup::CalcPose(
 	{
 		pIKContext->AddDependencies( seqdesc, sequence, cycle, poseParameter, flWeight );
 	}
-
-	AddSequenceLayers(pos, q, seqdesc, sequence, cycle, flWeight, flTime, pIKContext);
-//	AddSequenceLayers( pStudioHdr, pIKContext, pos, q, seqdesc, sequence, cycle, poseParameter, boneMask, flWeight, flTime );
+	
+	AddSequenceLayers( pStudioHdr, pIKContext, pos, q, seqdesc, sequence, cycle, poseParameter, boneMask, flWeight, flTime );
 
 	if (seqdesc.numiklocks)
 	{
@@ -2593,7 +2528,7 @@ void CalcBoneDerivatives( Vector &velocity, AngularImpulse &angVel, const matrix
 	
 	Vector endPosition, startPosition, deltaAxis;
 	QAngle endAngles, startAngles;
-	float deltaAngle = 1.0;
+	float deltaAngle;
 
 	MatrixAngles( prev, startAngles, startPosition );
 	MatrixAngles( current, endAngles, endPosition );

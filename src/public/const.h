@@ -295,17 +295,7 @@ enum
 										// the parent is not in the PVS.
 	EF_ITEM_BLINK			= 0x100,	// blink an item so that the user notices it.
 	EF_PARENT_ANIMATES		= 0x200,	// always assume that the parent entity is animating
-#ifdef DARKINTERVAL
-	EF_CREMATORLIGHT		= 0x400,
-	EF_PSTORMLIGHT			= 0x800,
-	EF_NOCROSSBOWHIT		= 0x1000,
-	EF_SPECIALHULLREDUCTION = 0x2000,	// reduce player hull even further to fit narrow doors on Borealis
-	EF_VERYDIMLIGHT			= 0x4000,	// reduce player hull even further to fit narrow doors on Borealis
-//	EF_NPCCONTROLLED		= 0x8000,
-	EF_MAX_BITS				= 14
-#else
-	EF_MAX_BITS				= 10
-#endif
+	EF_MAX_BITS = 10
 };
 
 #define EF_PARITY_BITS	3
@@ -402,9 +392,6 @@ enum RenderFx_t
 	kRenderFxSpotlight,			// TEST CODE for experimental spotlight
 	kRenderFxRagdoll,			// HACKHACK: TEST CODE for signalling death of a ragdoll character
 	kRenderFxPulseFastWider,
-#ifdef DARKINTERVAL
-	kRenderFxLiveRagdoll,		// HACKHACK: TEST CODE for signalling death of a ragdoll character
-#endif
 	kRenderFxMax
 };
 
@@ -432,9 +419,7 @@ enum Collision_Group_t
 
 	COLLISION_GROUP_NPC_ACTOR,		// Used so NPCs in scripts ignore the player.
 	COLLISION_GROUP_NPC_SCRIPTED,	// USed for NPCs in scripts that should not collide with each other
-#ifdef DARKINTERVAL
-	COLLISION_GROUP_PLAYERDEBRIS,	// behaves like debris for player (no collision), like non debris for everything else (does collide)
-#endif
+
 	LAST_SHARED_COLLISION_GROUP
 };
 
