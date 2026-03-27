@@ -208,6 +208,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 #ifdef SLE_WINTAB_ENABLE //// SLE NEW - Tablet support w/ Wintab
 	ON_MESSAGE(WT_PACKET, OnWTPacket)
 #endif
+#if defined( SLE )
+	ON_WM_DROPFILES()
+#endif // SLE
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 	
@@ -409,6 +412,25 @@ void CMainFrame::OnEnterMenuLoop( BOOL bIsTrackPopupMenu )
 		}
 	}
 }
+
+#if defined( SLE )
+void CMainFrame::OnDropFiles( HDROP hDropInfo )
+{
+	UINT unCount = DragQueryFile( hDropInfo, 0xFFFFFFFF, NULL, 0 );
+
+	for ( UINT i = 0; i < unCount; i++ )
+	{
+		TCHAR fileName[MAX_PATH];
+		DragQueryFile( hDropInfo, i, fileName, MAX_PATH );
+
+		APP()->OpenDocumentFile( fileName );
+	}
+
+	DragFinish( hDropInfo );
+
+	CMDIFrameWnd::OnDropFiles( hDropInfo );
+}
+#endif // SLE
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -759,6 +781,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	{
 		LoadBarState("Barstate");
 	}
+
+#if defined( SLE )
+	DragAcceptFiles( true );
+#endif // SLE
 
 	return 0;
 }

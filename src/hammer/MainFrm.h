@@ -152,6 +152,9 @@ protected:
 #endif
 	afx_msg BOOL OnHelpInfo(HELPINFO*);
 	afx_msg void OnEnterMenuLoop( BOOL bIsTrackPopupMenu );
+#if defined( SLE )
+	afx_msg void OnDropFiles(HDROP hDropInfo);
+#endif // SLE
 #if _MSC_VER < 1300
 	afx_msg void OnActivateApp(BOOL bActive, HTASK hTask);
 #else
