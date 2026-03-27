@@ -1,9 +1,13 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
 // $NoKeywords: $
 //===========================================================================//
+
+#ifndef FILESYSTEM_H
+#define FILESYSTEM_H
+#pragma once
 
 #include <limits.h>
 
@@ -12,18 +16,15 @@
 #include "tier1/interface.h"
 #include "tier1/utlsymbol.h"
 #include "tier1/utlstring.h"
-#include "appframework/iappsystem.h"
+#include "appframework/IAppSystem.h"
 #include "tier1/checksum_crc.h"
 #include "tier1/checksum_md5.h"
 #include "tier1/refcount.h"
 
-#ifndef FILESYSTEM_H
-#define FILESYSTEM_H
-
 #ifdef _WIN32
 #pragma once
 #endif
-//#define NEW_FILESYSTEM
+
 //-----------------------------------------------------------------------------
 // Forward declarations
 //-----------------------------------------------------------------------------
@@ -39,6 +40,10 @@ typedef void * FileCacheHandle_t;
 typedef int FileFindHandle_t;
 typedef void (*FileSystemLoggingFunc_t)( const char *fileName, const char *accessType );
 typedef int WaitForResourcesHandle_t;
+
+#ifdef _X360
+typedef void* HANDLE;
+#endif
 
 #define USE_CRC_FILE_TRACKING 0
 
@@ -530,11 +535,9 @@ public:
 //-----------------------------------------------------------------------------
 // Main file system interface
 //-----------------------------------------------------------------------------
-#ifdef NEW_FILESYSTEM
-#define FILESYSTEM_INTERFACE_VERSION			"VFileSystem011" // for Portal 2
-#else
+
 #define FILESYSTEM_INTERFACE_VERSION			"VFileSystem022"
-#endif
+
 abstract_class IFileSystem : public IAppSystem, public IBaseFileSystem
 {
 public:
@@ -579,10 +582,20 @@ public:
 	virtual void			MarkPathIDByRequestOnly( const char *pPathID, bool bRequestOnly ) = 0;
 
 	// converts a partial path into a full path
-	virtual const char		*RelativePathToFullPath( const char *pFileName, const char *pPathID, char *pLocalPath, int localPathBufferSize, PathTypeFilter_t pathFilter = FILTER_NONE, PathTypeQuery_t *pPathType = NULL ) = 0;
+	// Prefer using the RelativePathToFullPath_safe template wrapper to calling this directly
+	virtual const char		*RelativePathToFullPath( const char *pFileName, const char *pPathID, OUT_Z_CAP(maxLenInChars) char *pDest, int maxLenInChars, PathTypeFilter_t pathFilter = FILTER_NONE, PathTypeQuery_t *pPathType = NULL ) = 0;
+	template <size_t maxLenInChars> const char *RelativePathToFullPath_safe( const char *pFileName, const char *pPathID, OUT_Z_ARRAY char (&pDest)[maxLenInChars], PathTypeFilter_t pathFilter = FILTER_NONE, PathTypeQuery_t *pPathType = NULL )
+	{
+		return RelativePathToFullPath( pFileName, pPathID, pDest, (int)maxLenInChars, pathFilter, pPathType );
+	}
 
 	// Returns the search path, each path is separated by ;s. Returns the length of the string returned
-	virtual int				GetSearchPath( const char *pathID, bool bGetPackFiles, char *pPath, int nMaxLen ) = 0;
+	// Prefer using the GetSearchPath_safe template wrapper to calling this directly
+	virtual int				GetSearchPath( const char *pathID, bool bGetPackFiles, OUT_Z_CAP(maxLenInChars) char *pDest, int maxLenInChars ) = 0;
+	template <size_t maxLenInChars> int GetSearchPath_safe( const char *pathID, bool bGetPackFiles, OUT_Z_ARRAY char (&pDest)[maxLenInChars] )
+	{
+		return GetSearchPath( pathID, bGetPackFiles, pDest, (int)maxLenInChars );
+	}
 
 	// interface for custom pack files > 4Gb
 	virtual bool			AddPackFile( const char *fullpath, const char *pathID ) = 0;
@@ -649,11 +662,21 @@ public:
 
 	// FIXME: This method is obsolete! Use RelativePathToFullPath instead!
 	// converts a partial path into a full path
-	virtual const char		*GetLocalPath( const char *pFileName, char *pLocalPath, int localPathBufferSize ) = 0;
+	// Prefer using the GetLocalPath_safe template wrapper to calling this directly
+	virtual const char		*GetLocalPath( const char *pFileName, OUT_Z_CAP(maxLenInChars) char *pDest, int maxLenInChars ) = 0;
+	template <size_t maxLenInChars> const char *GetLocalPath_safe( const char *pFileName, OUT_Z_ARRAY char (&pDest)[maxLenInChars] )
+	{
+		return GetLocalPath( pFileName, pDest, (int)maxLenInChars );
+	}
 
 	// Returns true on success ( based on current list of search paths, otherwise false if 
 	//  it can't be resolved )
-	virtual bool			FullPathToRelativePath( const char *pFullpath, char *pRelative, int maxlen ) = 0;
+	// Prefer using the FullPathToRelativePath_safe template wrapper to calling this directly
+	virtual bool			FullPathToRelativePath( const char *pFullpath, OUT_Z_CAP(maxLenInChars) char *pDest, int maxLenInChars ) = 0;
+	template <size_t maxLenInChars> bool FullPathToRelativePath_safe( const char *pFullpath, OUT_Z_ARRAY char (&pDest)[maxLenInChars] )
+	{
+		return FullPathToRelativePath( pFullpath, pDest, (int)maxLenInChars );
+	}
 
 	// Gets the current working directory
 	virtual bool			GetCurrentDirectory( char* pDirectory, int maxlen ) = 0;
@@ -689,7 +712,7 @@ public:
 	virtual void AsyncRemoveFetcher( IAsyncFileFetch *pFetcher ) = 0;
 
 	//------------------------------------
-	// Functions to hold a file open if planning on doing mutiple reads. Use is optional,
+	// Functions to hold a file open if planning on doing multiple reads. Use is optional,
 	// and is taken only as a hint
 	//------------------------------------
 	virtual FSAsyncStatus_t	AsyncBeginRead( const char *pszFile, FSAsyncFile_t *phFile ) = 0;
@@ -813,7 +836,12 @@ public:
 	virtual void		EndMapAccess() = 0;
 
 	// Returns true on success, otherwise false if it can't be resolved
-	virtual bool		FullPathToRelativePathEx( const char *pFullpath, const char *pPathId, char *pRelative, int maxlen ) = 0;
+	// Prefer using the FullPathToRelativePathEx_safe template wrapper to calling this directly
+	virtual bool		FullPathToRelativePathEx( const char *pFullpath, const char *pPathId, OUT_Z_CAP(maxLenInChars) char *pDest, int maxLenInChars ) = 0;
+	template <size_t maxLenInChars> bool FullPathToRelativePathEx_safe( const char *pFullpath, OUT_Z_ARRAY char (&pDest)[maxLenInChars] )
+	{
+		return FullPathToRelativePathEx( pFullpath, pDest, (int)maxLenInChars );
+	}
 
 	virtual int			GetPathIndex( const FileNameHandle_t &handle ) = 0;
 	virtual long		GetPathTime( const char *pPath, const char *pPathID ) = 0;
@@ -890,6 +918,20 @@ public:
 
 	// Called when we unload a file, to remove that file's info for pure server purposes.
 	virtual void			NotifyFileUnloaded( const char *pszFilename, const char *pPathId ) = 0;
+
+	// Returns true on successfully retrieve case-sensitive full path, otherwise false
+	// Prefer using the GetCaseCorrectFullPath template wrapper to calling this directly
+	virtual bool			GetCaseCorrectFullPath_Ptr( const char *pFullPath, OUT_Z_CAP( maxLenInChars ) char *pDest, int maxLenInChars ) = 0;
+	template <size_t maxLenInChars> bool GetCaseCorrectFullPath( const char *pFullPath, OUT_Z_ARRAY char( &pDest )[maxLenInChars] )
+	{
+		return GetCaseCorrectFullPath_Ptr( pFullPath, pDest, (int)maxLenInChars );
+	}
+
+	// Whether we are allowed to write anywhere (default) or just to our search paths.
+	// By default, we can write everywhere--but the game client locks us down to writing in specific places, because
+	// remote users can coerce us into writing things down via a clickable URL.
+	virtual void			SetWriteProtectionEnable( bool bEnable ) = 0;
+	virtual bool			GetWriteProtectionEnable() const = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -899,8 +941,12 @@ public:
 class CMemoryFileBacking : public CRefCounted<CRefCountServiceMT>
 {
 public:
+	// malloc and free in headers with our janky memdbg system. What could go wrong. Except everything.
+	// (this free can't skip memdbg if paired malloc used memdbg)
+#include <memdbgon.h>
 	CMemoryFileBacking( IFileSystem* pFS ) : m_pFS( pFS ), m_nRegistered( 0 ), m_pFileName( NULL ), m_pData( NULL ), m_nLength( 0 ) { }
 	~CMemoryFileBacking() { free( (char*) m_pFileName ); if ( m_pData ) m_pFS->FreeOptimalReadBuffer( (char*) m_pData ); }
+#include <memdbgoff.h>
 
 	IFileSystem* m_pFS;
 	int m_nRegistered;
@@ -914,9 +960,37 @@ private:
 };
 
 //-----------------------------------------------------------------------------
+
+#if defined( _X360 ) && !defined( _RETAIL )
+extern char g_szXboxProfileLastFileOpened[MAX_PATH];
+#define SetLastProfileFileRead( s ) Q_strncpy( g_szXboxProfileLastFileOpened, sizeof( g_szXboxProfileLastFileOpened), pFileName )
+#define GetLastProfileFileRead() (&g_szXboxProfileLastFileOpened[0])
+#else
 #define SetLastProfileFileRead( s ) ((void)0)
 #define GetLastProfileFileRead() NULL
+#endif
+
+#if defined( _X360 ) && defined( _BASETSD_H_ )
+class CXboxDiskCacheSetter
+{
+public:
+	CXboxDiskCacheSetter( SIZE_T newSize )
+	{
+		m_oldSize = XGetFileCacheSize();
+		XSetFileCacheSize( newSize );
+	}
+
+	~CXboxDiskCacheSetter()
+	{
+		XSetFileCacheSize( m_oldSize );
+	}
+private:
+	SIZE_T m_oldSize;
+};
+#define DISK_INTENSIVE() CXboxDiskCacheSetter cacheSetter( 1024*1024 )
+#else
 #define DISK_INTENSIVE() ((void)0)
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -938,7 +1012,7 @@ inline unsigned IFileSystem::GetOptimalReadSize( FileHandle_t hFile, unsigned nL
 // Async memory tracking
 //-----------------------------------------------------------------------------
 
-#if (defined(_DEBUG) || defined(USE_MEM_DEBUG))
+#if defined(USE_MEM_DEBUG)
 #define AsyncRead( a, b ) AsyncReadCreditAlloc( a, __FILE__, __LINE__, b )
 #define AsyncReadMutiple( a, b, c ) AsyncReadMultipleCreditAlloc( a, b, __FILE__, __LINE__, c )
 #endif

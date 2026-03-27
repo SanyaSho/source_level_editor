@@ -49,6 +49,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Constructor.
 //-----------------------------------------------------------------------------
@@ -56,6 +57,7 @@ CChunkHandlerMap::CChunkHandlerMap(void)
 {
 	m_pHandlers = NULL;
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Destructor. Frees handler list.
@@ -71,6 +73,7 @@ CChunkHandlerMap::~CChunkHandlerMap(void)
 		delete pPrev;
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Adds a chunk handler to the handler list.
@@ -102,6 +105,7 @@ void CChunkHandlerMap::AddHandler(const char *pszChunkName, ChunkHandler_t pfnHa
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Sets the callback for error handling within this chunk's scope.
 // Input  : pfnHandler - 
@@ -113,6 +117,7 @@ void CChunkHandlerMap::SetErrorHandler(ChunkErrorHandler_t pfnHandler, void *pDa
 	m_pErrorData = pData;
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : ppData - 
@@ -123,6 +128,7 @@ ChunkErrorHandler_t CChunkHandlerMap::GetErrorHandler(void **ppData)
 	*ppData = m_pErrorData;
 	return(m_pfnErrorHandler);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Gets the handler for a given chunk name, if one has been set.
@@ -148,6 +154,7 @@ ChunkHandler_t CChunkHandlerMap::GetHandler(const char *pszChunkName, void **ppD
 	return(false);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Constructor. Initializes data members.
 //-----------------------------------------------------------------------------
@@ -160,6 +167,7 @@ CChunkFile::CChunkFile(void)
 	m_DefaultChunkHandler = 0;
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Destructor. Closes the file if it is currently open.
 //-----------------------------------------------------------------------------
@@ -170,6 +178,7 @@ CChunkFile::~CChunkFile(void)
 		fclose(m_hFile);
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -197,6 +206,7 @@ ChunkFileResult_t CChunkFile::BeginChunk(const char *pszChunkName)
 	return(eResult);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -213,6 +223,7 @@ void CChunkFile::BuildIndentString(char *pszDest, int nDepth)
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Output : ChunkFileResult_t
@@ -227,6 +238,7 @@ ChunkFileResult_t CChunkFile::Close(void)
 
 	return(ChunkFile_Ok);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -244,6 +256,7 @@ ChunkFileResult_t CChunkFile::EndChunk(void)
 
 	return(ChunkFile_Ok);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns a string explaining the last error that occurred.
@@ -287,6 +300,7 @@ const char *CChunkFile::GetErrorText(ChunkFileResult_t eResult)
 	return(m_TokenReader.Error(szError));
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : eError - 
@@ -298,6 +312,7 @@ void CChunkFile::HandleError(const char *szChunkName, ChunkFileResult_t eError)
 	// - use the last non-NULL handler that was pushed onto the stack?
 	// - need a return code to determine whether to abort parsing?
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -375,6 +390,7 @@ ChunkFileResult_t CChunkFile::HandleChunk(const char *szChunkName)
 	return(ChunkFile_Ok);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Opens the chunk file for reading or writing.
 // Input  : pszFileName - Path of file to open.
@@ -412,6 +428,7 @@ ChunkFileResult_t CChunkFile::Open(const char *pszFileName, ChunkFileOpenMode_t 
 	return(ChunkFile_Ok);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Removes the topmost set of chunk handlers.
 //-----------------------------------------------------------------------------
@@ -423,11 +440,12 @@ void CChunkFile::PopHandlers(void)
 	}
 }
 
+
 void CChunkFile::SetDefaultChunkHandler( DefaultChunkHandler_t pHandler, void *pData )
 {
 	m_DefaultChunkHandler = pHandler;
-	m_pDefaultChunkHandlerData = pData;
-}
+	m_pDefaultChunkHandlerData = pData;}
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Adds a set of chunk handlers to the top of the handler stack.
@@ -441,6 +459,7 @@ void CChunkFile::PushHandlers(CChunkHandlerMap *pHandlerMap)
 		m_nHandlerStackDepth++;
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Reads the next term from the chunk file. The type of term read is
@@ -546,6 +565,7 @@ ChunkFileResult_t CChunkFile::ReadNext(char *szName, char *szValue, int nValueSi
 	return(ChunkFile_EOF);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: Reads the current chunk and dispatches keys and sub-chunks to the
 //			appropriate handler callbacks.
@@ -606,6 +626,7 @@ ChunkFileResult_t CChunkFile::ReadChunk(KeyHandler_t pfnKeyHandler, void *pData)
 	return(eResult);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : pszValue - 
@@ -628,6 +649,7 @@ bool CChunkFile::ReadKeyValueBool(const char *pszValue, bool &bBool)
 	return(true);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : pszValue - 
@@ -640,6 +662,7 @@ bool CChunkFile::ReadKeyValueFloat(const char *pszValue, float &flFloat)
 	return(true);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : pszValue - 
@@ -651,6 +674,7 @@ bool CChunkFile::ReadKeyValueInt(const char *pszValue, int &nInt)
 	nInt = atoi(pszValue);
 	return(true);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -681,6 +705,7 @@ bool CChunkFile::ReadKeyValueColor(const char *pszValue, unsigned char &chRed, u
 	return(false);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : pszValue - 
@@ -696,6 +721,7 @@ bool CChunkFile::ReadKeyValuePoint(const char *pszValue, Vector &Point)
 
 	return(false);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -713,6 +739,7 @@ bool CChunkFile::ReadKeyValueVector2(const char *pszValue, Vector2D &vec)
 	return(false);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : pszValue - 
@@ -728,6 +755,7 @@ bool CChunkFile::ReadKeyValueVector3(const char *pszValue, Vector &vec)
 
 	return(false);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -745,6 +773,7 @@ bool CChunkFile::ReadKeyValueVector4(const char *pszValue, Vector4D &vec)
 	return false;
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : pszLine - 
@@ -761,6 +790,7 @@ ChunkFileResult_t CChunkFile::WriteKeyValue(const char *pszKey, const char *pszV
 
 	return(ChunkFile_Ok);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -780,6 +810,7 @@ ChunkFileResult_t CChunkFile::WriteKeyValueBool(const char *pszKey, bool bValue)
 	return(ChunkFile_Ok);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : pszKey - 
@@ -798,6 +829,7 @@ ChunkFileResult_t CChunkFile::WriteKeyValueInt(const char *pszKey, int nValue)
 	return(ChunkFile_Ok);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : pszKey - 
@@ -815,6 +847,7 @@ ChunkFileResult_t CChunkFile::WriteKeyValueFloat(const char *pszKey, float fValu
 
 	return(ChunkFile_Ok);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -836,6 +869,7 @@ ChunkFileResult_t CChunkFile::WriteKeyValueColor(const char *pszKey, unsigned ch
 	return(ChunkFile_Ok);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : pszKey - 
@@ -854,6 +888,7 @@ ChunkFileResult_t CChunkFile::WriteKeyValuePoint(const char *pszKey, const Vecto
 	return(ChunkFile_Ok);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -869,6 +904,7 @@ ChunkFileResult_t CChunkFile::WriteKeyValueVector2(const char *pszKey, const Vec
 	return(ChunkFile_Ok);
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -883,6 +919,7 @@ ChunkFileResult_t CChunkFile::WriteKeyValueVector3(const char *pszKey, const Vec
 
 	return(ChunkFile_Ok);
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -901,6 +938,7 @@ ChunkFileResult_t CChunkFile::WriteKeyValueVector4(const char *pszKey, const Vec
 
 	return( ChunkFile_Ok );
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -944,3 +982,4 @@ ChunkFileResult_t CChunkFile::WriteLine(const char *pszLine)
 	
 	return(ChunkFile_Ok);
 }
+

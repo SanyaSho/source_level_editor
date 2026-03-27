@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -12,7 +12,7 @@
 #pragma once
 #endif
 
-#include <vgui/vgui.h>
+#include <vgui/VGUI.h>
 #include "tier1/interface.h"
 #include "vgui/MouseCode.h"
 #include "vgui/KeyCode.h"
@@ -21,7 +21,7 @@ namespace vgui
 {
 
 class Cursor;
-typedef unsigned long HCursor;
+typedef uint32 HCursor;
 
 #define VGUI_GCS_COMPREADSTR                 0x0001
 #define VGUI_GCS_COMPREADATTR                0x0002

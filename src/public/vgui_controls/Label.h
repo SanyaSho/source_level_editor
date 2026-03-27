@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -13,7 +13,7 @@
 #endif
 
 #include "utlvector.h"
-#include "vgui/vgui.h"
+#include "vgui/VGUI.h"
 #include "vgui_controls/Panel.h"
 #include "vgui_controls/PHandle.h"
 
@@ -117,7 +117,7 @@ public:
 	// fixes the layout bounds of the image within the label
 	virtual void SetImageBounds(int index, int x, int width);
 
-	// Returns a pointer to the default text image
+	// Teturns a pointer to the default text image
 	virtual TextImage *GetTextImage();
 
 	// Moves where the default text image is within the image array (it starts in position 0)
@@ -191,9 +191,9 @@ private:
 	struct TImageInfo
 	{
 		IImage *image;
-		short offset;
-		short xpos;
-		short width;
+		int offset;
+		int xpos;
+		int width;
 	};
 	CUtlVector<TImageInfo> _imageDar;
 
@@ -215,7 +215,9 @@ private:
 	bool	m_bCenterWrap;
 	bool	m_bAllCaps;
 	bool	m_bAutoWideToContents;
+	bool	m_bAutoTallToContents;
 	bool	m_bAutoWideDirty;
+	bool	m_bAutoTallDirty;
 	bool	m_bUseProportionalInsets;
 
 };

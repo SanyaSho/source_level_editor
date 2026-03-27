@@ -15,13 +15,16 @@
 #include <stdio.h>
 #include "tokenreader.h"
 
+
 #define MAX_INDENT_DEPTH		80
 #define MAX_KEYVALUE_LEN		1024
+
 
 class CChunkFile;
 class Vector2D;
 class Vector;
 class Vector4D;
+
 
 //
 // Modes for Open.
@@ -31,6 +34,7 @@ enum ChunkFileOpenMode_t
 	ChunkFile_Read = 0,
 	ChunkFile_Write,
 };
+
 
 //
 // Return codes.
@@ -49,17 +53,20 @@ enum ChunkFileResult_t
 	ChunkFile_NotHandled
 };
 
+
 enum ChunkType_t
 {
 	ChunkType_Key = 0,
 	ChunkType_Chunk,
 };
 
+
 typedef ChunkFileResult_t (*DefaultChunkHandler_t)(CChunkFile *pFile, void *pData, char const *pChunkName);
 
 typedef ChunkFileResult_t (*ChunkHandler_t)(CChunkFile *pFile, void *pData);
 typedef ChunkFileResult_t (*KeyHandler_t)(const char *szKey, const char *szValue, void *pData);
 typedef bool (*ChunkErrorHandler_t)(CChunkFile *pFile, const char *szChunkName, void *pData);
+
 
 struct ChunkHandlerInfo_t
 {
@@ -68,11 +75,13 @@ struct ChunkHandlerInfo_t
 	void *pData;
 };
 
+
 struct ChunkHandlerInfoNode_t
 {
 	ChunkHandlerInfo_t Handler;
 	struct ChunkHandlerInfoNode_t *pNext;
 };
+
 
 //
 // Consider handling chunks with handler objects instead of callbacks.
@@ -83,6 +92,7 @@ struct ChunkHandlerInfoNode_t
 //	virtual ChunkFileResult_t HandleKey(const char *szKey, const char *szValue);
 //	virtual bool HandleError(const char *szChunkName, ChunkFileResult_t eError);
 //};
+
 
 class CChunkHandlerMap
 {
@@ -104,9 +114,11 @@ class CChunkHandlerMap
 		void *m_pErrorData;
 };
 
+
 class CChunkFile
 {
 	public:
+
 		CChunkFile(void);
 		~CChunkFile(void);
 
@@ -163,6 +175,7 @@ class CChunkFile
 		void PopHandlers(void);
 
 	protected:
+
 		void BuildIndentString(char *pszDest, int nDepth);
 
 		TokenReader m_TokenReader;
@@ -179,5 +192,6 @@ class CChunkFile
 		CChunkHandlerMap *m_HandlerStack[MAX_INDENT_DEPTH];
 		int m_nHandlerStackDepth;
 };
+
 
 #endif // CHUNKFILE_H

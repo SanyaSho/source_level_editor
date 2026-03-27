@@ -11,7 +11,9 @@
 
 typedef struct tagMSG MSG;
 
+
 class IStudioDataCache;
+
 
 //#define SLE //// SLE NEW - holds all the additions and changes done in SLE
 
@@ -37,6 +39,8 @@ class IStudioDataCache;
 #define SLE_DARK_THEME_CLR_EDIT_BACK		RGB(96, 96, 96)
 #define SLE_DARK_THEME_CLR_EDIT_TEXT		RGB(245, 245, 245)
 #endif
+
+
 //-----------------------------------------------------------------------------
 // Return values for RequestNewConfig
 //-----------------------------------------------------------------------------
@@ -45,6 +49,7 @@ enum RequestRetval_t
 	REQUEST_OK = 0,
 	REQUEST_QUIT
 };
+
 
 //-----------------------------------------------------------------------------
 // Interface used to drive hammer
@@ -72,6 +77,6 @@ public:
 	virtual const char *GetDefaultModFullPath() = 0;
 
 	virtual int MainLoop() = 0;
-};
+};	
 
 #endif // IHAMMER_H

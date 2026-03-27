@@ -80,7 +80,7 @@ class CCallQueueT
 {
 public:
 	CCallQueueT()
-		: m_bNoQueue(false)
+		: m_bNoQueue( false )
 	{
 #ifdef _DEBUG
 		m_nCurSerialNumber = 0;
@@ -88,13 +88,13 @@ public:
 #endif
 	}
 
-	void DisableQueue(bool bDisable)
+	void DisableQueue( bool bDisable )
 	{
-		if (m_bNoQueue == bDisable)
+		if ( m_bNoQueue == bDisable )
 		{
 			return;
 		}
-		if (!m_bNoQueue)
+		if ( !m_bNoQueue )
 			CallQueued();
 
 		m_bNoQueue = bDisable;
@@ -112,19 +112,19 @@ public:
 
 	void CallQueued()
 	{
-		if (!m_queue.Count())
+		if ( !m_queue.Count() )
 		{
 			return;
 		}
 
-		m_queue.PushItem(NULL);
+		m_queue.PushItem( NULL );
 
 		CFunctor *pFunctor;
 
-		while (m_queue.PopItem(&pFunctor) && pFunctor != NULL)
+		while ( m_queue.PopItem( &pFunctor ) && pFunctor != NULL )
 		{
 #ifdef _DEBUG
-			if (pFunctor->m_nUserID == m_nBreakSerialNumber)
+			if ( pFunctor->m_nUserID == m_nBreakSerialNumber)
 			{
 				m_nBreakSerialNumber = (unsigned)-1;
 			}
@@ -135,19 +135,19 @@ public:
 
 	}
 
-	void QueueFunctor(CFunctor *pFunctor)
+	void QueueFunctor( CFunctor *pFunctor )
 	{
-		Assert(pFunctor);
-		QueueFunctorInternal(RetAddRef(pFunctor));
+		Assert( pFunctor );
+		QueueFunctorInternal( RetAddRef( pFunctor ) );
 	}
 
 	void Flush()
 	{
-		m_queue.PushItem(NULL);
+		m_queue.PushItem( NULL );
 
 		CFunctor *pFunctor;
 
-		while (m_queue.PopItem(&pFunctor) && pFunctor != NULL)
+		while ( m_queue.PopItem( &pFunctor ) && pFunctor != NULL )
 		{
 			pFunctor->Release();
 		}
@@ -156,14 +156,14 @@ public:
 	FUNC_GENERATE_QUEUE_METHODS();
 
 private:
-	void QueueFunctorInternal(CFunctor *pFunctor)
+	void QueueFunctorInternal( CFunctor *pFunctor )
 	{
-		if (!m_bNoQueue)
+		if ( !m_bNoQueue )
 		{
 #ifdef _DEBUG
 			pFunctor->m_nUserID = m_nCurSerialNumber++;
 #endif
-			m_queue.PushItem(pFunctor);
+			m_queue.PushItem( pFunctor );
 		}
 		else
 		{
@@ -189,15 +189,15 @@ class CCallQueue : public CCallQueueT<>
 class ICallQueue
 {
 public:
-	void QueueFunctor(CFunctor *pFunctor)
+	void QueueFunctor( CFunctor *pFunctor )
 	{
-		QueueFunctorInternal(RetAddRef(pFunctor));
+		QueueFunctorInternal( RetAddRef( pFunctor ) );
 	}
 
 	FUNC_GENERATE_QUEUE_METHODS();
 
 private:
-	virtual void QueueFunctorInternal(CFunctor *pFunctor) = 0;
+	virtual void QueueFunctorInternal( CFunctor *pFunctor ) = 0;
 };
 
 #endif // CALLQUEUE_H

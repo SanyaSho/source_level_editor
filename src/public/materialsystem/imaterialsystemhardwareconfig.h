@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -13,8 +13,9 @@
 #pragma once
 #endif
 
-
+#include "tier0/platform.h"
 #include "tier1/interface.h"
+#include "imaterialsystem.h"
 
 //-----------------------------------------------------------------------------
 // GL helpers
@@ -25,23 +26,10 @@ FORCEINLINE bool IsEmulatingGL()
 	return bIsEmulatingGL;
 }
 
-FORCEINLINE bool IsOpenGL( void )
-{
-	return IsPlatformOpenGL() || IsEmulatingGL();
-}
-
 //-----------------------------------------------------------------------------
 // Material system interface version
 //-----------------------------------------------------------------------------
 #define MATERIALSYSTEM_HARDWARECONFIG_INTERFACE_VERSION		"MaterialSystemHardwareConfig012"
-
-// HDRFIXME NOTE: must match common_ps_fxc.h
-enum HDRType_t
-{
-	HDR_TYPE_NONE,
-	HDR_TYPE_INTEGER,
-	HDR_TYPE_FLOAT,
-};
 
 // For now, vertex compression is simply "on or off" (for the sake of simplicity
 // and MeshBuilder perf.), but later we may support multiple flavours.
@@ -64,8 +52,24 @@ enum VertexCompressionType_t
 	VERTEX_COMPRESSION_ON = 1
 };
 
+
+// use DEFCONFIGMETHOD to define time-critical methods that we want to make just return constants
+// on the 360, so that the checks will happen at compile time. Not all methods are defined this way
+// - just the ones that I perceive as being called often in the frame interval.
+#ifdef _X360
+#define DEFCONFIGMETHOD( ret_type, method, xbox_return_value )		\
+FORCEINLINE ret_type method const 									\
+{																	\
+	return xbox_return_value;										\
+}
+
+
+#else
 #define DEFCONFIGMETHOD( ret_type, method, xbox_return_value )	\
 virtual ret_type method const = 0;
+#endif
+
+
 
 //-----------------------------------------------------------------------------
 // Material system configuration
@@ -82,7 +86,7 @@ public:
 	virtual bool HasSetDeviceGammaRamp() const = 0;
 	DEFCONFIGMETHOD( bool, SupportsCompressedTextures(), true );
 	virtual VertexCompressionType_t SupportsCompressedVertices() const = 0;
-	DEFCONFIGMETHOD( bool, SupportsNormalMapCompression(), true );
+	virtual bool SupportsNormalMapCompression() const { return false; }
 	DEFCONFIGMETHOD( bool, SupportsVertexAndPixelShaders(), true );
 	DEFCONFIGMETHOD( bool, SupportsPixelShaders_1_4(), true );
 	DEFCONFIGMETHOD( bool, SupportsStaticControlFlow(), true );
@@ -188,6 +192,7 @@ public:
 
 	virtual bool SupportsBorderColor( void ) const = 0;
 	virtual bool SupportsFetch4( void ) const = 0;
+	virtual bool CanStretchRectFromTextures( void ) const = 0;
 
 	inline bool ShouldAlwaysUseShaderModel2bShaders() const { return IsOpenGL(); }
 	inline bool PlatformRequiresNonNullPixelShaders() const { return IsOpenGL(); }

@@ -909,7 +909,6 @@ void DetailObjects::Render3D(CRender3D *pRender)
 	if (pRender->GetCurrentRenderMode() != RENDER_MODE_WIREFRAME && pRender->GetCurrentRenderMode() != RENDER_MODE_WIREFRAME_NOZ && pRender->GetCurrentRenderMode() != RENDER_MODE_TEXTURED && pRender->GetCurrentRenderMode() != RENDER_MODE_TEXTURED_SHADED)
 		return;
 #endif
-	Vector Mins, Maxs;
 	float fDetailDistance = Options.view3d.nDetailDistance;
 	Vector viewPoint; pRender->GetCamera()->GetViewPoint( viewPoint );
 

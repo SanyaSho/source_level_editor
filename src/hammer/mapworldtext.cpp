@@ -82,16 +82,6 @@ void CWorldTextHelper::ComputeCornerVertices( Vector* pVerts, float flBloat ) co
 	pVerts[3] = pVerts[0] + ( m_flTextSize + 2.0f * flBloat ) * ViewUp;
 }
 
-inline Vector VectorMin( const Vector &a, const Vector &b )
-{
-	return Vector( fpmin(a.x, b.x), fpmin(a.y, b.y), fpmin(a.z, b.z) );
-}
-
-inline Vector VectorMax( const Vector &a, const Vector &b )
-{
-	return Vector( fpmax(a.x, b.x), fpmax(a.y, b.y), fpmax(a.z, b.z) );
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: Calculates our bounding box based on the sprite dimensions.
 // Input  : bFullUpdate - Whether we should recalculate our childrens' bounds.

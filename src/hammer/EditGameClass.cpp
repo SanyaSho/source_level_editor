@@ -631,7 +631,7 @@ ChunkFileResult_t CEditGameClass::LoadKeyCallback(const char *szKey, const char 
 	const char *psz = nexttoken(szToken, szValue, chDelim);
 #ifdef SLE
 	// deal with trying to load invalid tokens
-	if ( psz == TOKEN_ERROR )
+	if ( !V_strcmp( psz, TOKEN_ERROR ) )
 		return ChunkFile_Fail;
 #endif
 	if (szToken[0] != '\0')
@@ -645,7 +645,7 @@ ChunkFileResult_t CEditGameClass::LoadKeyCallback(const char *szKey, const char 
 	psz = nexttoken(szToken, psz, chDelim);
 #ifdef SLE
 	// deal with trying to load invalid tokens
-	if ( psz == TOKEN_ERROR )
+	if ( psz && psz[0] && !V_strcmp( psz, TOKEN_ERROR ) )
 		return ChunkFile_Fail;
 #endif
 	if (szToken[0] != '\0')
@@ -659,7 +659,7 @@ ChunkFileResult_t CEditGameClass::LoadKeyCallback(const char *szKey, const char 
 	psz = nexttoken(szToken, psz, chDelim);
 #ifdef SLE
 	// deal with trying to load invalid tokens
-	if ( psz == TOKEN_ERROR )
+	if ( psz && psz[0] && !V_strcmp( psz, TOKEN_ERROR ) )
 		return ChunkFile_Fail;
 #endif
 	if (szToken[0] != '\0')
@@ -673,7 +673,7 @@ ChunkFileResult_t CEditGameClass::LoadKeyCallback(const char *szKey, const char 
 	psz = nexttoken(szToken, psz, chDelim);
 #ifdef SLE
 	// deal with trying to load invalid tokens
-	if ( psz == TOKEN_ERROR )
+	if ( psz && psz[0] && !V_strcmp( psz, TOKEN_ERROR ) )
 		return ChunkFile_Fail;
 #endif
 	if (szToken[0] != '\0')
@@ -687,7 +687,7 @@ ChunkFileResult_t CEditGameClass::LoadKeyCallback(const char *szKey, const char 
 	nexttoken(szToken, psz, chDelim);
 #ifdef SLE
 	// deal with trying to load invalid tokens
-	if ( psz == TOKEN_ERROR )
+	if ( !V_strcmp( psz, TOKEN_ERROR ) )
 		return ChunkFile_Fail;
 #endif
 	if (szToken[0] != '\0')

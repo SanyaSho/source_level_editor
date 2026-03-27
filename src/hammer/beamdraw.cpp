@@ -24,7 +24,7 @@ static Vector g_vecVForward(0, 0, 0), g_vecVRight(0, 0, 0), g_vecVUp(0, 0, 0);
 void DrawHalo(IMaterial* pMaterial, const Vector& source, float scale, float const* color, float flHDRColorScale )
 {
 	static unsigned int nHDRColorScaleCache = 0;
-	Vector		point, screen;
+	Vector		point;
 	
 	if( pMaterial )
 	{

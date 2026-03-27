@@ -102,7 +102,7 @@ void PerforceFileExplorer::SetCurrentDirectory( const char *pFullPath )
 
 	m_CurrentDirectory = pFullPath;
 	m_CurrentDirectory.StripTrailingSlash();
-	Q_FixSlashes( m_CurrentDirectory.Get() );
+    m_CurrentDirectory.FixSlashes();
 
 	PopulateFileList();
 	PopulateDriveList();
@@ -203,7 +203,7 @@ void PerforceFileExplorer::PopulateFileList()
 	int nCount = fileList.Count();
 	for ( int i = 0; i < nCount; ++i )
 	{
-		const char *pFileName = p4->String( fileList[i].m_sLocalFile );
+		pFileName = p4->String( fileList[i].m_sLocalFile );
 		if ( !pFileName[0] )
 			continue;
 

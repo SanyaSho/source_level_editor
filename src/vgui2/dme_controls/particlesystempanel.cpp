@@ -236,7 +236,7 @@ void CParticleSystemPanelV2::Simulate()
 	}
 	else
 	{
-		m_pParticleSystem->Simulate( flDt );
+		m_pParticleSystem->Simulate( flDt, false );
 	}
 
 	if( m_bAutoView && !m_bSuppressAutoView )

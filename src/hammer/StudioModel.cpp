@@ -729,7 +729,6 @@ void StudioModel::DrawModel3D(CRender3D *pRender, const Color &color, float flAl
 		AngleMatrix(m_angles, fCurrentMatrix);
 		ConcatTransforms(matrix.As3x4(), fCurrentMatrix, fMatrixNew);
 
-		QAngle newAngles;
 		MatrixAngles(fMatrixNew, m_angles);
 
 		matrix3x4_t boneToWorld[MAXSTUDIOBONES];
@@ -977,7 +976,6 @@ void StudioModel::DrawModel2D( CRender2D *pRender, float flAlpha, bool bWireFram
 		AngleMatrix(m_angles, fCurrentMatrix);
 		ConcatTransforms(matrix.As3x4(), fCurrentMatrix, fMatrixNew);
 
-		QAngle newAngles;
 		MatrixAngles(fMatrixNew, m_angles);
 	}
 

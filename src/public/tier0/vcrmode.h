@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: VCR mode records a client's game and allows you to 
 //			play it back and reproduce it exactly. When playing it back, nothing
@@ -28,6 +28,11 @@
 DBG_INTERFACE const char *BuildCmdLine( int argc, char **argv, bool fAddSteam = true );
 tchar *GetCommandLine();
 #endif
+
+#ifdef _X360
+#define NO_VCR 1
+#endif
+
 
 // Enclose lines of code in this if you don't want anything in them written to or read from the VCR file.
 #ifndef NO_VCR
@@ -62,6 +67,11 @@ enum VCRMode_t
 	VCR_Playback
 };
 
+#ifdef PLATFORM_64BITS
+typedef uint64 VCRThreadId_t;
+#else
+typedef uint32 VCRThreadId_t;
+#endif
 
 //-----------------------------------------------------------------------------
 // Functions.
@@ -185,7 +195,7 @@ typedef struct VCR_s
 		void *lpStartAddress,
 		void *lpParameter,
 		unsigned long dwCreationFlags,
-		unsigned long *lpThreadID );
+		VCRThreadId_t *lpThreadID );
 	
 	unsigned long (*Hook_WaitForSingleObject)(
 		void *handle,
@@ -287,7 +297,11 @@ PLATFORM_INTERFACE VCR_t *g_pVCR;
 #define VCRHook_GetKeyState						GetKeyState
 #define VCRHook_recv							recv
 #define VCRHook_send							send
+#if defined( _X360 )
+#define VCRHook_CreateThread					CreateThread
+#else
 #define VCRHook_CreateThread					(void*)_beginthreadex
+#endif
 #define VCRHook_WaitForSingleObject				WaitForSingleObject
 #define VCRHook_EnterCriticalSection			EnterCriticalSection
 #define VCRHook_WaitForMultipleObjects( a, b, c, d) WaitForMultipleObjects( a, (const HANDLE *)b, c, d)

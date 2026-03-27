@@ -143,6 +143,7 @@ static void *Sys_GetProcAddress( const char *pModuleName, const char *pName )
 #endif
 }
 
+#if !defined(LINUX)
 static void *Sys_GetProcAddress( HMODULE hModule, const char *pName )
 {
 #ifdef WIN32
@@ -151,6 +152,7 @@ static void *Sys_GetProcAddress( HMODULE hModule, const char *pName )
 	return (void *)dlsym( (void *)hModule, pName );
 #endif
 }
+#endif
 
 bool Sys_IsDebuggerPresent()
 {
@@ -177,7 +179,7 @@ static HMODULE InternalLoadLibrary( const char *pName, Sys_Flags flags )
 		return LoadLibraryEx( pName, NULL, LOAD_WITH_ALTERED_SEARCH_PATH );
 #endif
 }
-unsigned ThreadedLoadLibraryFunc( void *pParam )
+uintp ThreadedLoadLibraryFunc( void *pParam )
 {
 	ThreadedLoadLibaryContext_t *pContext = (ThreadedLoadLibaryContext_t*)pParam;
 	pContext->m_hLibrary = InternalLoadLibrary( pContext->m_pLibraryName, SYS_NOFLAGS );
@@ -282,7 +284,7 @@ CSysModule *Sys_LoadModule( const char *pModuleName, Sys_Flags flags /* = SYS_NO
 			int i = CommandLine()->FindParm( "-basedir" );
 			if ( i )
 			{
-				strcpy( szCwd, CommandLine()->GetParm( i+1 ) );
+				V_strcpy_safe( szCwd, CommandLine()->GetParm( i + 1 ) );
 			}
 		}
 		if (szCwd[strlen(szCwd) - 1] == '/' || szCwd[strlen(szCwd) - 1] == '\\' )
@@ -291,15 +293,14 @@ CSysModule *Sys_LoadModule( const char *pModuleName, Sys_Flags flags /* = SYS_NO
 		}
 
 		char szAbsoluteModuleName[1024];
-		size_t cCwd = strlen( szCwd );
-		if ( strstr( pModuleName, "bin/") == pModuleName || ( szCwd[ cCwd - 1 ] == 'n'  && szCwd[ cCwd - 2 ] == 'i' && szCwd[ cCwd - 3 ] == 'b' )  )
+		if ( strstr( pModuleName, PLATFORM_BIN_DIR ) != NULL )
 		{
 			// don't make bin/bin path
-			Q_snprintf( szAbsoluteModuleName, sizeof(szAbsoluteModuleName), "%s/%s", szCwd, pModuleName );			
+			Q_snprintf( szAbsoluteModuleName, sizeof( szAbsoluteModuleName ), "%s" CORRECT_PATH_SEPARATOR_S "%s", szCwd, pModuleName );
 		}
 		else
 		{
-			Q_snprintf( szAbsoluteModuleName, sizeof(szAbsoluteModuleName), "%s/bin/%s", szCwd, pModuleName );
+			Q_snprintf( szAbsoluteModuleName, sizeof( szAbsoluteModuleName ), "%s" CORRECT_PATH_SEPARATOR_S PLATFORM_BIN_DIR CORRECT_PATH_SEPARATOR_S "%s", szCwd, pModuleName );
 		}
 		hDLL = Sys_LoadLibrary( szAbsoluteModuleName, flags );
 	}
@@ -540,3 +541,5 @@ void CDllDemandLoader::Unload()
 		m_hModule = 0;
 	}
 }
+
+

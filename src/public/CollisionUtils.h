@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Common collision utility methods
 //
@@ -29,6 +29,7 @@ class QAngle;
 class CBaseTrace;
 struct matrix3x4_t;
 
+
 //-----------------------------------------------------------------------------
 //
 // IntersectRayWithTriangle
@@ -43,6 +44,7 @@ struct matrix3x4_t;
 float IntersectRayWithTriangle( const Ray_t& ray, 
 		                        const Vector& v1, const Vector& v2, const Vector& v3, 
 								bool oneSided );
+
 //-----------------------------------------------------------------------------
 //
 // ComputeIntersectionBarycentricCoordinates
@@ -58,6 +60,7 @@ float IntersectRayWithTriangle( const Ray_t& ray,
 bool ComputeIntersectionBarycentricCoordinates( const Ray_t& ray, 
 		const Vector& v1, const Vector& v2, const Vector& v3, float& u, float& v,
 		float *t = 0 );
+
 //-----------------------------------------------------------------------------
 //
 // IntersectRayWithRay
@@ -70,6 +73,7 @@ bool ComputeIntersectionBarycentricCoordinates( const Ray_t& ray,
 //-----------------------------------------------------------------------------
 bool IntersectRayWithRay( const Ray_t &ray0, const Ray_t &ray1, float &t, float &s );
 
+
 //-----------------------------------------------------------------------------
 //
 // IntersectRayWithSphere
@@ -79,6 +83,7 @@ bool IntersectRayWithRay( const Ray_t &ray0, const Ray_t &ray1, float &t, float 
 //
 //-----------------------------------------------------------------------------
 bool IntersectRayWithSphere( const Vector &vecRayOrigin, const Vector &vecRayDelta, const Vector &vecSphereCenter, float flRadius, float *pT1, float *pT2 );
+
 
 //-----------------------------------------------------------------------------
 //
@@ -91,6 +96,7 @@ bool IntersectRayWithSphere( const Vector &vecRayOrigin, const Vector &vecRayDel
 //-----------------------------------------------------------------------------
 bool IntersectInfiniteRayWithSphere( const Vector &vecRayOrigin, const Vector &vecRayDelta, 
 	const Vector &vecSphereCenter, float flRadius, float *pT1, float *pT2 );
+
 
 // returns true if the sphere and cone intersect
 // NOTE: cone sine/cosine are the half angle of the cone
@@ -110,6 +116,7 @@ float IntersectRayWithPlane( const Vector& org, const Vector& dir, const Vector&
 
 // This version intersects a ray with an axis-aligned plane
 float IntersectRayWithAAPlane( const Vector& vecStart, const Vector& vecEnd, int nAxis, float flSign, float flDist );
+
 
 //-----------------------------------------------------------------------------
 // IntersectRayWithBox
@@ -133,6 +140,7 @@ struct BoxTraceInfo_t
 
 bool IntersectRayWithBox( const Vector &vecRayStart, const Vector &vecRayDelta, 
 	const Vector &boxMins, const Vector &boxMaxs, float flTolerance, BoxTraceInfo_t *pTrace );
+
 
 //-----------------------------------------------------------------------------
 // IntersectRayWithOBB
@@ -168,6 +176,7 @@ bool IntersectRayWithOBB( const Vector &vecRayStart, const Vector &vecRayDelta,
 bool IsSphereIntersectingSphere( const Vector& center1, float radius1, 
 								 const Vector& center2, float radius2 );
 
+
 //-----------------------------------------------------------------------------
 // 
 // IsBoxIntersectingSphere
@@ -187,6 +196,7 @@ bool IsBoxIntersectingSphereExtents( const Vector& boxCenter, const Vector& boxH
 bool IsRayIntersectingSphere( const Vector &vecRayOrigin, const Vector &vecRayDelta, 
 	const Vector &vecSphereCenter, float flRadius, float flTolerance = 0.0f );
 
+
 //-----------------------------------------------------------------------------
 // 
 // IsCircleIntersectingRectangle
@@ -196,6 +206,7 @@ bool IsRayIntersectingSphere( const Vector &vecRayOrigin, const Vector &vecRayDe
 //-----------------------------------------------------------------------------
 bool IsCircleIntersectingRectangle( const Vector2D& boxMin, const Vector2D& boxMax, 
 						      const Vector2D& center, float radius );
+
 
 //-----------------------------------------------------------------------------
 // 
@@ -209,6 +220,15 @@ bool IsBoxIntersectingBox( const Vector& boxMin1, const Vector& boxMax1,
 
 bool IsBoxIntersectingBoxExtents( const Vector& boxCenter1, const Vector& boxHalfDiagonal1, 
 						   const Vector& boxCenter2, const Vector& boxHalfDiagonal2 );
+
+
+#ifdef _X360
+// inline version:
+#include "mathlib/ssemath.h"
+inline bool IsBoxIntersectingBoxExtents( const fltx4 boxCenter1, const fltx4 boxHalfDiagonal1, 
+								 const fltx4 boxCenter2, const fltx4 boxHalfDiagonal2 );
+#endif
+
 //-----------------------------------------------------------------------------
 // 
 // IsOBBIntersectingOBB
@@ -218,6 +238,7 @@ bool IsBoxIntersectingBoxExtents( const Vector& boxCenter1, const Vector& boxHal
 //-----------------------------------------------------------------------------
 bool IsOBBIntersectingOBB( const Vector &vecOrigin1, const QAngle &vecAngles1, const Vector& boxMin1, const Vector& boxMax1, 
 						   const Vector &vecOrigin2, const QAngle &vecAngles2, const Vector& boxMin2, const Vector& boxMax2, float flTolerance = 0.0f );
+
 
 //-----------------------------------------------------------------------------
 // 
@@ -237,10 +258,20 @@ bool FASTCALL IsBoxIntersectingRay( const Vector& boxMin, const Vector& boxMax,
 									const Vector& origin, const Vector& delta,
 									const Vector& invDelta, float flTolerance = 0.0f );
 
+
+// On the PC, we can't pass fltx4's in registers like this. On the x360, it is 
+// much better if we do.
+#ifdef _X360
+bool FASTCALL IsBoxIntersectingRay( fltx4 boxMin, fltx4 boxMax, 
+								   fltx4 origin, fltx4 delta, fltx4 invDelta, // ray parameters
+								   fltx4 vTolerance = LoadZeroSIMD() ///< eg from ReplicateX4(flTolerance)
+								   );
+#else
 bool FASTCALL IsBoxIntersectingRay( const fltx4 &boxMin, const fltx4 &boxMax, 
 								   const fltx4 & origin, const fltx4 & delta, const fltx4 & invDelta, // ray parameters
 								   const fltx4 & vTolerance = Four_Zeros ///< eg from ReplicateX4(flTolerance)
 								   );
+#endif
 
 bool inline FASTCALL IsBoxIntersectingRay( const fltx4& boxMin, const fltx4& boxMax, 
 								   const fltx4& origin, const fltx4& delta, float flTolerance = 0.0f )
@@ -248,8 +279,11 @@ bool inline FASTCALL IsBoxIntersectingRay( const fltx4& boxMin, const fltx4& box
 	return IsBoxIntersectingRay( boxMin, boxMax, origin, delta, ReciprocalSIMD(delta), ReplicateX4(flTolerance) );
 }
 
+
 bool FASTCALL IsBoxIntersectingRay( const fltx4& boxMin, const fltx4& boxMax, 
 								   const Ray_t& ray, float flTolerance = 0.0f );
+
+
 
 //-----------------------------------------------------------------------------
 // 
@@ -260,6 +294,7 @@ bool FASTCALL IsBoxIntersectingRay( const fltx4& boxMin, const fltx4& boxMax,
 //-----------------------------------------------------------------------------
 bool IsPointInBox( const Vector& pt, const Vector& boxMin, const Vector& boxMax );
 
+
 // SIMD version
 FORCEINLINE bool IsPointInBox( const fltx4& pt, const fltx4& boxMin, const fltx4& boxMax )
 {
@@ -268,11 +303,14 @@ FORCEINLINE bool IsPointInBox( const fltx4& pt, const fltx4& boxMin, const fltx4
 	return (IsAllZeros(SetWToZeroSIMD(OrSIMD(greater,less))));
 }
 
+
+
 //-----------------------------------------------------------------------------
 // Purpose: returns true if pt intersects the truncated cone
 // origin - cone tip, axis unit cone axis, cosAngle - cosine of cone axis to surface angle
 //-----------------------------------------------------------------------------
 bool IsPointInCone( const Vector &pt, const Vector &origin, const Vector &axis, float cosAngle, float length );
+
 //-----------------------------------------------------------------------------
 // Intersects a plane with a triangle (using barycentric definition)
 // The return value, in pIntersection, is an array of barycentric coordinates 
@@ -281,6 +319,7 @@ bool IsPointInCone( const Vector &pt, const Vector &origin, const Vector &axis, 
 //-----------------------------------------------------------------------------
 int IntersectTriangleWithPlaneBarycentric( const Vector& org, const Vector& edgeU, const Vector& edgeV, 
 										   const Vector4D& plane, Vector2D* pIntersection );
+
 //-----------------------------------------------------------------------------
 //
 // PointInQuadBarycentric
@@ -308,6 +347,7 @@ void PointInQuadFromBarycentric( const Vector &v1, const Vector &v2, const Vecto
 void TexCoordInQuadFromBarycentric( const Vector2D &v1, const Vector2D &v2, const Vector2D &v3, const Vector2D &v4,
 								    const Vector2D &uv, Vector2D &texCoord );
 
+
 //-----------------------------------------------------------------------------
 // Compute point from barycentric specification
 // Edge u goes from v0 to v1, edge v goes from v0 to v2
@@ -317,11 +357,13 @@ void ComputePointFromBarycentric( const Vector& v0, const Vector& v1, const Vect
 void ComputePointFromBarycentric( const Vector2D& v0, const Vector2D& v1, const Vector2D& v2, 
 								 float u, float v, Vector2D& pt );
 
+
 //-----------------------------------------------------------------------------
 // Swept OBB test
 //-----------------------------------------------------------------------------
 bool IsRayIntersectingOBB( const Ray_t &ray, const Vector& org, const QAngle& angles, 
 						  const Vector& mins, const Vector& maxs );
+
 
 //-----------------------------------------------------------------------------
 // Compute a separating plane between two boxes (expensive!)
@@ -350,7 +392,9 @@ bool IsBoxIntersectingTriangle( const Vector &vecBoxCenter, const Vector &vecBox
 				   		        const Vector &v1, const Vector &v2, const Vector &v3,
 						        const cplane_t &plane, float flTolerance );
 
+
 Vector CalcClosestPointOnTriangle( const Vector &P, const Vector &v0, const Vector &v1, const Vector &v2 );
+
 
 //-----------------------------------------------------------------------------
 // Compute if the OBB intersects the quad plane, and whether the entire
@@ -364,6 +408,7 @@ bool OBBHasFullyContainedIntersectionWithQuad( const Vector &vOBBExtent1_Scaled,
 											  const Vector &vQuadExtent1_Normalized, float fQuadExtent1Length, 
 											  const Vector &vQuadExtent2_Normalized, float fQuadExtent2Length );
 
+
 //-----------------------------------------------------------------------------
 // Compute if the Ray intersects the quad plane, and whether the entire
 // Ray/Quad intersection is contained within the quad itself
@@ -375,4 +420,31 @@ bool RayHasFullyContainedIntersectionWithQuad( const Ray_t &ray,
 											  const Vector &vQuadNormal, float fQuadPlaneDist, const Vector &ptQuadCenter,
 											  const Vector &vQuadExtent1_Normalized, float fQuadExtent1Length, 
 											  const Vector &vQuadExtent2_Normalized, float fQuadExtent2Length );
+
+
+
+//-----------------------------------------------------------------------------
+// INLINES
+//-----------------------------------------------------------------------------
+
+
+#ifdef _X360
+inline bool IsBoxIntersectingBoxExtents( const fltx4 boxCenter1, const fltx4 boxHalfDiagonal1, 
+								 const fltx4 boxCenter2, const fltx4 boxHalfDiagonal2 )
+{
+	fltx4 vecDelta, vecSize;
+
+	vecDelta = SubSIMD(boxCenter1, boxCenter2);
+	vecSize = AddSIMD(boxHalfDiagonal1, boxHalfDiagonal2);
+
+	uint condition;
+	XMVectorInBoundsR(&condition, vecDelta, vecSize);
+	// we want the top three words to be all 1's ; that means in bounds
+
+
+	return XMComparisonAllInBounds( condition );
+}
+#endif
+
+
 #endif // COLLISIONUTILS_H

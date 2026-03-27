@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Basic header for using vgui
 //
@@ -11,6 +11,8 @@
 #ifdef _WIN32
 #pragma once
 #endif
+
+#include "tier0/platform.h"
 
 #define null 0L
 
@@ -33,7 +35,6 @@
 typedef unsigned char  uchar;
 typedef unsigned short ushort;
 typedef unsigned int   uint;
-typedef unsigned long  ulong;
 
 #ifndef _WCHAR_T_DEFINED
 // DAL - wchar_t is a built in define in gcc 3.2 with a size of 4 bytes
@@ -50,28 +51,26 @@ namespace vgui
 {
 // handle to an internal vgui panel
 // this is the only handle to a panel that is valid across dll boundaries
-typedef unsigned int VPANEL;
+typedef uintp VPANEL;
 
 // handles to vgui objects
 // NULL values signify an invalid value
-typedef unsigned long HScheme;
+typedef uint32 HScheme;
 // Both -1 and 0 are used for invalid textures. Be careful.
-typedef unsigned long HTexture;
-typedef unsigned long HCursor;
-typedef unsigned long HPanel;
+typedef uint32 HTexture;
+typedef uint32 HCursor;
+typedef uint32 HPanel;
 const HPanel INVALID_PANEL = 0xffffffff;
-typedef unsigned long HFont;
+typedef uint32 HFont;
 const HFont INVALID_FONT = 0; // the value of an invalid font handle
 }
 
 #include "tier1/strtools.h"
 
-#if defined( OSX ) // || defined( LINUX )
-// Set to 1 to use GetKernedCharWidth() instead of GetCharABCwide(). Alfred
-//  initially started using that code on the Mac because it did better
-//  kerning, but he was a leery about switching win32 over. I enabled this
-//  for Linux, but it causes some strings to look different than Windows. So
-//  I've disabled it for now. mikesart - 12/2012.
+#if 0 // defined( OSX ) // || defined( LINUX )
+// Disabled all platforms. Did a major cleanup of osxfont.cpp, and having this
+//  turned off renders much closer to Windows and Linux and also uses the same
+//  code paths (which is good).
 #define USE_GETKERNEDCHARWIDTH 1
 #else
 #define USE_GETKERNEDCHARWIDTH 0

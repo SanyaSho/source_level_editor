@@ -634,9 +634,7 @@ void CFaceEditMaterialPage::AlignToView( CMapFace *pFace )
 void CFaceEditMaterialPage::CopyTCoordSystem( const CMapFace *pFrom, CMapFace *pTo )
 {
 	Vector		axis[2], vEdge, vEdgePt, vOrigin;
-	Vector		vFromPt, vNextFromPt;
-	Vector		vToPt, vPrevToPt;
-	Vector		vTestTextureNormal, vTextureNormal;
+	Vector		vTextureNormal;
 	VMatrix		mEdgeRotation, mOriginRotation, mTranslation;
 	float		fAngle, fDot;
 	bool		bRotate;

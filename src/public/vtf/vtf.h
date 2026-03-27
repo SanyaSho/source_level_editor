@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -56,14 +56,15 @@ enum CompiledVtfFlags
 	TEXTUREFLAGS_NODEBUGOVERRIDE               = 0x00020000,
 	TEXTUREFLAGS_SINGLECOPY		               = 0x00040000,
 	
-		TEXTUREFLAGS_UNUSED_00080000		   = 0x00080000,
-		TEXTUREFLAGS_UNUSED_00100000		   = 0x00100000,
-		TEXTUREFLAGS_UNUSED_00200000           = 0x00200000,
-		TEXTUREFLAGS_UNUSED_00400000           = 0x00400000,
+	TEXTUREFLAGS_STAGING_MEMORY                = 0x00080000,
+	TEXTUREFLAGS_IMMEDIATE_CLEANUP			   = 0x00100000,
+	TEXTUREFLAGS_IGNORE_PICMIP				   = 0x00200000,
+
+		TEXTUREFLAGS_UNUSED_00400000		   = 0x00400000,
 
 	TEXTUREFLAGS_NODEPTHBUFFER                 = 0x00800000,
 
-		TEXTUREFLAGS_UNUSED_01000000           = 0x01000000,
+		TEXTUREFLAGS_UNUSED_01000000		   = 0x01000000,
 
 	TEXTUREFLAGS_CLAMPU                        = 0x02000000,
 
@@ -76,8 +77,10 @@ enum CompiledVtfFlags
 	// Clamp to border color on all texture coordinates
 	TEXTUREFLAGS_BORDER						   = 0x20000000,
 
-		TEXTUREFLAGS_UNUSED_40000000		   = 0x40000000,
-		TEXTUREFLAGS_UNUSED_80000000		   = 0x80000000,
+	TEXTUREFLAGS_STREAMABLE_COARSE			   = 0x40000000,
+	TEXTUREFLAGS_STREAMABLE_FINE		       = 0x80000000, 
+	TEXTUREFLAGS_STREAMABLE					   = ( TEXTUREFLAGS_STREAMABLE_COARSE | TEXTUREFLAGS_STREAMABLE_FINE )
+
 };
 
 enum VersionedVtfFlags
@@ -159,6 +162,10 @@ enum LookDir_t
 	LOOK_DOWN_NEGZ,
 };
 
+//-----------------------------------------------------------------------------
+// What mipmap (and coarser) is always available when we ship 
+//-----------------------------------------------------------------------------
+#define STREAMING_START_MIPMAP 3
 
 //-----------------------------------------------------------------------------
 // Use this image format if you want to perform tool operations on the texture
@@ -330,9 +337,29 @@ public:
 
 	// Sets threshhold values for alphatest mipmapping
 	virtual void SetAlphaTestThreshholds( float flBase, float flHighFreq ) = 0;
-	
+
+#if defined( _X360 )
+	virtual int UpdateOrCreate( const char *pFilename, const char *pPathID = NULL, bool bForce = false ) = 0;
+	virtual bool UnserializeFromBuffer( CUtlBuffer &buf, bool bBufferIsVolatile, bool bHeaderOnly, bool bPreloadOnly, int nMipSkipCount ) = 0;
+	virtual int FileSize( bool bPreloadOnly, int nMipSkipCount ) const = 0;
+	virtual int MappingWidth() const = 0;
+	virtual int MappingHeight() const = 0;
+	virtual int MappingDepth() const = 0;
+	virtual int MipSkipCount() const = 0;
+	virtual bool IsPreTiled() const = 0;
+	virtual unsigned char *LowResImageSample() = 0;
+	virtual void ReleaseImageMemory() = 0;
+#endif
+
 	// Sets post-processing flags (settings are copied, pointer passed to distinguish between structure versions)
 	virtual void SetPostProcessingSettings( VtfProcessingOptions const *pOptions ) = 0;
+
+	// Like Unserialize, but allows you to additionally specify some flags to forcibly enable. 
+	virtual bool UnserializeEx( CUtlBuffer &buf, bool bHeaderOnly = false, int nForceFlags = 0, int nSkipMipLevels = 0 ) = 0;
+
+	// Data is included in [ finest, coarsest ] mips--other ranges have garbage. This is particularly useful for 
+	// streaming textures.
+	virtual void GetMipmapRange( int* pOutFinest, int* pOutCoarsest ) = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -444,7 +471,7 @@ struct VTFFileHeaderV7_1_t : public VTFFileBaseHeader_t
 	unsigned int	flags;
 	unsigned short	numFrames;
 	unsigned short	startFrame;
-#if !defined( POSIX )
+#if !defined( POSIX ) && !defined( _X360 )
 	VectorAligned	reflectivity;
 #else
 	// must manually align in order to maintain pack(1) expected layout with existing binaries
@@ -468,8 +495,13 @@ struct VTFFileHeaderV7_2_t : public VTFFileHeaderV7_1_t
 };
 
 #define BYTE_POS( byteVal, shft )	uint32( uint32(uint8(byteVal)) << uint8(shft * 8) )
+#if !defined( _X360 )
 #define MK_VTF_RSRC_ID(a, b, c)		uint32( BYTE_POS(a, 0) | BYTE_POS(b, 1) | BYTE_POS(c, 2) )
 #define MK_VTF_RSRCF(d)				BYTE_POS(d, 3)
+#else
+#define MK_VTF_RSRC_ID(a, b, c)		uint32( BYTE_POS(a, 3) | BYTE_POS(b, 2) | BYTE_POS(c, 1) )
+#define MK_VTF_RSRCF(d)				BYTE_POS(d, 0)
+#endif
 
 // Special section for stock resources types
 enum ResourceEntryType
@@ -493,6 +525,7 @@ enum ResourceEntryTypeFlag
 enum HeaderDetails
 {
 	MAX_RSRC_DICTIONARY_ENTRIES = 32,		// Max number of resources in dictionary
+	MAX_X360_RSRC_DICTIONARY_ENTRIES = 4,	// 360 needs this to be slim, otherwise preload size suffers
 };
 
 struct ResourceEntryInfo
@@ -512,7 +545,7 @@ struct VTFFileHeaderV7_3_t : public VTFFileHeaderV7_2_t
 	char			pad4[3];
 	unsigned int	numResources;
 
-#if defined( POSIX )
+#if defined( _X360 ) || defined( POSIX )
 	// must manually align in order to maintain pack(1) expected layout with existing binaries
 	char			pad5[8];
 #endif
@@ -525,6 +558,28 @@ struct VTFFileHeaderV7_3_t : public VTFFileHeaderV7_2_t
 struct VTFFileHeader_t : public VTFFileHeaderV7_3_t
 {
 	DECLARE_BYTESWAP_DATADESC();
+};
+
+#define VTF_X360_MAJOR_VERSION	0x0360
+#define VTF_X360_MINOR_VERSION	8
+struct VTFFileHeaderX360_t : public VTFFileBaseHeader_t 
+{
+	DECLARE_BYTESWAP_DATADESC();
+	unsigned int	flags;
+	unsigned short	width;					// actual width of data in file
+	unsigned short	height;					// actual height of data in file
+	unsigned short	depth;					// actual depth of data in file
+	unsigned short	numFrames;
+	unsigned short	preloadDataSize;		// exact size of preload data (may extend into image!)
+	unsigned char	mipSkipCount;			// used to resconstruct mapping dimensions
+	unsigned char	numResources;
+	Vector			reflectivity;			// Resides on 16 byte boundary!
+	float			bumpScale;
+	ImageFormat		imageFormat;
+	unsigned char	lowResImageSample[4];
+	unsigned int	compressedSize;
+
+	// *** followed by *** ResourceEntryInfo resources[0];
 };
 
 ///////////////////////////
@@ -561,6 +616,16 @@ struct TextureSettingsEx_t
 };
 
 #define VTF_RSRC_TEXTURE_CRC ( MK_VTF_RSRC_ID( 'C','R','C' ) )
+
+#define VTF_RSRC_TEXTURE_STREAM_SETTINGS ( MK_VTF_RSRC_ID( 'S', 'T', 'R' ) )
+struct TextureStreamSettings_t
+{
+	uint8 m_firstAvailableMip;
+	uint8 m_lastAvailableMip;
+
+	uint8 m_reserved0;
+	uint8 m_reserved1;
+};
 
 #pragma pack()
 

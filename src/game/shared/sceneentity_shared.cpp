@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -11,9 +11,7 @@
 #include "tier0/memdbgon.h"
 
 static ConVar scene_print( "scene_print", "0", FCVAR_REPLICATED, "When playing back a scene, print timing and event info to console." );
-#ifdef _DEBUG 
 ConVar scene_clientflex( "scene_clientflex", "1", FCVAR_REPLICATED, "Do client side flex animation." );
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -46,7 +44,7 @@ void Scene_Printf( const char *pFormat, ... )
 	Q_vsnprintf(msg, sizeof(msg), pFormat, marker);
 	va_end(marker);	
 	
-	Msg( "%8.3f[%d] %s:  %s", CURTIME, gpGlobals->tickcount, CBaseEntity::IsServer() ? "sv" : "cl", msg );
+	Msg( "%8.3f[%d] %s:  %s", gpGlobals->curtime, gpGlobals->tickcount, CBaseEntity::IsServer() ? "sv" : "cl", msg );
 }
 
 //-----------------------------------------------------------------------------

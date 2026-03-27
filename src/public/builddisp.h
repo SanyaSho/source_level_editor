@@ -130,11 +130,14 @@ public:
 	
 	CDispNeighbor*			GetEdgeNeighbor( int iEdge )		{ Assert( iEdge >= 0 && iEdge < ARRAYSIZE( m_EdgeNeighbors ) ); return &m_EdgeNeighbors[iEdge]; }
 	const CDispNeighbor*	GetEdgeNeighbor( int iEdge ) const	{ Assert( iEdge >= 0 && iEdge < ARRAYSIZE( m_EdgeNeighbors ) ); return &m_EdgeNeighbors[iEdge]; }
-	
+
+
 protected:
+
 	// Utility
 	bool		LongestInU( const Vector &vecU, const Vector &vecV );
-	
+
+
 	int			m_Index;																// parent face (CMapFace, dface_t, msurface_t) index "handle"
 	
 	int			m_PointCount;															// number of points in the face (should be 4!)
@@ -161,6 +164,7 @@ protected:
 	Vector		m_PointStart;															// starting point used to determine the orientation of the displacement map on the surface
 };
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::SetHandle( int handle )
@@ -168,12 +172,14 @@ inline void CCoreDispSurface::SetHandle( int handle )
 	m_Index = handle;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline int CCoreDispSurface::GetHandle( void )
 {
 	return m_Index;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -185,12 +191,14 @@ inline void CCoreDispSurface::SetPointCount( int count )
 	m_PointCount = count;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline int CCoreDispSurface::GetPointCount( void ) const
 {
 	return m_PointCount;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -201,6 +209,7 @@ inline void CCoreDispSurface::SetPoint( int index, Vector const &pt )
 	VectorCopy( pt, m_Points[index] );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::GetPoint( int index, Vector &pt ) const
@@ -209,6 +218,7 @@ inline void CCoreDispSurface::GetPoint( int index, Vector &pt ) const
 	Assert( index < QUAD_POINT_COUNT );
 	VectorCopy( m_Points[index], pt );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -219,6 +229,7 @@ inline Vector const& CCoreDispSurface::GetPoint( int index ) const
 	return m_Points[index];
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::SetPointNormal( int index, Vector const &normal )
@@ -227,6 +238,7 @@ inline void CCoreDispSurface::SetPointNormal( int index, Vector const &normal )
 	Assert( index < QUAD_POINT_COUNT );
 	VectorCopy( normal, m_Normals[index] );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -237,6 +249,7 @@ inline void CCoreDispSurface::GetPointNormal( int index, Vector& normal )
 	VectorCopy( m_Normals[index], normal );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::SetTexCoord( int index, Vector2D const& texCoord )
@@ -246,6 +259,7 @@ inline void CCoreDispSurface::SetTexCoord( int index, Vector2D const& texCoord )
 	Vector2DCopy( texCoord, m_TexCoords[index] );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::GetTexCoord( int index, Vector2D& texCoord ) const
@@ -254,6 +268,7 @@ inline void CCoreDispSurface::GetTexCoord( int index, Vector2D& texCoord ) const
 	Assert( index < QUAD_POINT_COUNT );
 	Vector2DCopy( m_TexCoords[index], texCoord );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -266,6 +281,7 @@ inline void CCoreDispSurface::SetLuxelCoord( int bumpIndex, int index, Vector2D 
 	Vector2DCopy( luxelCoord, m_LuxelCoords[bumpIndex][index] );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::GetLuxelCoord( int bumpIndex, int index, Vector2D& luxelCoord ) const
@@ -277,6 +293,7 @@ inline void CCoreDispSurface::GetLuxelCoord( int bumpIndex, int index, Vector2D&
 	Vector2DCopy( m_LuxelCoords[bumpIndex][index], luxelCoord );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::SetLuxelCoords( int bumpIndex, Vector2D const luxelCoords[4] )
@@ -286,6 +303,7 @@ inline void CCoreDispSurface::SetLuxelCoords( int bumpIndex, Vector2D const luxe
 	for( int i=0; i < 4; i++ )
 		Vector2DCopy( luxelCoords[i], m_LuxelCoords[bumpIndex][i] );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -297,6 +315,7 @@ inline void CCoreDispSurface::GetLuxelCoords( int bumpIndex, Vector2D luxelCoord
 		Vector2DCopy( m_LuxelCoords[bumpIndex][i], luxelCoords[i] );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::SetAlpha( int index, float alpha )
@@ -305,6 +324,7 @@ inline void CCoreDispSurface::SetAlpha( int index, float alpha )
 	Assert( index < QUAD_POINT_COUNT );
 	m_Alphas[index] = alpha;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -315,12 +335,14 @@ inline float CCoreDispSurface::GetAlpha( int const index ) const
 	return m_Alphas[index];
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::SetFlags( int flag )
 {
 	m_Flags = flag;
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -328,6 +350,7 @@ inline int CCoreDispSurface::GetFlags( void )
 {
 	return m_Flags;
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -335,6 +358,7 @@ inline void CCoreDispSurface::SetContents( int contents )
 {
 	m_Contents = contents;
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -343,12 +367,14 @@ inline int CCoreDispSurface::GetContents( void )
 	return m_Contents;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::SetSAxis( Vector const &axis )
 {
 	VectorCopy( axis, sAxis );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -357,6 +383,7 @@ inline void CCoreDispSurface::GetSAxis( Vector& axis )
 	VectorCopy( sAxis, axis );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::SetTAxis( Vector const &axis )
@@ -364,12 +391,14 @@ inline void CCoreDispSurface::SetTAxis( Vector const &axis )
 	VectorCopy( axis, tAxis );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::GetTAxis( Vector& axis )
 {
 	VectorCopy( tAxis, axis );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -380,12 +409,14 @@ inline void CCoreDispSurface::SetPointStartIndex( int index )
 	m_PointStartIndex = index;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline int CCoreDispSurface::GetPointStartIndex( void )
 {
 	return m_PointStartIndex;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -394,12 +425,14 @@ inline void CCoreDispSurface::SetPointStart( Vector const& pt )
 	VectorCopy( pt, m_PointStart );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispSurface::GetPointStart( Vector& pt )
 {
 	VectorCopy( m_PointStart, pt );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -415,6 +448,7 @@ inline void CCoreDispSurface::GetNormal( Vector& normal )
 	VectorNormalize( normal );
 }
 
+
 //=========================================================================
 //
 // Node Class (for displacement quad-tree)
@@ -422,6 +456,7 @@ inline void CCoreDispSurface::GetNormal( Vector& normal )
 class CCoreDispNode
 {
 public:
+
 	enum { MAX_NEIGHBOR_NODE_COUNT = 4 };
 	enum { MAX_NEIGHBOR_VERT_COUNT = 8 };
 	enum { MAX_SURF_AT_NODE_COUNT = 8 };
@@ -475,7 +510,8 @@ public:
 	friend void GetComponentsFromNodeIndex( int index, int *x, int *y );
 	friend int GetNodeIndexFromComponents( int x, int y );
 
-protected:			
+protected:	
+		
 	Vector		m_BBox[2];											// displacement node bounding box (take into account size of children)
 	float		m_ErrorTerm;										// LOD error term (the "precision" of the representation of the surface at this node's level)
 	int			m_VertIndex;										// the node's vertex index (center vertex of node)
@@ -486,6 +522,7 @@ protected:
 	Vector		m_RayBBoxes[4][2];									// bounding boxes for ray traces
 };
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispNode::SetBoundingBox( Vector const& bMin, Vector const& bMax )
@@ -493,6 +530,7 @@ inline void CCoreDispNode::SetBoundingBox( Vector const& bMin, Vector const& bMa
 	VectorCopy( bMin, m_BBox[0] );
 	VectorCopy( bMax, m_BBox[1] );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -502,12 +540,14 @@ inline void CCoreDispNode::GetBoundingBox( Vector& bMin, Vector& bMax )
 	VectorCopy( m_BBox[1], bMax );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispNode::SetErrorTerm( float errorTerm )
 {
 	m_ErrorTerm = errorTerm;
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -516,12 +556,14 @@ inline float CCoreDispNode::GetErrorTerm( void )
 	return m_ErrorTerm;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispNode::SetCenterVertIndex( int index )
 {
 	m_VertIndex = index;
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -529,6 +571,7 @@ inline int CCoreDispNode::GetCenterVertIndex( void )
 {
 	return m_VertIndex;
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -538,6 +581,7 @@ inline void CCoreDispNode::SetNeighborVertIndex( int dir, int index )
 	Assert( dir < MAX_NEIGHBOR_VERT_COUNT );
 	m_NeighborVertIndices[dir] = index;
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -547,6 +591,7 @@ inline int CCoreDispNode::GetNeighborVertIndex( int dir )
 	Assert( dir < MAX_NEIGHBOR_VERT_COUNT );
 	return m_NeighborVertIndices[dir];
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -558,6 +603,7 @@ inline void CCoreDispNode::SetTriBoundingBox( int index, Vector const& bMin, Vec
 	VectorCopy( bMax, m_SurfBBoxes[index][1] );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispNode::GetTriBoundingBox( int index, Vector& bMin, Vector& bMax )
@@ -568,6 +614,7 @@ inline void CCoreDispNode::GetTriBoundingBox( int index, Vector& bMin, Vector& b
 	VectorCopy( m_SurfBBoxes[index][1], bMax );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispNode::SetTriPlane( int index, Vector const &normal, float dist )
@@ -577,6 +624,7 @@ inline void CCoreDispNode::SetTriPlane( int index, Vector const &normal, float d
 	VectorCopy( normal, m_SurfPlanes[index].normal );
 	m_SurfPlanes[index].dist = dist;
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -588,6 +636,7 @@ inline void CCoreDispNode::GetTriPlane( int index, cplane_t *plane )
 	plane->dist = m_SurfPlanes[index].dist;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispNode::SetRayBoundingBox( int index, Vector const &bMin, Vector const &bMax )
@@ -597,6 +646,7 @@ inline void CCoreDispNode::SetRayBoundingBox( int index, Vector const &bMin, Vec
 	VectorCopy( bMin, m_RayBBoxes[index][0] );
 	VectorCopy( bMax, m_RayBBoxes[index][1] );
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -607,6 +657,7 @@ inline void CCoreDispNode::GetRayBoundingBox( int index, Vector& bMin, Vector& b
 	VectorCopy( m_RayBBoxes[index][0], bMin );
 	VectorCopy( m_RayBBoxes[index][1], bMax );
 }
+
 	
 //=============================================================================
 //
@@ -651,9 +702,10 @@ struct CoreDispTri_t
 	unsigned short	m_uiTags;							// walkable, buildable, etc.
 };
 
-class CCoreDispInfo : public CDispUtilsHelper
+class CCoreDispInfo final : public CDispUtilsHelper
 {
 public:
+
 	//
 	// tree and displacement surface directions
 	//
@@ -665,6 +717,7 @@ public:
 		   SOUTHEAST = 5,
 		   NORTHWEST = 6,
 		   NORTHEAST = 7 };
+
 #if 0
 	//
 	// building parameters
@@ -676,6 +729,7 @@ public:
 		   BUILD_COLLISION    = 0x10,
 		   BUILD_TANGENTSPACE = 0x20 };
 #endif
+
 	//
 	// surface info flags
 	//
@@ -687,19 +741,25 @@ public:
 	enum { MAX_DISP_POWER = MAX_MAP_DISP_POWER };
 	enum { MAX_VERT_COUNT = MAX_DISPVERTS };
 	enum { MAX_NODE_COUNT = 85 };
-	
+
+
 // Convert from a CDispUtilsHelper.
-public:	
+public:
+	
 	static CCoreDispInfo*			FromDispUtils( CDispUtilsHelper *p )	{ return (CCoreDispInfo*)p; }
+
 
 // CDispUtilsHelper implementation.
 public:
+
 	virtual CDispNeighbor*			GetEdgeNeighbor( int index );
 	virtual CDispCornerNeighbors*	GetCornerNeighbors( int index );
 	virtual const CPowerInfo* 		GetPowerInfo() const;
 	virtual CDispUtilsHelper*		GetDispUtilsByIndex( int index );
-	
+
+
 public:
+
 	//=========================================================================
 	//
 	// Creation/Destruction
@@ -843,6 +903,7 @@ public:
 	unsigned long AllowedVerts_GetDWord(int i) const        { return m_AllowedVerts.GetDWord( i ); }
 	void AllowedVerts_SetDWord(int i, unsigned long val)    { m_AllowedVerts.SetDWord( i, val ); }
 
+
 	void Position_Update( int iVert, Vector vecPos );
 
 	//=========================================================================
@@ -851,7 +912,8 @@ public:
 	//
 	friend void SmoothNeighboringDispSurfNormals( CCoreDispInfo **ppCoreDispInfoList, int listSize );
 
-private: // be changed to match the paint normal next pass)
+private:
+																				// be changed to match the paint normal next pass)
 	// LOD/collision node data
 	CCoreDispNode		*m_Nodes;		// LOD quad-tree nodes
 
@@ -933,12 +995,14 @@ private: // be changed to match the paint normal next pass)
 	void CreateTris( void );
 };
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::SetPower( int power )
 {
 	m_Power = power;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -947,12 +1011,14 @@ inline int CCoreDispInfo::GetPower( void ) const
 	return m_Power;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline int CCoreDispInfo::GetPostSpacing( void )
 {
 	return ( ( 1 << m_Power ) + 1 );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -961,6 +1027,7 @@ inline int CCoreDispInfo::GetWidth( void )
 	return ( ( 1 << m_Power ) + 1 );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline int CCoreDispInfo::GetHeight( void )
@@ -968,12 +1035,14 @@ inline int CCoreDispInfo::GetHeight( void )
 	return ( ( 1 << m_Power ) + 1 );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline int CCoreDispInfo::GetSize( void ) const
 {
     return ( ( ( 1 << m_Power ) + 1 ) * ( ( 1 << m_Power ) + 1 ) );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -984,6 +1053,7 @@ inline void CCoreDispInfo::SetVert( int index, Vector const &vert )
 	VectorCopy( vert, m_pVerts[index].m_Vert );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::GetVert( int index, Vector& vert ) const
@@ -992,6 +1062,7 @@ inline void CCoreDispInfo::GetVert( int index, Vector& vert ) const
 	Assert( index < MAX_VERT_COUNT );
 	VectorCopy( m_pVerts[index].m_Vert, vert );
 }
+
 
 inline const Vector& CCoreDispInfo::GetVert( int index ) const
 {
@@ -1032,10 +1103,12 @@ inline void CCoreDispInfo::SetNormal( int index, Vector const &normal )
 	VectorCopy( normal, m_pVerts[index].m_Normal );
 }
 
+	
 inline void CCoreDispInfo::SetNormal( const CVertIndex &index, Vector const &normal )
 {
 	SetNormal( VertIndexToInt( index ), normal );
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1046,6 +1119,7 @@ inline void CCoreDispInfo::GetNormal( int index, Vector& normal ) const
 	VectorCopy( m_pVerts[index].m_Normal, normal );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline const Vector& CCoreDispInfo::GetNormal( int index ) const
@@ -1055,10 +1129,12 @@ inline const Vector& CCoreDispInfo::GetNormal( int index ) const
 	return m_pVerts[index].m_Normal;
 }
 
+
 inline const Vector& CCoreDispInfo::GetNormal( const CVertIndex &index ) const
 {
 	return GetNormal( VertIndexToInt( index ) );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1076,6 +1152,7 @@ inline const Vector &CCoreDispInfo::GetTangentS( int index ) const
 	return m_pVerts[index].m_TangentS;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::GetTangentT( int index, Vector& tangentT ) const
@@ -1085,6 +1162,7 @@ inline void CCoreDispInfo::GetTangentT( int index, Vector& tangentT ) const
 	VectorCopy( m_pVerts[index].m_TangentT, tangentT );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::SetTexCoord( int index, Vector2D const& texCoord )
@@ -1093,6 +1171,7 @@ inline void CCoreDispInfo::SetTexCoord( int index, Vector2D const& texCoord )
 	Assert( index < GetSize() );
 	Vector2DCopy( texCoord, m_pVerts[index].m_TexCoord );
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1102,6 +1181,7 @@ inline void CCoreDispInfo::GetTexCoord( int index, Vector2D& texCoord ) const
 	Assert( index < GetSize() );
 	Vector2DCopy( m_pVerts[index].m_TexCoord, texCoord );
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1114,6 +1194,7 @@ inline void CCoreDispInfo::SetLuxelCoord( int bumpIndex, int index, Vector2D con
 	Vector2DCopy( luxelCoord, m_pVerts[index].m_LuxelCoords[bumpIndex] );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::GetLuxelCoord( int bumpIndex, int index, Vector2D& luxelCoord ) const 
@@ -1125,6 +1206,7 @@ inline void CCoreDispInfo::GetLuxelCoord( int bumpIndex, int index, Vector2D& lu
 	Vector2DCopy( m_pVerts[index].m_LuxelCoords[bumpIndex], luxelCoord );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::SetAlpha( int index, float alpha )
@@ -1133,6 +1215,7 @@ inline void CCoreDispInfo::SetAlpha( int index, float alpha )
 	Assert( index < MAX_VERT_COUNT );
 	m_pVerts[index].m_Alpha = alpha;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1143,12 +1226,14 @@ inline float CCoreDispInfo::GetAlpha( int index )
 	return m_pVerts[index].m_Alpha;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::SetElevation( float elevation )
 {
 	m_Elevation = elevation;
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1156,6 +1241,7 @@ inline float CCoreDispInfo::GetElevation( void )
 {
 	return m_Elevation;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1172,6 +1258,7 @@ inline void CCoreDispInfo::ResetFieldVectors( void )
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::SetFieldVector( int index, Vector const &v )
@@ -1180,6 +1267,7 @@ inline void CCoreDispInfo::SetFieldVector( int index, Vector const &v )
 	Assert( index < MAX_VERT_COUNT );
 	VectorCopy( v, m_pVerts[index].m_FieldVector ); 
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1189,6 +1277,7 @@ inline void CCoreDispInfo::GetFieldVector( int index, Vector& v )
 	Assert( index < MAX_VERT_COUNT );
 	VectorCopy( m_pVerts[index].m_FieldVector, v ); 
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1201,6 +1290,7 @@ inline void CCoreDispInfo::ResetSubdivPositions( void )
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::SetSubdivPosition( int ndx, Vector const &v )
@@ -1210,6 +1300,7 @@ inline void CCoreDispInfo::SetSubdivPosition( int ndx, Vector const &v )
 	m_pVerts[ndx].m_SubdivPos = v;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::GetSubdivPosition( int ndx, Vector& v )
@@ -1218,6 +1309,7 @@ inline void CCoreDispInfo::GetSubdivPosition( int ndx, Vector& v )
 	Assert( ndx < MAX_VERT_COUNT );
 	v = m_pVerts[ndx].m_SubdivPos;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1233,6 +1325,7 @@ inline void CCoreDispInfo::ResetSubdivNormals( void )
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::SetSubdivNormal( int ndx, Vector const &v )
@@ -1242,6 +1335,7 @@ inline void CCoreDispInfo::SetSubdivNormal( int ndx, Vector const &v )
 	m_pVerts[ndx].m_SubdivNormal = v;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::GetSubdivNormal( int ndx, Vector &v )
@@ -1250,6 +1344,7 @@ inline void CCoreDispInfo::GetSubdivNormal( int ndx, Vector &v )
 	Assert( ndx < MAX_VERT_COUNT );
 	v = m_pVerts[ndx].m_SubdivNormal;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1262,6 +1357,7 @@ inline void CCoreDispInfo::ResetFieldDistances( void )
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::SetFieldDistance( int index, float dist )
@@ -1270,6 +1366,7 @@ inline void CCoreDispInfo::SetFieldDistance( int index, float dist )
 	Assert( index < GetSize() );
 	m_pVerts[index].m_FieldDistance = dist;
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1280,6 +1377,7 @@ inline float CCoreDispInfo::GetFieldDistance( int index )
 	return m_pVerts[index].m_FieldDistance;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::SetRenderIndexCount( int count )
@@ -1287,12 +1385,14 @@ inline void CCoreDispInfo::SetRenderIndexCount( int count )
 	m_RenderIndexCount = count;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline int CCoreDispInfo::GetRenderIndexCount( void )
 {
 	return m_RenderIndexCount;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1303,6 +1403,7 @@ inline void CCoreDispInfo::SetRenderIndex( int index, int triIndex )
 	m_RenderIndices[index] = triIndex;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline int CCoreDispInfo::GetRenderIndex( int index )
@@ -1311,6 +1412,7 @@ inline int CCoreDispInfo::GetRenderIndex( int index )
 	Assert( index < ( MAX_VERT_COUNT*2*3) );
 	return m_RenderIndices[index];
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1326,12 +1428,14 @@ inline unsigned short *CCoreDispInfo::GetRenderIndexList( void )
 	return &m_RenderIndices[0];
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline void CCoreDispInfo::SetTouched( bool touched )
 {
 	m_bTouched = touched;
 }
+
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1339,6 +1443,7 @@ inline bool CCoreDispInfo::IsTouched( void )
 {
 	return m_bTouched;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1351,4 +1456,5 @@ inline CCoreDispNode *CCoreDispInfo::GetNode( int index )
 
 bool CalcBarycentricCooefs( Vector const &v0, Vector const &v1, Vector const &v2,
 						    Vector const &pt, float &c0, float &c1, float &c2 );
+
 #endif // BUILDDISP_H

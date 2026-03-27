@@ -11,11 +11,16 @@
 #pragma once
 #endif
 
+
 #include "interface.h"
+#if defined( SLE )
 #include "filesystem.h"
+#endif // SLE
 #include "bspfile.h"
 
+
 #define VRAD_INTERFACE_VERSION "vraddll_1"
+
 
 class CBSPInfo
 {
@@ -46,12 +51,13 @@ public:
 	ddispinfo_t		*g_dispinfo;
 	int				g_numdispinfo;
 
-	char			*texDataStringData;
-	int				nTexDataStringData;
+	char				*texDataStringData;
+	int					nTexDataStringData;
 
-	int				*texDataStringTable;
-	int				nTexDataStringTable;
+	int					*texDataStringTable;
+	int					nTexDataStringTable;
 };
+
 
 // This is the DLL interface to VRAD.
 class IVRadDLL
@@ -59,9 +65,14 @@ class IVRadDLL
 public:
 	// All vrad.exe does is load the VRAD DLL and run this.
 	virtual int			main( int argc, char **argv ) = 0;
-		
+	
+	
 	// Load the BSP file into memory.
+#if defined( SLE )
 	virtual bool		Init( char const *pFilename, IFileSystem *fullFileSystem = NULL, IBaseFileSystem *fileSystem = NULL ) = 0;
+#else
+	virtual bool		Init( char const *pFilename ) = 0;
+#endif // SLE
 
 	// You must call this if you call Init(), to free resources.
 	virtual void		Release() = 0;
@@ -90,5 +101,6 @@ public:
 	// It asynchronously tells DoIncrementalLight to stop as soon as possible and exit.
 	virtual void		Interrupt() = 0;
 };
+
 
 #endif // IVRADDLL_H

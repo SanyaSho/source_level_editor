@@ -50,16 +50,16 @@ enum GDIV_TYPE
 	ivAngleNegativePitch,	// used for instance rotating when just a pitch value is present
 	ivInstanceVariable,		// used for instance variables for easy hammer editing
 	ivInstanceParm,			// used for instance parameter declaration
+	ivScript,
+	ivScriptList,
+	ivBoolean,
 #ifdef SLE //// SLE NEW - more data types
 	ivParticleSystem,		//// SLE NEW - particle system browser
-	ivBoolean,
 	ivNodeID,				// used for instance node id remapping
 	ivCableMat,				// to open material browser to cable/
 	ivSkyMat,				// to open material browser to skybox/ and strip sky side suffixes
 	ivSoundscape,			// to open list of soundscapes
 	ivActbusy,				// to open list of actbusies
-	ivScript,				// backported from 2015, for VScript
-	ivScriptList,			// ditto
 	ivSoundchoices,			// for button sounds which are a choices list but hardcoded
 #endif
 	ivMax					// count of types

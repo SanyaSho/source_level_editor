@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -18,7 +18,7 @@
 #include "tier1/utlvector.h"
 #include "materialsystem/imaterial.h"
 #include "materialsystem/imaterialsystem.h"
-#include "appframework/iappsystem.h"
+#include "appframework/IAppSystem.h"
 #include "datacache/imdlcache.h"
 #include "studio.h"
 
@@ -178,6 +178,16 @@ struct DrawModelResults_t
 	CUtlVectorFixed<IMaterial *,MAX_DRAW_MODEL_INFO_MATERIALS> m_Materials;
 };
 
+struct ColorTexelsInfo_t
+{
+	int						m_nWidth;
+	int						m_nHeight;
+	int						m_nMipmapCount;
+	ImageFormat				m_ImageFormat;
+	int						m_nByteCount;
+	byte*					m_pTexelData;
+};
+
 struct ColorMeshInfo_t
 {
 	// A given color mesh can own a unique Mesh, or it can use a shared Mesh
@@ -186,6 +196,8 @@ struct ColorMeshInfo_t
 	IPooledVBAllocator	*	m_pPooledVBAllocator;
 	int						m_nVertOffsetInBytes;
 	int						m_nNumVerts;
+	ITexture			*   m_pLightmap;
+	ColorTexelsInfo_t   *   m_pLightmapData;
 };
 
 struct DrawModelInfo_t
@@ -364,6 +376,8 @@ public:
 	virtual int GetMaterialListFromBodyAndSkin( MDLHandle_t studio, int nSkin, int nBody, int nCountOutputMaterials, IMaterial** ppOutputMaterials ) = 0;
 	// draw an array of models with the same state
 	virtual void DrawModelArray( const DrawModelInfo_t &drawInfo, int arrayCount, model_array_instance_t *pInstanceData, int instanceStride, int flags = STUDIORENDER_DRAW_ENTIRE_MODEL ) = 0;
+
+	virtual void GetMaterialOverride( IMaterial** ppOutForcedMaterial, OverrideType_t* pOutOverrideType ) = 0;
 };
 
 extern IStudioRender *g_pStudioRender;

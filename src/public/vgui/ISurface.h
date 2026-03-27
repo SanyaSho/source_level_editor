@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -12,14 +12,13 @@
 #pragma once
 #endif
 
-#include <vgui/vgui.h>
+#include <vgui/VGUI.h>
 #include <vgui/IHTML.h> // CreateHTML, PaintHTML 
 #include "tier1/interface.h"
 #include "bitmap/imageformat.h"
 
-#include "appframework/iappsystem.h"
+#include "appframework/IAppSystem.h"
 #include "mathlib/vector2d.h"  // must be before the namespace line
-#include <html/ichromehtmlwrapper.h>
 
 #include "IVguiMatInfo.h"
 
@@ -42,9 +41,9 @@ class Image;
 class Point;
 
 // handles
-typedef unsigned long HCursor;
-typedef unsigned long HTexture;
-typedef unsigned long HFont;
+typedef uint32 HCursor;
+typedef uint32 HTexture;
+typedef uint32 HFont;
 
 
 //SRC only defines
@@ -52,7 +51,7 @@ typedef unsigned long HFont;
 
 struct Vertex_t
 {
-	Vertex_t() {}
+	Vertex_t() = default;
 	Vertex_t( const Vector2D &pos, const Vector2D &coord = Vector2D( 0, 0 ) )
 	{
 		m_Position = pos;
@@ -384,7 +383,7 @@ public:
 
 	virtual const char *GetWebkitHTMLUserAgentString() = 0;
 
-	virtual IHTMLChromeController *AccessChromeHTMLController() = 0;
+	virtual void *Deprecated_AccessChromeHTMLController() = 0;
 
 	// the origin of the viewport on the framebuffer (Which might not be 0,0 for stereo)
 	virtual void SetFullscreenViewport( int x, int y, int w, int h ) = 0; // this uses NULL for the render target.

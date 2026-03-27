@@ -252,7 +252,7 @@ CRender3D::~CRender3D(void)
 // Input  : pObject - Map atom pointer that will be returned from the ObjectsAt
 //			routine if this rendered object is positively hit tested.
 //-----------------------------------------------------------------------------
-void CRender3D::BeginRenderHitTarget(CMapAtom *pObject, unsigned int uHandle)
+void CRender3D::BeginRenderHitTarget(CMapAtom *pObject, uintp uHandle)
 {
 	if ( !IsPicking() )
 	{
@@ -266,8 +266,13 @@ void CRender3D::BeginRenderHitTarget(CMapAtom *pObject, unsigned int uHandle)
 	}
 
 	CMatRenderContextPtr pRenderContext( MaterialSystemInterface() );
-	pRenderContext->PushSelectionName((unsigned int)pObject);
-	pRenderContext->PushSelectionName(uHandle);
+
+	uintp unObject = (uintp)pObject;
+
+	pRenderContext->PushSelectionName((unsigned int)(unObject & 0xFFFFFFFF));
+	pRenderContext->PushSelectionName((unsigned int)(unObject >> 32));
+	pRenderContext->PushSelectionName((unsigned int)(uHandle & 0xFFFFFFFF));
+	pRenderContext->PushSelectionName((unsigned int)(uHandle >> 32));
 }
 
 //-----------------------------------------------------------------------------
@@ -288,13 +293,15 @@ void CRender3D::EndRenderHitTarget(void)
 		CMatRenderContextPtr pRenderContext( MaterialSystemInterface() );
 		pRenderContext->PopSelectionName();
 		pRenderContext->PopSelectionName();
+		pRenderContext->PopSelectionName();
+		pRenderContext->PopSelectionName();
 
 		if ((pRenderContext->SelectionMode(true) != 0) && (m_Pick.nNumHits < MAX_PICK_HITS))
 		{
-			if (m_Pick.uSelectionBuffer[0] == 2)
+			if (m_Pick.uSelectionBuffer[0] == 4)
 			{
-				m_Pick.Hits[m_Pick.nNumHits].pObject = (CMapClass *)m_Pick.uSelectionBuffer[3];
-				m_Pick.Hits[m_Pick.nNumHits].uData = m_Pick.uSelectionBuffer[4];
+				m_Pick.Hits[m_Pick.nNumHits].pObject = (CMapClass *)*(uint64 *)&m_Pick.uSelectionBuffer[3];
+				m_Pick.Hits[m_Pick.nNumHits].uData = *(uint64 *)&m_Pick.uSelectionBuffer[5];
 				m_Pick.Hits[m_Pick.nNumHits].nDepth = m_Pick.uSelectionBuffer[1];
 				m_Pick.Hits[m_Pick.nNumHits].m_LocalMatrix = m_LocalMatrix.Head();
 				m_Pick.nNumHits++;
@@ -1764,7 +1771,6 @@ void CRender3D::EndRenderFrame(void)
 #endif
 						)
 					{
-						Vector lpnt;
 						CLightPreview_Light tmplight;
 						tmplight.m_Light = *pLight;
 						tmplight.m_flDistanceToEye = pLight->m_Position.DistTo(eye_pnt);
@@ -2651,7 +2657,7 @@ void CRender3D::RenderCone( Vector const &vBasePt, Vector const &vTipPt, float f
 	int size = nSlices * sizeof( Vector );
 	size += 16 + sizeof( Vector* );
 	byte *ptr = ( byte* )_alloca( size );
-	long data = ( long )ptr;
+	intp data = ( intp )ptr;
 	
 	data += 16 + sizeof( Vector* ) - 1;
 	data &= -16;

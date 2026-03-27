@@ -26,7 +26,7 @@ static BOOL CountObject(CMapClass *pobj);
 // Input  : *pobj - Object to count.
 // Output : Returns TRUE to continue enumerating.
 //-----------------------------------------------------------------------------
-static BOOL CountObject(CMapClass *pobj, unsigned int dwParam)
+static BOOL CountObject(CMapClass *pobj, DWORD_PTR dwParam)
 {
 	CMapInfoDlg *pdlg = ( CMapInfoDlg * )dwParam;
 
@@ -106,7 +106,7 @@ BOOL CMapInfoDlg::OnInitDialog(void)
 #endif
 #ifndef SLE //// moved to UpdateDialogue because updating the checkbox now needs to regenerate the list
 	// count objects!
-	pWorld->EnumChildren(ENUMMAPCHILDRENPROC(CountObject), (DWORD)this);
+	pWorld->EnumChildren(ENUMMAPCHILDRENPROC(CountObject), (DWORD_PTR)this);
 
 	char szBuf[128];
 	ultoa(m_uSolidCount, szBuf, 10);
@@ -169,7 +169,7 @@ void CMapInfoDlg::UpdateDialogue()
 	m_uOverlaysCount = 0;
 #endif
 	// count objects!
-	pWorld->EnumChildren(ENUMMAPCHILDRENPROC(CountObject), ( DWORD )this);
+	pWorld->EnumChildren(ENUMMAPCHILDRENPROC(CountObject), ( DWORD_PTR )this);
 
 	char szBuf[ 128 ];
 	ultoa(m_uSolidCount, szBuf, 10);

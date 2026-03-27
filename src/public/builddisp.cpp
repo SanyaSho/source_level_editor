@@ -47,12 +47,14 @@ int GetNodeLevel( int index )
     return -1;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 int GetNodeCount( int power )
 {
     return ( ( 1 << ( power << 1 ) ) / 3 );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -61,6 +63,7 @@ int GetNodeParent( int index )
 	// ( index - 1 ) / 4
 	return ( ( index - 1 ) >> 2 );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -84,6 +87,7 @@ int GetNodeMinNodeAtLevel( int level )
     }
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void GetComponentsFromNodeIndex( int index, int *x, int *y )
@@ -100,6 +104,7 @@ void GetComponentsFromNodeIndex( int index, int *x, int *y )
 		index >>= 1;
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -122,6 +127,7 @@ int GetNodeIndexFromComponents( int x, int y )
 
 	return index;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -174,6 +180,7 @@ CCoreDispSurface::CCoreDispSurface()
 	Init();
 }
 
+
 //=============================================================================
 //
 // CDispSurface Functions
@@ -216,6 +223,7 @@ void CCoreDispSurface::Init( void )
 	m_Contents = 0;
 }
 
+
 void CCoreDispSurface::SetNeighborData( const CDispNeighbor edgeNeighbors[4], const CDispCornerNeighbors cornerNeighbors[4] )
 {
 	for ( int i=0; i < 4; i++ )
@@ -227,7 +235,7 @@ void CCoreDispSurface::SetNeighborData( const CDispNeighbor edgeNeighbors[4], co
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCoreDispSurface::GeneratePointStartIndexFromMappingAxes( Vector const &sAxis, Vector const &tAxis )
+void CCoreDispSurface::GeneratePointStartIndexFromMappingAxes( Vector const &sAxis_, Vector const &tAxis_ )
 {
 	if( m_PointStartIndex != -1 )
 		return;
@@ -239,14 +247,14 @@ void CCoreDispSurface::GeneratePointStartIndexFromMappingAxes( Vector const &sAx
     //
     // project all points on to the v-axis first and find the minimum
     //
-	float minValue = DotProduct( tAxis, m_Points[0] );
+	float minValue = DotProduct( tAxis_, m_Points[0] );
     indices[numIndices] = 0;
     numIndices++;
 
 	int i;
     for( i = 1; i < m_PointCount; i++ )
     {
-		float value = DotProduct( tAxis, m_Points[i] );
+		float value = DotProduct( tAxis_, m_Points[i] );
 		float delta = ( value - minValue );
 		delta = FloatMakePositive( delta );
         if( delta < 0.1 )
@@ -265,12 +273,12 @@ void CCoreDispSurface::GeneratePointStartIndexFromMappingAxes( Vector const &sAx
     //
     // break ties with the u-axis projection
     //
-	minValue = DotProduct( sAxis, m_Points[indices[0]] );
+	minValue = DotProduct( sAxis_, m_Points[indices[0]] );
     offsetIndex = indices[0];
     
     for( i = 1; i < numIndices; i++ )
     {
-		float value = DotProduct( sAxis, m_Points[indices[i]] );
+		float value = DotProduct( sAxis_, m_Points[indices[i]] );
         if( ( value < minValue ) )
         {
             minValue = value;
@@ -280,6 +288,7 @@ void CCoreDispSurface::GeneratePointStartIndexFromMappingAxes( Vector const &sAx
 
 	m_PointStartIndex = offsetIndex;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -325,6 +334,7 @@ int CCoreDispSurface::GenerateSurfPointStartIndex( void )
 	return minIndex;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 int CCoreDispSurface::FindSurfPointStartIndex( void )
@@ -351,6 +361,7 @@ int CCoreDispSurface::FindSurfPointStartIndex( void )
 
 	return minIndex;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -510,6 +521,7 @@ bool CCoreDispSurface::CalcLuxelCoords( int nLuxels, bool bAdjust, const Vector 
 // CDispNode Functions
 //
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispNode::Init( void )
@@ -535,6 +547,7 @@ void CCoreDispNode::Init( void )
 		m_SurfPlanes[j].dist = 0.0f;
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -605,6 +618,7 @@ void GetDispNodeTriVerts( CCoreDispInfo *pDisp, int nodeIndex, int triIndex, Vec
 	}
 }
 
+
 //=============================================================================
 //
 // CCoreDispInfo Functions
@@ -638,6 +652,7 @@ CCoreDispInfo::CCoreDispInfo()
 	m_nListIndex = -1;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 CCoreDispInfo::~CCoreDispInfo()
@@ -651,6 +666,7 @@ CCoreDispInfo::~CCoreDispInfo()
 	if (m_pTris)
 		delete [] m_pTris;
 }
+
 
 #if 0
 //-----------------------------------------------------------------------------
@@ -729,6 +745,7 @@ void CCoreDispInfo::InitSurf( int parentIndex, Vector points[4], Vector normals[
 	AdjustSurfPointData();
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -820,6 +837,7 @@ void CCoreDispInfo::InitDispInfo( int power, int minTess, float smoothingAngle,
 	}
 }
 
+
 void CCoreDispInfo::InitDispInfo( int power, int minTess, float smoothingAngle, const CDispVert *pVerts,
 								  const CDispTri *pTris )
 {
@@ -843,6 +861,7 @@ void CCoreDispInfo::InitDispInfo( int power, int minTess, float smoothingAngle, 
 		m_pTris[iTri].m_uiTags = pTris[iTri].m_uiTags;
 	}
 }
+
 
 void CCoreDispInfo::SetDispUtilsHelperInfo( CCoreDispInfo **ppListBase, int listSize )
 {
@@ -871,6 +890,7 @@ CDispUtilsHelper* CCoreDispInfo::GetDispUtilsByIndex( int index )
 	return index == 0xFFFF ? 0 : m_ppListBase[index];
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispInfo::BuildTriTLtoBR( int ndx )
@@ -889,6 +909,7 @@ void CCoreDispInfo::BuildTriTLtoBR( int ndx )
 	m_RenderIndexCount += 3;
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispInfo::BuildTriBLtoTR( int ndx )
@@ -906,6 +927,7 @@ void CCoreDispInfo::BuildTriBLtoTR( int ndx )
 	m_RenderIndices[m_RenderIndexCount+2] = ndx + 1;
 	m_RenderIndexCount += 3;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -942,12 +964,14 @@ void CCoreDispInfo::GenerateCollisionSurface( void )
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispInfo::GenerateCollisionData( void )
 {
     GenerateCollisionSurface();
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -975,6 +999,7 @@ void CCoreDispInfo::CalcTriSurfPlanes( int nodeIndex, int indices[8][3] )
 		m_Nodes[nodeIndex].SetTriPlane( i, normal, dist );
     }
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1031,6 +1056,7 @@ void CCoreDispInfo::CalcRayBoundingBoxes( int nodeIndex, int indices[8][3] )
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispInfo::CalcTriSurfBoundingBoxes( int nodeIndex, int indices[8][3] )
@@ -1072,6 +1098,7 @@ void CCoreDispInfo::CalcTriSurfBoundingBoxes( int nodeIndex, int indices[8][3] )
     }
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispInfo::CalcTriSurfIndices( int nodeIndex, int indices[8][3] )
@@ -1109,6 +1136,7 @@ void CCoreDispInfo::CalcTriSurfIndices( int nodeIndex, int indices[8][3] )
     indices[7][2] = m_Nodes[nodeIndex].GetNeighborVertIndex( 7 );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispInfo::CalcTriSurfInfoAtNode( int nodeIndex )
@@ -1120,6 +1148,7 @@ void CCoreDispInfo::CalcTriSurfInfoAtNode( int nodeIndex )
 	CalcRayBoundingBoxes( nodeIndex, indices );
 	CalcTriSurfPlanes( nodeIndex, indices );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1161,6 +1190,7 @@ void CCoreDispInfo::CalcMinMaxBoundingBoxAtNode( int nodeIndex, Vector& bMin, Ve
             bMax[2] = nodeMax[2];
     }
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1235,6 +1265,7 @@ void CCoreDispInfo::CalcBoundingBoxAtNode( int nodeIndex )
 	m_Nodes[nodeIndex].SetBoundingBox( bMin, bMax );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 float CCoreDispInfo::GetMaxErrorFromChildren( int nodeIndex, int level )
@@ -1262,6 +1293,7 @@ float CCoreDispInfo::GetMaxErrorFromChildren( int nodeIndex, int level )
 
 	return errorTerm;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1331,6 +1363,7 @@ void CCoreDispInfo::CalcErrorTermAtNode( int nodeIndex, int level )
 	m_Nodes[nodeIndex].SetErrorTerm( errorTerm );
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispInfo::CalcNeighborVertIndicesAtNode( int nodeIndex, int level )
@@ -1380,6 +1413,7 @@ void CCoreDispInfo::CalcNeighborVertIndicesAtNode( int nodeIndex, int level )
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispInfo::CalcNodeInfo( int nodeIndex, int terminationLevel )
@@ -1420,6 +1454,7 @@ void CCoreDispInfo::CalcNodeInfo( int nodeIndex, int terminationLevel )
     }	
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 int CCoreDispInfo::GetNodeVertIndexFromParentIndex( int level, int parentVertIndex, int direction )
@@ -1450,6 +1485,7 @@ int CCoreDispInfo::GetNodeVertIndexFromParentIndex( int level, int parentVertInd
     // return the child vertex index
     return ( ( posY * extent ) + posX );
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1483,6 +1519,7 @@ void CCoreDispInfo::CalcVertIndicesAtNodes( int nodeIndex )
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispInfo::GenerateLODTree( void )
@@ -1505,6 +1542,7 @@ void CCoreDispInfo::GenerateLODTree( void )
 		CalcNodeInfo( 0, i );
     }
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1688,6 +1726,7 @@ void CCoreDispInfo::GenerateDispSurfTangentSpaces( void )
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispInfo::CalcNormalFromEdges( int indexRow, int indexCol, bool bIsEdge[4],
@@ -1796,6 +1835,7 @@ void CCoreDispInfo::CalcNormalFromEdges( int indexRow, int indexCol, bool bIsEdg
 	VectorScale( accumNormal, ( 1.0f / ( float )normalCount ), normal );
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: This function determines if edges exist in each of the directions
 //          off of the given point (given in component form).  We know ahead of
@@ -1840,6 +1880,7 @@ bool CCoreDispInfo::DoesEdgeExist( int indexRow, int indexCol, int direction, in
     }
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CCoreDispInfo::GenerateDispSurfNormals( void )
@@ -1870,6 +1911,7 @@ void CCoreDispInfo::GenerateDispSurfNormals( void )
 		}
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1954,6 +1996,7 @@ void CCoreDispInfo::GenerateDispSurf( void )
 	}
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 //bool CCoreDispInfo::Create( int creationFlags )
@@ -2009,13 +2052,14 @@ bool CCoreDispInfo::CreateWithoutLOD( void )
 	{
 		CalcDispSurfCoords( true, bumpID );
 	}
-
 	GenerateCollisionData();
 
 	CreateTris();
 	
     return true;
 }
+
+
 
 //-----------------------------------------------------------------------------
 // Purpose: This function calculates the neighbor node index given the base
@@ -2095,6 +2139,7 @@ int GetNodeNeighborNode( int power, int index, int direction, int level )
     }
 }
 
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 int GetNodeNeighborNodeFromNeighborSurf( int power, int index, int direction, int level, int neighborOrient )
@@ -2163,6 +2208,8 @@ int GetNodeNeighborNodeFromNeighborSurf( int power, int index, int direction, in
         }
     }
 }
+
+
 
 // Turn the optimizer back on
 #pragma optimize( "", on )

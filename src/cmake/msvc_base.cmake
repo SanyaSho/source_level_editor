@@ -83,7 +83,8 @@ string( REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" )
 # C6269: Possibly incorrect order of operations.
 # C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
 # C4577: 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed. Specify /EHsc
-add_definitions( "/wd4458 /wd5208 /wd4459 /wd4457 /wd4456 /wd5105 /wd4463 /wd26495 /wd26451 /wd26819 /wd4838 /wd6255 /wd5205 /wd6308 /wd6385 /wd4189 /wd4706 /wd6269 /wd4530 /wd4577" )
+# C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+add_definitions( "/wd4458 /wd5208 /wd4459 /wd4457 /wd4456 /wd5105 /wd4463 /wd26495 /wd26451 /wd26819 /wd4838 /wd6255 /wd5205 /wd6308 /wd6385 /wd4189 /wd4706 /wd6269 /wd4530 /wd4577 /wd4267" )
 
 # These are expanded so that we can pass each option individually to the targets
 # So they may choose to exclude them

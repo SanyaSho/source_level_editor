@@ -1305,17 +1305,6 @@ FSReturnCode_t FileSystem_GetFileSystemDLLName( char *pFileSystemDLL, int nMaxLe
 	return FS_OK;
 }
 
-#if defined( SLE )
-//-----------------------------------------------------------------------------
-// Sets up the steam.dll install path in our PATH env var (so you can then just
-// LoadLibrary() on filesystem_steam.dll without having to copy steam.dll anywhere special )
-//-----------------------------------------------------------------------------
-FSReturnCode_t FileSystem_SetupSteamInstallPath()
-{
-	// SanyaSho: Need to keep this function for backwards compatibility with appframework.lib
-	return FS_OK;
-}
-#endif // SLE
 
 //-----------------------------------------------------------------------------
 // Sets up the steam environment + gets back the gameinfo.txt path

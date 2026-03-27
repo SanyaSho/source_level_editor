@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -12,9 +12,9 @@
 #pragma once
 #endif
 
-#include <vgui/vgui.h>
+#include <vgui/VGUI.h>
 #include <vgui/IPanel.h>
-#include <vstdlib/ikeyvaluessystem.h>
+#include <vstdlib/IKeyValuesSystem.h>
 
 #include "tier1/interface.h"
 #include "vgui/MouseCode.h"
@@ -70,7 +70,7 @@ inline vgui::ISystem *system()
 	return g_pVGuiSystem;
 }
 
-// #include <vgui/Ivgui.h>
+// #include <vgui/IVGui.h>
 inline vgui::IVGui *ivgui()
 {
 	return g_pVGui;

@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -16,7 +16,9 @@
 #include <math.h>
 #include <stdlib.h>		// For rand(). We really need a library!
 #include <float.h>
+#if !defined( _X360 )
 #include <xmmintrin.h>	// For SSE
+#endif
 #include "basetypes.h"	// For vec_t, put this somewhere else?
 #include "tier0/dbg.h"
 #include "mathlib/math_pfns.h"
@@ -36,7 +38,11 @@ public:
 	vec_t x, y, z, w;
 
 	// Construction/destruction
-	Vector4D(void);
+#ifdef _DEBUG
+	Vector4D();
+#else
+	Vector4D() = default;
+#endif
 	Vector4D(vec_t X, vec_t Y, vec_t Z, vec_t W);
 	Vector4D(const float *pFloat);
 
@@ -74,7 +80,14 @@ public:
 	Vector4D&	operator*=(const Vector4D &v);			
 	Vector4D&	operator*=(float s);
 	Vector4D&	operator/=(const Vector4D &v);		
-	Vector4D&	operator/=(float s);					
+	Vector4D&	operator/=(float s);				
+
+	Vector4D	operator-( void ) const;
+	Vector4D	operator*( float fl ) const;
+	Vector4D	operator/( float fl ) const;
+	Vector4D	operator*( const Vector4D& v ) const;
+	Vector4D	operator+( const Vector4D& v ) const;
+	Vector4D	operator-( const Vector4D& v ) const;
 
 	// negate the Vector4D components
 	void	Negate(); 
@@ -199,13 +212,13 @@ void Vector4DLerp(Vector4D const& src1, Vector4D const& src2, vec_t t, Vector4D&
 // constructors
 //-----------------------------------------------------------------------------
 
+#ifdef _DEBUG
 inline Vector4D::Vector4D(void)									
 { 
-#ifdef _DEBUG
 	// Initialize to NAN to catch errors
 	x = y = z = w = VEC_T_NAN;
-#endif
 }
+#endif
 
 inline Vector4D::Vector4D(vec_t X, vec_t Y, vec_t Z, vec_t W )
 { 
@@ -432,6 +445,52 @@ inline Vector4D& Vector4D::operator/=(Vector4D const& v)
 	return *this;
 }
 
+inline Vector4D Vector4D::operator-(void) const
+{ 
+	return Vector4D(-x,-y,-z,-w);				
+}
+
+inline Vector4D Vector4D::operator+(const Vector4D& v) const	
+{ 
+	Vector4D res;
+	Vector4DAdd( *this, v, res );
+	return res;	
+}
+
+inline Vector4D Vector4D::operator-(const Vector4D& v) const	
+{ 
+	Vector4D res;
+	Vector4DSubtract( *this, v, res );
+	return res;	
+}
+
+
+inline Vector4D Vector4D::operator*(float fl) const	
+{ 
+	Vector4D res;
+	Vector4DMultiply( *this, fl, res );
+	return res;	
+}
+
+inline Vector4D Vector4D::operator*(const Vector4D& v) const	
+{ 
+	Vector4D res;
+	Vector4DMultiply( *this, v, res );
+	return res;	
+}
+
+inline Vector4D Vector4D::operator/(float fl) const	
+{ 
+	Vector4D res;
+	Vector4DDivide( *this, fl, res );
+	return res;	
+}
+
+inline Vector4D operator*( float fl, const Vector4D& v )	
+{ 
+	return v * fl; 
+}
+
 inline void Vector4DAdd( Vector4D const& a, Vector4D const& b, Vector4D& c )
 {
 	Assert( a.IsValid() && b.IsValid() );
@@ -612,23 +671,32 @@ inline void Vector4DAligned::Set( vec_t X, vec_t Y, vec_t Z, vec_t W )
 
 inline void Vector4DAligned::InitZero( void )
 { 
+#if !defined( _X360 )
 	this->AsM128() = _mm_set1_ps( 0.0f );
+#else
+	this->AsM128() = __vspltisw( 0 );
+#endif
 	Assert( IsValid() );
 }
 
 inline void Vector4DMultiplyAligned( Vector4DAligned const& a, Vector4DAligned const& b, Vector4DAligned& c )
 {
 	Assert( a.IsValid() && b.IsValid() );
+#if !defined( _X360 )
 	c.x = a.x * b.x;
 	c.y = a.y * b.y;
 	c.z = a.z * b.z;
 	c.w = a.w * b.w;
+#else
+	c.AsM128() = __vmulfp( a.AsM128(), b.AsM128() );
+#endif
 }
 
 inline void Vector4DWeightMAD( vec_t w, Vector4DAligned const& vInA, Vector4DAligned& vOutA, Vector4DAligned const& vInB, Vector4DAligned& vOutB )
 {
 	Assert( vInA.IsValid() && vInB.IsValid() && IsFinite(w) );
 
+#if !defined( _X360 )
 	vOutA.x += vInA.x * w;
 	vOutA.y += vInA.y * w;
 	vOutA.z += vInA.z * w;
@@ -638,18 +706,37 @@ inline void Vector4DWeightMAD( vec_t w, Vector4DAligned const& vInA, Vector4DAli
 	vOutB.y += vInB.y * w;
 	vOutB.z += vInB.z * w;
 	vOutB.w += vInB.w * w;
+#else
+    __vector4 temp;
+
+    temp = __lvlx( &w, 0 );
+    temp = __vspltw( temp, 0 );
+
+	vOutA.AsM128() = __vmaddfp( vInA.AsM128(), temp, vOutA.AsM128() );
+	vOutB.AsM128() = __vmaddfp( vInB.AsM128(), temp, vOutB.AsM128() );
+#endif
 }
 
 inline void Vector4DWeightMADSSE( vec_t w, Vector4DAligned const& vInA, Vector4DAligned& vOutA, Vector4DAligned const& vInB, Vector4DAligned& vOutB )
 {
 	Assert( vInA.IsValid() && vInB.IsValid() && IsFinite(w) );
 
+#if !defined( _X360 )
 	// Replicate scalar float out to 4 components
     __m128 packed = _mm_set1_ps( w );
 
 	// 4D SSE Vector MAD
 	vOutA.AsM128() = _mm_add_ps( vOutA.AsM128(), _mm_mul_ps( vInA.AsM128(), packed ) );
 	vOutB.AsM128() = _mm_add_ps( vOutB.AsM128(), _mm_mul_ps( vInB.AsM128(), packed ) );
+#else
+    __vector4 temp;
+
+    temp = __lvlx( &w, 0 );
+    temp = __vspltw( temp, 0 );
+
+	vOutA.AsM128() = __vmaddfp( vInA.AsM128(), temp, vOutA.AsM128() );
+	vOutB.AsM128() = __vmaddfp( vInB.AsM128(), temp, vOutB.AsM128() );
+#endif
 }
 
 #endif // VECTOR4D_H

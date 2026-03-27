@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -19,9 +19,10 @@
 #include "tier2/meshutils.h"
 #include "mathlib/mathlib.h"
 
-#if defined( DX_TO_GL_ABSTRACTION )
-// Swap these so that we do color swapping on 10.6.2, which doesn't have EXT_vertex_array_bgra
-#define	OPENGL_SWAP_COLORS
+#if defined( OSX )
+	// Needed to support older versions of MacOS.
+	// No longer needed on Linux as we have BGRA there.
+	#define OPENGL_SWAP_COLORS
 #endif
 
 //-----------------------------------------------------------------------------
@@ -215,6 +216,17 @@ inline void IncrementFloatPointer( float* &pBufferPointer, int vertexSize )
 	pBufferPointer = reinterpret_cast<float*>( reinterpret_cast<unsigned char*>( pBufferPointer ) + vertexSize );
 }
 
+inline int PackRGBToPlatformColor( int r, int g, int b, int a )
+{
+	#if defined( OPENGL_SWAP_COLORS )
+		int col = r | (g << 8) | (b << 16) | (a << 24);	// r, g, b, a in memory
+	#elif defined( CELL_GCM_SWAP_COLORS )
+		int col = ( r << 24 ) | ( g << 16 ) | ( b << 8 ) | a;
+	#else
+		int col = b | (g << 8) | (r << 16) | (a << 24);
+	#endif
+	return col;
+}
 
 //-----------------------------------------------------------------------------
 // Used in lists of indexed primitives.
@@ -572,7 +584,11 @@ public:
 
 	// Add number of verts and current vert since FastVertex routines do not update.
 	void FastAdvanceNVertices( int n );	
-	
+
+#if defined( _X360 )
+	void VertexDX8ToX360( const ModelVertexDX8_t &vertex );
+#endif
+
 	// FIXME: Remove! Backward compat so we can use this from a CMeshBuilder.
 	void AttachBegin( IMesh* pMesh, int nMaxVertexCount, const MeshDesc_t &desc );
 	void AttachEnd();
@@ -1145,7 +1161,6 @@ inline void CVertexBuilder::FastAdvanceNVertices( int n )
 
 
 
-#ifndef COMPILER_MSVC64
 // Implement for 64-bit Windows if needed.
 //-----------------------------------------------------------------------------
 // Fast Vertex! No need to call advance vertex, and no random access allowed
@@ -1155,7 +1170,7 @@ inline void CVertexBuilder::FastVertex( const ModelVertexDX7_t &vertex )
 	Assert( m_CompressionType == VERTEX_COMPRESSION_NONE ); // FIXME: support compressed verts if needed
 	Assert( m_nCurrentVertex < m_nMaxVertexCount );
 
-#if defined( _WIN32 )
+#if defined( _WIN32 ) && !defined( _X360 ) && !defined( _M_X64 )
 	const void *pRead = &vertex;
 	void *pCurrPos = m_pCurrPosition;
 
@@ -1199,7 +1214,7 @@ inline void CVertexBuilder::FastVertex( const ModelVertexDX7_t &vertex )
 						  "emms\n"
 						  :: "r" (pRead), "r" (pCurrPos) : "memory");
 #else
-	Error( "Implement CMeshBuilder::FastVertex(dx7) ");
+	memcpy( m_pCurrPosition, &vertex, m_VertexSize_Position );
 #endif
 
 	IncrementFloatPointer( m_pCurrPosition, m_VertexSize_Position );
@@ -1216,7 +1231,7 @@ inline void CVertexBuilder::FastVertexSSE( const ModelVertexDX7_t &vertex )
 	Assert( m_CompressionType == VERTEX_COMPRESSION_NONE ); // FIXME: support compressed verts if needed
 	Assert( m_nCurrentVertex < m_nMaxVertexCount );
 
-#if defined( _WIN32 )
+#if defined( _WIN32 ) && !defined( _X360 ) && !defined( _M_X64 )
 	const void *pRead = &vertex;
 	void *pCurrPos = m_pCurrPosition;
 	__asm
@@ -1242,7 +1257,7 @@ inline void CVertexBuilder::FastVertexSSE( const ModelVertexDX7_t &vertex )
 	_mm_stream_ps( (float *)(pCurrPos + 16), m2 );
 	_mm_stream_ps( (float *)(pCurrPos + 32), m3 );
 #else
-	Error( "Implement CMeshBuilder::FastVertexSSE(dx7)" );
+	memcpy( m_pCurrPosition, &vertex, m_VertexSize_Position );
 #endif
 
 	IncrementFloatPointer( m_pCurrPosition, m_VertexSize_Position );
@@ -1263,7 +1278,7 @@ inline void CVertexBuilder::Fast4VerticesSSE(
 	Assert( m_CompressionType == VERTEX_COMPRESSION_NONE ); // FIXME: support compressed verts if needed
 	Assert( m_nCurrentVertex < m_nMaxVertexCount-3 );
 
-#if defined( _WIN32 )
+#if defined( _WIN32 ) && !defined( _X360 ) && !defined( _M_X64 )
 	void *pCurrPos = m_pCurrPosition;
 	__asm
 	{
@@ -1306,7 +1321,10 @@ inline void CVertexBuilder::Fast4VerticesSSE(
 
 	}
 #else
-	Error( "Implement CMeshBuilder::Fast4VerticesSSE\n");
+	memcpy( &m_pCurrPosition[0 * m_VertexSize_Position], vtx_a, m_VertexSize_Position );
+	memcpy( &m_pCurrPosition[1 * m_VertexSize_Position], vtx_b, m_VertexSize_Position );
+	memcpy( &m_pCurrPosition[2 * m_VertexSize_Position], vtx_c, m_VertexSize_Position );
+	memcpy( &m_pCurrPosition[3 * m_VertexSize_Position], vtx_d, m_VertexSize_Position );
 #endif
 	IncrementFloatPointer( m_pCurrPosition, 4*m_VertexSize_Position );
 
@@ -1321,7 +1339,7 @@ inline void CVertexBuilder::FastVertex( const ModelVertexDX8_t &vertex )
 	Assert( m_CompressionType == VERTEX_COMPRESSION_NONE ); // FIXME: support compressed verts if needed
 	Assert( m_nCurrentVertex < m_nMaxVertexCount );
 
-#if defined( _WIN32 )
+#if defined( _WIN32 ) && !defined( _X360 ) && !defined( _M_X64 )
 	const void *pRead = &vertex;
 	void *pCurrPos = m_pCurrPosition;
 	__asm
@@ -1372,7 +1390,7 @@ inline void CVertexBuilder::FastVertex( const ModelVertexDX8_t &vertex )
 						  "emms\n"
 						  :: "r" (pRead), "r" (pCurrPos) : "memory");
 #else
-	Error( "Implement CMeshBuilder::FastVertex(dx8)" );
+	memcpy( m_pCurrPosition, &vertex, m_VertexSize_Position );
 #endif
 
 	IncrementFloatPointer( m_pCurrPosition, m_VertexSize_Position );
@@ -1389,7 +1407,7 @@ inline void CVertexBuilder::FastVertexSSE( const ModelVertexDX8_t &vertex )
 	Assert( m_CompressionType == VERTEX_COMPRESSION_NONE ); // FIXME: support compressed verts if needed
 	Assert( m_nCurrentVertex < m_nMaxVertexCount );
 
-#if defined( _WIN32 )
+#if defined( _WIN32 ) && !defined( _X360 ) && !defined( _M_X64 )
 	const void *pRead = &vertex;
 	void *pCurrPos = m_pCurrPosition;
 	__asm
@@ -1421,7 +1439,7 @@ inline void CVertexBuilder::FastVertexSSE( const ModelVertexDX8_t &vertex )
 						  "movntps %%xmm3, 48(%1)\n"						  
 						  :: "r" (pRead), "r" (pCurrPos) : "memory");
 #else
-	Error( "Implement CMeshBuilder::FastVertexSSE((dx8)" );
+	memcpy( m_pCurrPosition, &vertex, m_VertexSize_Position );
 #endif
 
 	IncrementFloatPointer( m_pCurrPosition, m_VertexSize_Position );
@@ -1432,7 +1450,6 @@ inline void CVertexBuilder::FastVertexSSE( const ModelVertexDX8_t &vertex )
 	m_bWrittenUserData = false;
 #endif
 }
-#endif // COMPILER_MSVC64
 
 
 //-----------------------------------------------------------------------------
@@ -1442,6 +1459,81 @@ inline int CVertexBuilder::GetCurrentVertex() const
 {
 	return m_nCurrentVertex;
 }
+
+
+//-----------------------------------------------------------------------------
+// Copies a vertex into the x360 format
+//-----------------------------------------------------------------------------
+#if defined( _X360 )
+inline void CVertexBuilder::VertexDX8ToX360( const ModelVertexDX8_t &vertex )
+{
+	Assert( m_CompressionType == VERTEX_COMPRESSION_NONE ); // FIXME: support compressed verts if needed
+	Assert( m_nCurrentVertex < m_nMaxVertexCount );
+
+	// get the start of the data
+	unsigned char *pDst = (unsigned char*)m_pCurrPosition;
+
+	Assert( m_VertexSize_Position > 0 ); // Assume position is always present
+	Assert( GetVertexElementSize( VERTEX_ELEMENT_POSITION, VERTEX_COMPRESSION_NONE ) == sizeof( vertex.m_vecPosition ) );
+	memcpy( pDst, vertex.m_vecPosition.Base(), sizeof( vertex.m_vecPosition ) );
+	pDst += sizeof( vertex.m_vecPosition );
+
+	if ( m_VertexSize_BoneWeight )
+	{
+		Assert( vertex.m_flBoneWeights[0] >= 0 && vertex.m_flBoneWeights[0] <= 1.0f );
+		Assert( vertex.m_flBoneWeights[1] >= 0 && vertex.m_flBoneWeights[1] <= 1.0f );
+		Assert( GetVertexElementSize( VERTEX_ELEMENT_BONEWEIGHTS2, VERTEX_COMPRESSION_NONE ) == sizeof( vertex.m_flBoneWeights ) );
+		memcpy( pDst, vertex.m_flBoneWeights.Base(), sizeof( vertex.m_flBoneWeights ) );
+		pDst += sizeof( vertex.m_flBoneWeights );
+
+		if ( m_VertexSize_BoneMatrixIndex )
+		{
+			Assert( GetVertexElementSize( VERTEX_ELEMENT_BONEINDEX, VERTEX_COMPRESSION_NONE ) == sizeof( vertex.m_nBoneIndices ) );
+			*(unsigned int*)pDst = vertex.m_nBoneIndices;
+			pDst += sizeof( vertex.m_nBoneIndices );
+		}
+	}
+
+	if ( m_VertexSize_Normal )
+	{
+		Assert( GetVertexElementSize( VERTEX_ELEMENT_NORMAL, VERTEX_COMPRESSION_NONE ) == sizeof( vertex.m_vecNormal ) );
+		memcpy( pDst, vertex.m_vecNormal.Base(), sizeof( vertex.m_vecNormal ) );
+		pDst += sizeof( vertex.m_vecNormal );
+	}
+
+	if ( m_VertexSize_Color )
+	{
+		Assert( GetVertexElementSize( VERTEX_ELEMENT_COLOR, VERTEX_COMPRESSION_NONE ) == sizeof( vertex.m_nColor ) );
+		*(unsigned int*)pDst = vertex.m_nColor;
+		pDst += sizeof( vertex.m_nColor );
+	}
+
+	if ( m_VertexSize_TexCoord[0] )
+	{
+		Assert( GetVertexElementSize( VERTEX_ELEMENT_TEXCOORD2D_0, VERTEX_COMPRESSION_NONE ) == sizeof( vertex.m_vecTexCoord ) );
+		memcpy( pDst, vertex.m_vecTexCoord.Base(), sizeof( vertex.m_vecTexCoord ) );
+		pDst += sizeof( vertex.m_vecTexCoord );
+	}
+
+	if ( m_VertexSize_UserData )
+	{
+		Assert( GetVertexElementSize( VERTEX_ELEMENT_USERDATA4, VERTEX_COMPRESSION_NONE ) == sizeof( vertex.m_vecUserData ) );
+		memcpy( pDst, vertex.m_vecUserData.Base(), sizeof( vertex.m_vecUserData ) );
+		pDst += sizeof( vertex.m_vecUserData );
+	}
+
+	// ensure code is synced with the mesh builder that established the offsets
+	Assert( pDst - (unsigned char*)m_pCurrPosition == m_VertexSize_Position );
+
+	IncrementFloatPointer( m_pCurrPosition, m_VertexSize_Position );
+
+#if ( defined( _DEBUG ) && ( COMPRESSED_NORMALS_TYPE == COMPRESSED_NORMALS_COMBINEDTANGENTS_UBYTE4 ) )
+	m_bWrittenNormal   = false;
+	m_bWrittenUserData = false;
+#endif
+}
+#endif
+
 
 //-----------------------------------------------------------------------------
 // Data retrieval...
@@ -1472,7 +1564,15 @@ inline unsigned int CVertexBuilder::Color() const
 	// Swizzle it so it returns the same format as accepted by Color4ubv - rgba
 	Assert( m_nCurrentVertex < m_nMaxVertexCount );
 	unsigned int color;
-	color = (m_pCurrColor[3] << 24) | (m_pCurrColor[0] << 16) | (m_pCurrColor[1] << 8) | (m_pCurrColor[2]);
+	if ( IsPC() || !IsX360() )
+	{
+		color = (m_pCurrColor[3] << 24) | (m_pCurrColor[0] << 16) | (m_pCurrColor[1] << 8) | (m_pCurrColor[2]);
+	}
+	else
+	{
+		// in memory as argb, back to rgba
+		color = (m_pCurrColor[1] << 24) | (m_pCurrColor[2] << 16) | (m_pCurrColor[3] << 8) | (m_pCurrColor[0]);
+	}
 	return color;
 }
 
@@ -1605,9 +1705,9 @@ inline void	CVertexBuilder::Normal3fv( const float *n )
 	Assert( n );
 	Assert( m_pNormal && m_pCurrNormal );
 	Assert( IsFinite(n[0]) && IsFinite(n[1]) && IsFinite(n[2]) );
-//	Assert( n[0] >= -1.05f && n[0] <= 1.05f );
-//	Assert( n[1] >= -1.05f && n[1] <= 1.05f );
-//	Assert( n[2] >= -1.05f && n[2] <= 1.05f );
+	Assert( n[0] >= -1.05f && n[0] <= 1.05f );
+	Assert( n[1] >= -1.05f && n[1] <= 1.05f );
+	Assert( n[2] >= -1.05f && n[2] <= 1.05f );
 
 	float *pDst = m_pCurrNormal;
 	*pDst++ = *n++;
@@ -2137,6 +2237,11 @@ inline void CVertexBuilder::BoneMatrix( int idx, int matrixIdx )
 	
 #ifndef NEW_SKINNING
 	unsigned char* pBoneMatrix = &m_pBoneMatrixIndex[m_nCurrentVertex * m_VertexSize_BoneMatrixIndex];
+	if ( IsX360() )
+	{
+		// store sequentially as wzyx order, gpu delivers as xyzw
+		idx = 3-idx;
+	}
 	pBoneMatrix[idx] = (unsigned char)matrixIdx;
 #else
 	float* pBoneMatrix = &m_pBoneMatrixIndex[m_nCurrentVertex * m_VertexSize_BoneMatrixIndex];
@@ -2169,8 +2274,8 @@ template <VertexCompressionType_t T> inline void CVertexBuilder::CompressedBoneW
 		// Only 1 or 2 weights (SHORT2N) supported for compressed verts so far
 		Assert( m_NumBoneWeights <= 2 );
 
-		const int WEIGHT0_SHIFT = 0;
-		const int WEIGHT1_SHIFT = 16;
+		const int WEIGHT0_SHIFT = IsX360() ? 16 : 0;
+		const int WEIGHT1_SHIFT = IsX360() ? 0 : 16;
 		unsigned int *weights = (unsigned int *)pDestWeights;
 
 		// We scale our weights so that they sum to 32768, then subtract 1 (which gets added
@@ -2795,12 +2900,13 @@ inline void CIndexBuilder::FastPolygon( int startVert, int triangleCount )
 {
 	unsigned short *pIndex = &m_pIndices[m_nCurrentIndex];
 	startVert += m_nIndexOffset;
-
-	// NOTE: IndexSize is 1 or 0 (0 for alt-tab)
-	// This prevents us from writing into bogus memory
-	Assert( m_nIndexSize == 0 || m_nIndexSize == 1 );
-	triangleCount *= m_nIndexSize;
-
+	if ( !IsX360() )
+	{
+		// NOTE: IndexSize is 1 or 0 (0 for alt-tab)
+		// This prevents us from writing into bogus memory
+		Assert( m_nIndexSize == 0 || m_nIndexSize == 1 );
+		triangleCount *= m_nIndexSize;
+	}
 	for ( int v = 0; v < triangleCount; ++v )
 	{
 		*pIndex++ = startVert;
@@ -2816,10 +2922,13 @@ inline void CIndexBuilder::FastPolygonList( int startVert, int *pVertexCount, in
 	startVert += m_nIndexOffset;
 	int indexOut = 0;
 
-	// NOTE: IndexSize is 1 or 0 (0 for alt-tab)
-	// This prevents us from writing into bogus memory
-	Assert( m_nIndexSize == 0 || m_nIndexSize == 1 );
-	polygonCount *= m_nIndexSize;
+	if ( !IsX360() )
+	{
+		// NOTE: IndexSize is 1 or 0 (0 for alt-tab)
+		// This prevents us from writing into bogus memory
+		Assert( m_nIndexSize == 0 || m_nIndexSize == 1 );
+		polygonCount *= m_nIndexSize;
+	}
 
 	for ( int i = 0; i < polygonCount; i++ )
 	{
@@ -2841,12 +2950,13 @@ inline void CIndexBuilder::FastIndexList( const unsigned short *pIndexList, int 
 {
 	unsigned short *pIndexOut = &m_pIndices[m_nCurrentIndex];
 	startVert += m_nIndexOffset;
-
-	// NOTE: IndexSize is 1 or 0 (0 for alt-tab)
-	// This prevents us from writing into bogus memory
-	Assert( m_nIndexSize == 0 || m_nIndexSize == 1 );
-	indexCount *= m_nIndexSize;
-
+	if ( !IsX360() )
+	{
+		// NOTE: IndexSize is 1 or 0 (0 for alt-tab)
+		// This prevents us from writing into bogus memory
+		Assert( m_nIndexSize == 0 || m_nIndexSize == 1 );
+		indexCount *= m_nIndexSize;
+	}
 	for ( int i = 0; i < indexCount; ++i )
 	{
 		pIndexOut[i] = startVert + pIndexList[i];
@@ -2865,7 +2975,11 @@ inline void CIndexBuilder::FastIndex2( unsigned short nIndex1, unsigned short nI
 	Assert( m_nCurrentIndex < m_nMaxIndexCount - 1 );
 //	Assert( ( (int)( &m_pIndices[m_nCurrentIndex] ) & 0x3 ) == 0 );
 
+#ifndef _X360
 	unsigned int nIndices = ( (unsigned int)nIndex1 + m_nIndexOffset ) | ( ( (unsigned int)nIndex2 + m_nIndexOffset ) << 16 );
+#else
+	unsigned int nIndices = ( (unsigned int)nIndex2 + m_nIndexOffset ) | ( ( (unsigned int)nIndex1 + m_nIndexOffset ) << 16 );
+#endif
 
 	*(int*)( &m_pIndices[m_nCurrentIndex] ) = nIndices;
 	m_nCurrentIndex += m_nIndexSize + m_nIndexSize;
@@ -3105,6 +3219,7 @@ public:
 
 	// Fast Index! No need to call advance index, and no random access allowed
 	void FastIndex( unsigned short index );
+	void FastQuad( int index );
 
 	// Fast Vertex! No need to call advance vertex, and no random access allowed. 
 	// WARNING - these are low level functions that are intended only for use
@@ -3124,7 +3239,11 @@ public:
 
 	// Add number of verts and current vert since FastVertexxx routines do not update.
 	void FastAdvanceNVertices(int n);	
-	
+
+#if defined( _X360 )
+	void VertexDX8ToX360( const ModelVertexDX8_t &vertex );
+#endif
+
 private:
 	// Computes number of verts and indices 
 	void ComputeNumVertsAndIndices( int *pMaxVertices, int *pMaxIndices, 
@@ -3224,6 +3343,8 @@ inline void CMeshBuilder::ComputeNumVertsAndIndices( int *pMaxVertices, int *pMa
 		break;
 
 	default:
+		*pMaxVertices = 0;
+		*pMaxIndices = 0;
 		Assert(0);
 	}
 
@@ -3661,6 +3782,11 @@ FORCEINLINE void CMeshBuilder::FastIndex( unsigned short idx )
 	m_IndexBuilder.FastIndex( idx );
 }
 
+FORCEINLINE void CMeshBuilder::FastQuad( int nIndex )
+{
+	m_IndexBuilder.FastQuad( nIndex );
+}
+
 // NOTE: Use this one to get write combining! Much faster than the other version of FastIndex
 // Fast Index! No need to call advance index, and no random access allowed
 FORCEINLINE void CMeshBuilder::FastIndex2( unsigned short nIndex1, unsigned short nIndex2 )
@@ -3706,6 +3832,16 @@ FORCEINLINE void CMeshBuilder::FastVertexSSE( const ModelVertexDX8_t &vertex )
 {
 	m_VertexBuilder.FastVertexSSE( vertex );
 }
+
+//-----------------------------------------------------------------------------
+// Copies a vertex into the x360 format
+//-----------------------------------------------------------------------------
+#if defined( _X360 )
+inline void CMeshBuilder::VertexDX8ToX360( const ModelVertexDX8_t &vertex )
+{
+	m_VertexBuilder.VertexDX8ToX360( vertex );
+}
+#endif
 
 //-----------------------------------------------------------------------------
 // Vertex field setting methods

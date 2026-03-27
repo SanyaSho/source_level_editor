@@ -1486,7 +1486,7 @@ bool CMapStudioModel::SaveSMD(ExportSMDInfo_s *pInfo, bool onlyCollision)
 								int idx = pStripData->indexOffset + i;
 								bool ccw = ( i & 0x1 ) == 0;
 
-								Vector pos1, pos2, pos3, normal;
+								Vector pos1, pos2, pos3;
 								pos1 = transform.VMul4x3(*vertData->Position(pMeshGroup->MeshIndex(idx)));
 								pos2 = transform.VMul4x3(*vertData->Position(pMeshGroup->MeshIndex(idx + 1 + ccw)));
 								pos3 = transform.VMul4x3(*vertData->Position(pMeshGroup->MeshIndex(idx + 2 - ccw)));

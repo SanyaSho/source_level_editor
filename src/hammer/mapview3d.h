@@ -17,7 +17,7 @@
 
 namespace vgui
 {
-	typedef unsigned long HCursor;
+	typedef uint32 HCursor;
 }
 
 class CMapAtom;
@@ -204,7 +204,7 @@ private:
 #endif
 	//{{AFX_MSG(CMapView3D)
 protected:
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnSize(UINT nType, int cx, int cy);

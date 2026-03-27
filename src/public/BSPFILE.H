@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Defines and structures for the BSP file format.
 //
@@ -24,6 +24,7 @@
 #define MINBSPVERSION 19
 #define BSPVERSION 20
 
+
 // This needs to match the value in gl_lightmap.h
 // Need to dynamically allocate the weights and light values in radial_t to make this variable.
 #define MAX_BRUSH_LIGHTMAP_DIM_WITHOUT_BORDER 32
@@ -34,11 +35,13 @@
 #define MAX_DISP_LIGHTMAP_DIM_WITHOUT_BORDER	125
 #define MAX_DISP_LIGHTMAP_DIM_INCLUDING_BORDER	128
 
+
 // This is the actual max.. (change if you change the brush lightmap dim or disp lightmap dim
 #define MAX_LIGHTMAP_DIM_WITHOUT_BORDER		MAX_DISP_LIGHTMAP_DIM_WITHOUT_BORDER
 #define MAX_LIGHTMAP_DIM_INCLUDING_BORDER	MAX_DISP_LIGHTMAP_DIM_INCLUDING_BORDER
 
 #define	MAX_LIGHTSTYLES	64
+
 
 // upper design bounds
 #define MIN_MAP_DISP_POWER		2	// Minimum and maximum power a displacement can be.
@@ -93,12 +96,13 @@
 #define MAX_MAP_WATEROVERLAYS			16384
 #define MAX_MAP_TEXDATA_STRING_DATA		256000
 #define MAX_MAP_TEXDATA_STRING_TABLE	65536
-#define MAX_MAP_DETAILPROPS				65535
 // this is stuff for trilist/tristrips, etc.
 #define MAX_MAP_PRIMITIVES				32768
 #define MAX_MAP_PRIMVERTS				65536
 #define MAX_MAP_PRIMINDICES				65536
+
 #else
+
 // Xbox 360 - Force static arrays to be very small
 #define	MAX_MAP_MODELS					2
 #define	MAX_MAP_BRUSHES					2
@@ -141,11 +145,13 @@
 #define MAX_MAP_PRIMITIVES				2
 #define MAX_MAP_PRIMVERTS				2
 #define MAX_MAP_PRIMINDICES				2
+
 #endif // BSP_USE_LESS_MEMORY
 
 // key / value pair sizes
 #define	MAX_KEY		32
 #define	MAX_VALUE	1024
+
 
 // ------------------------------------------------------------------------------------------------ //
 // Displacement neighbor rules
@@ -226,6 +232,7 @@ enum
 	CHILDNODE_LOWER_RIGHT=3
 };
 
+
 // Corner indices. Used to index m_CornerNeighbors.
 enum
 {
@@ -235,6 +242,7 @@ enum
 	CORNER_LOWER_RIGHT=3
 };
 
+
 // These edge indices must match the edge indices of the CCoreDispSurface.
 enum
 {
@@ -243,6 +251,7 @@ enum
 	NEIGHBOREDGE_RIGHT=2,
 	NEIGHBOREDGE_BOTTOM=3
 };
+
 
 // These denote where one dispinfo fits on another.
 // Note: tables are generated based on these indices so make sure to update
@@ -254,6 +263,7 @@ typedef enum
 	MIDPOINT_TO_CORNER=2
 } NeighborSpan;
 
+
 // These define relative orientations of displacement neighbors.
 typedef enum
 {
@@ -262,6 +272,7 @@ typedef enum
 	ORIENTATION_CCW_180=2,
 	ORIENTATION_CCW_270=3
 } NeighborOrientation;
+
 
 //=============================================================================
 
@@ -344,6 +355,7 @@ enum
 	LUMP_OVERLAY_FADES				= 60,	// Fade distances for overlays
 };
 
+
 // Lumps that have versions are listed here
 enum
 {
@@ -354,6 +366,7 @@ enum
 	LUMP_LEAF_AMBIENT_LIGHTING_VERSION = 1,
 };
 
+
 #define	HEADER_LUMPS		64
 
 #include "zip_uncompressed.h"
@@ -363,14 +376,17 @@ struct lump_t
 	DECLARE_BYTESWAP_DATADESC();
 	int		fileofs, filelen;
 	int		version;		// default to zero
-	char	fourCC[4];		// default to ( char )0, ( char )0, ( char )0, ( char )0
+	// this field was char fourCC[4] previously, but was unused, favoring the LUMP IDs above instead. It has been
+	// repurposed for compression.  0 implies the lump is not compressed.
+	int		uncompressedSize; // default to zero
 };
+
 
 struct dheader_t
 {
 	DECLARE_BYTESWAP_DATADESC();
 	int			ident;
-	int			version;	
+	int			version;
 	lump_t		lumps[HEADER_LUMPS];
 	int			mapRevision;				// the map's revision (iteration, version) number (added BSPVERSION 6)
 };
@@ -405,7 +421,7 @@ struct dgamelumpheader_t
 // This is expected to be a four-CC code ('lump')
 typedef int GameLumpId_t;
 
-// 360 only: game lump is compressed, filelen reflects original size
+// game lump is compressed, filelen reflects original size
 // use next entry fileofs to determine actual disk lump compressed size
 // compression stage ensures a terminal null dictionary entry
 #define GAMELUMPFLAG_COMPRESSED	0x0001
@@ -500,6 +516,7 @@ struct dtexdata_t
 	int			view_width, view_height;		//
 };
 
+
 //-----------------------------------------------------------------------------
 // Occluders are simply polygons
 //-----------------------------------------------------------------------------
@@ -550,7 +567,8 @@ public:
 
 	bool				IsValid() const				{ return m_iNeighbor != 0xFFFF; }
 	void				SetInvalid()				{ m_iNeighbor = 0xFFFF; }
-	
+
+
 public:
 	unsigned short		m_iNeighbor;		// This indexes into ddispinfos.
 											// 0xFFFF if there is no neighbor here.
@@ -562,6 +580,7 @@ public:
 	unsigned char		m_NeighborSpan;				// Where we fit onto our neighbor.
 };
 
+
 // NOTE: see the section above titled "displacement neighbor rules".
 class CDispNeighbor
 {
@@ -571,23 +590,27 @@ public:
 	
 	// Returns false if there isn't anything touching this edge.
 	bool				IsValid()		{ return m_SubNeighbors[0].IsValid() || m_SubNeighbors[1].IsValid(); }
-	
+
+
 public:
 	// Note: if there is a neighbor that fills the whole side (CORNER_TO_CORNER),
 	//       then it will always be in CDispNeighbor::m_Neighbors[0]
 	CDispSubNeighbor	m_SubNeighbors[2];
 };
 
+
 class CDispCornerNeighbors
 {
 public:
 	DECLARE_BYTESWAP_DATADESC();
 	void			SetInvalid()	{ m_nNeighbors = 0; }
-	
+
+
 public:
 	unsigned short	m_Neighbors[MAX_DISP_CORNER_NEIGHBORS];	// indices of neighbors.
 	unsigned char	m_nNeighbors;
 };
+
 
 class CDispVert
 {
@@ -640,9 +663,10 @@ public:
 	CDispCornerNeighbors	m_CornerNeighbors[4];	// Indexed by CORNER_ defines.
 
 	enum unnamed { ALLOWEDVERTS_SIZE = PAD_NUMBER( MAX_DISPVERTS, 32 ) / 32 };
-	unsigned long	m_AllowedVerts[ALLOWEDVERTS_SIZE];	// This is built based on the layout and sizes of our neighbors
+	uint32	m_AllowedVerts[ALLOWEDVERTS_SIZE];	// This is built based on the layout and sizes of our neighbors
 														// and tells us which vertices are allowed to be active.
 };
+
 
 // note that edge 0 is never used, because negative edge nums are used for
 // counterclockwise use of the edge in a face
@@ -710,7 +734,8 @@ struct dface_t
 	int			m_LightmapTextureSizeInLuxels[2];
 
 	int origFace;				// reference the original face this face was derived from
-	
+
+
 public:
 
 	unsigned short GetNumPrims() const;
@@ -727,6 +752,7 @@ public:
 	
 	unsigned int	smoothingGroups;
 };
+
 
 inline unsigned short dface_t::GetNumPrims() const
 {
@@ -759,11 +785,16 @@ struct dfaceid_t
 	unsigned short	hammerfaceid;
 };
 
+
+
 // NOTE: Only 7-bits stored!!!
 #define LEAF_FLAGS_SKY			0x01		// This leaf has 3D sky in its PVS
 #define LEAF_FLAGS_RADIAL		0x02		// This leaf culled away some portals due to radial vis
 #define LEAF_FLAGS_SKY2D		0x04		// This leaf has 2D sky in its PVS
 
+#if defined( _X360 )
+#pragma bitfield_order( push, lsb_to_msb )
+#endif
 #pragma warning( disable:4201 )	// C4201: nonstandard extension used: nameless struct/union
 struct dleaf_version_0_t
 {
@@ -819,6 +850,9 @@ struct dleaf_t
 //	CompressedLightCube m_AmbientLighting;
 };
 #pragma warning( default:4201 )	// C4201: nonstandard extension used: nameless struct/union
+#if defined( _X360 )
+#pragma bitfield_order( pop )
+#endif
 
 // each leaf contains N samples of the ambient lighting
 // each sample contains a cube of ambient light projected on to each axis
@@ -861,6 +895,7 @@ struct dbrush_t
 #define	ANGLE_UP	-1
 #define	ANGLE_DOWN	-2
 
+
 // the visibility lump consists of a header with a count, then
 // byte offsets for the PVS and PHS of each cluster, then the raw
 // compressed bit vectors
@@ -889,6 +924,7 @@ struct dareaportal_t
 
 	int				planenum;
 };
+
 
 struct darea_t
 {
@@ -925,8 +961,10 @@ enum emittype_t
 	emit_skyambient,	// spherical light source with no falloff (surface must trace to SKY texture)
 };
 
+
 // Flags for dworldlight_t::flags
 #define DWL_FLAGS_INAMBIENTCUBE		0x0001	// This says that the light was put into the per-leaf ambient cubes.
+
 
 struct dworldlight_t
 {
@@ -991,6 +1029,7 @@ public:
 	Vector		vecBasisNormal;
 };
 
+
 inline void doverlay_t::SetFaceCount( unsigned short count )
 {
 	m_nFaceCountAndRenderOrder &= OVERLAY_RENDER_ORDER_MASK;
@@ -1013,6 +1052,7 @@ inline unsigned short doverlay_t::GetRenderOrder() const
 	return (m_nFaceCountAndRenderOrder >> (16 - OVERLAY_RENDER_ORDER_NUM_BITS));
 }
 
+
 struct doverlayfade_t
 {
 	DECLARE_BYTESWAP_DATADESC();
@@ -1020,6 +1060,7 @@ struct doverlayfade_t
 	float flFadeDistMinSq;
 	float flFadeDistMaxSq;
 };
+
 
 #define WATEROVERLAY_BSP_FACE_COUNT				256
 #define WATEROVERLAY_RENDER_ORDER_NUM_BITS		2
@@ -1038,9 +1079,11 @@ struct dwateroverlay_t
 	unsigned short	GetRenderOrder() const;
 
 private:
+
 	unsigned short	m_nFaceCountAndRenderOrder;
 
 public:
+
 	int				aFaces[WATEROVERLAY_BSP_FACE_COUNT];
 	float			flU[2];
 	float			flV[2];
@@ -1077,10 +1120,13 @@ typedef unsigned char	byte;
 typedef unsigned short	word;
 #endif
 
+
 #define	ANGLE_UP	-1
 #define	ANGLE_DOWN	-2
 
+
 //===============
+
 
 struct epair_t
 {

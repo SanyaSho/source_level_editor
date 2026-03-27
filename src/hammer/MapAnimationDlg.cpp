@@ -300,7 +300,7 @@ void CMapAnimationDlg::SelectionChanged( CMapObjectList &selection )
 	ResetTimeSlider();
 	m_bEnabled = false;
 #ifdef SLE //// WIP rework
-	CMapEntity *pSelectedEntity;
+	CMapEntity *pSelectedEntity = NULL;
 	if (pSelection->Count() > 0 && pSelection->Count() < 2)
 	{
 		pSelectedEntity = dynamic_cast<CMapEntity*>(pSelection->Element(0));

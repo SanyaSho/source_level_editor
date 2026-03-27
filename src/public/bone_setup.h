@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -11,14 +11,17 @@
 #pragma once
 #endif
 
+
 #include "studio.h"
 #include "cmodel.h"
 #include "bitvec.h"
+
 
 class CBoneToWorld;
 class CIKContext;
 class CBoneAccessor;
 class IPoseDebugger;
+
 
 // This provides access to networked arrays, so if this code actually changes a value, 
 // the entity is marked as changed.
@@ -28,6 +31,8 @@ public:
 	virtual float GetParameter( int iParam ) = 0;
 	virtual void SetParameter( int iParam, float flValue ) = 0;
 };
+
+
 
 class CBoneBitList : public CBitVec<MAXSTUDIOBONES>
 {
@@ -49,41 +54,6 @@ public:
 	IBoneSetup( const CStudioHdr *pStudioHdr, int boneMask, const float poseParameter[], IPoseDebugger *pPoseDebugger = NULL );
 	~IBoneSetup( void );
 	void InitPose( Vector pos[], Quaternion[] );
-#ifdef DARKINTERVAL
-	// DI NEW
-	void InitPose(
-		const CStudioHdr *pStudioHdr,
-		Vector pos[],
-		Quaternion q[],
-		int boneMask
-	);
-
-	void CalcPose(
-		const CStudioHdr *pStudioHdr,
-		CIKContext *pIKContext,
-		Vector pos[],
-		Quaternion q[],
-		int sequence,
-		float cycle,
-		const float poseParameter[],
-		int boneMask,
-		float flWeight,
-		float flTime
-	);
-
-	void AccumulatePose(
-		const CStudioHdr *pStudioHdr,
-		CIKContext *pIKContext,			//optional
-		Vector pos[],
-		Quaternion q[],
-		int sequence,
-		float cycle,
-		const float poseParameter[],
-		int boneMask,
-		float flWeight,
-		float flTime
-	);
-#endif
 	void AccumulatePose( Vector pos[], Quaternion q[], int sequence, float cycle, float flWeight, float flTime, CIKContext *pIKContext );
 	void CalcAutoplaySequences(	Vector pos[], Quaternion q[], float flRealTime, CIKContext *pIKContext );
 	void CalcBoneAdj( Vector pos[], Quaternion q[], const float controllers[] );
@@ -125,6 +95,7 @@ void SetupSingleBoneMatrix(
 	int iBone, 
 	matrix3x4_t &mBoneLocal );
 
+
 // Purpose: build boneToWorld transforms for a specific bone
 void BuildBoneChain(
 	const CStudioHdr *pStudioHdr,
@@ -142,6 +113,7 @@ void BuildBoneChain(
 	int	iBone,
 	matrix3x4_t *pBoneToWorld,
 	CBoneBitList &boneComputed );
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -230,6 +202,7 @@ private:
 	friend class CIKContext;
 };
 
+
 struct ikchainresult_t
 {
 	// accumulated offset from ideal footplant location
@@ -238,6 +211,8 @@ struct ikchainresult_t
 	Quaternion	q;
 	float		flWeight;
 };
+
+
 
 struct ikcontextikrule_t
 {
@@ -274,18 +249,24 @@ struct ikcontextikrule_t
 	Vector		kneeDir;
 	Vector		kneePos;
 
-	ikcontextikrule_t() {}
+	ikcontextikrule_t()
+	{
+		memset( this, 0, sizeof( *this ) );
+	}
 
 private:
 	// No copy constructors allowed
 	ikcontextikrule_t(const ikcontextikrule_t& vOther);
 };
 
+
 void Studio_AlignIKMatrix( matrix3x4_t &mMat, const Vector &vAlignTo );
 
 bool Studio_SolveIK( int iThigh, int iKnee, int iFoot, Vector &targetFoot, matrix3x4_t* pBoneToWorld );
 
 bool Studio_SolveIK( int iThigh, int iKnee, int iFoot, Vector &targetFoot, Vector &targetKneePos, Vector &targetKneeDir, matrix3x4_t* pBoneToWorld );
+
+
 
 class CIKContext 
 {
@@ -329,6 +310,7 @@ private:
 	int m_boneMask;
 };
 
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -352,6 +334,7 @@ void Studio_BuildMatrices(
 	int boneMask
 	);
 
+
 // Get a bone->bone relative transform
 void Studio_CalcBoneToBoneTransform( const CStudioHdr *pStudioHdr, int inputBoneIndex, int outputBoneIndex, matrix3x4_t &matrixOut );
 
@@ -361,6 +344,7 @@ void Studio_CalcBoneToBoneTransform( const CStudioHdr *pStudioHdr, int inputBone
 // [out] ctlValue = the (0-1) value to set the controller t.
 // return value   = flValue, unwrapped to lie between the controller's start and end.
 float Studio_SetController( const CStudioHdr *pStudioHdr, int iController, float flValue, float &ctlValue );
+
 
 // Given a 0-1 controller value, maps it into the controller's start and end and returns the bone rotation angle.
 // [in] ctlValue  = value in controller space (0-1).

@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -75,6 +75,7 @@
 #define	CONTENTS_LADDER			0x20000000
 #define CONTENTS_HITBOX			0x40000000	// use accurate hitboxes on trace
 
+
 // NOTE: These are stored in a short in the engine now.  Don't use more than 16 bits
 #define	SURF_LIGHT		0x0001		// value will hold the light strength
 #define	SURF_SKY2D		0x0002		// don't draw, indicates we should skylight + draw 2d sky but not draw the 3D skybox
@@ -95,6 +96,8 @@
 #define SURF_NOCHOP		0x4000	// Don't subdivide patches on this surface 
 #define SURF_HITBOX		0x8000	// surface is part of a hitbox
 
+
+
 // -----------------------------------------------------
 // spatial content masks - used for spatial queries (traceline,etc.)
 // -----------------------------------------------------
@@ -106,11 +109,7 @@
 // blocks npc movement
 #define	MASK_NPCSOLID				(CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTERCLIP|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE)
 // water physics in these contents
-#ifdef DARKINTERVAL
-#define	MASK_WATER					(CONTENTS_WATER|CONTENTS_MOVEABLE|CONTENTS_SLIME|CONTENTS_AUX) // DI_QUICKSAND
-#else
 #define	MASK_WATER					(CONTENTS_WATER|CONTENTS_MOVEABLE|CONTENTS_SLIME)
-#endif
 // everything that blocks lighting
 #define	MASK_OPAQUE					(CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_OPAQUE)
 // everything that blocks lighting, but with monsters added.
@@ -146,7 +145,4 @@
 // everything that blocks corpse movement
 // UNDONE: Not used yet / may be deleted
 #define	MASK_DEADSOLID				(CONTENTS_SOLID|CONTENTS_PLAYERCLIP|CONTENTS_WINDOW|CONTENTS_GRATE)
-#ifdef DARKINTERVAL
-#define MASK_RAIN					(CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_WATER|CONTENTS_SLIME)
-#endif
 #endif // BSPFLAGS_H

@@ -149,7 +149,7 @@ public:
 	void SaveSequences();
 	void LoadSequences();
 #ifdef SLE //// SLE NEW - ported from Hammer-2013 - autosave on a separate thread
-	static unsigned DoAutosave( void* );
+	static uintp DoAutosave( void* );
 #endif
 	void Autosave();
 	void LoadLastGoodSave();

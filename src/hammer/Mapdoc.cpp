@@ -1364,7 +1364,7 @@ CMapEntity *CMapDoc::FindEntity(const char *pszClassName, float x, float y, floa
 		FindInfo.Pos[1] = V_rint(y);
 		FindInfo.Pos[2] = V_rint(z);
 
-		m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)FindEntityCallback, (DWORD)&FindInfo, MAPCLASS_TYPE(CMapEntity));
+		m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)FindEntityCallback, (DWORD_PTR)&FindInfo, MAPCLASS_TYPE(CMapEntity));
 
 		if (FindInfo.pEntityFound != NULL)
 		{
@@ -1605,7 +1605,7 @@ void CMapDoc::OnMapShowSelectedBrushNumber()
 
 	// Enumerate the visible brushes..
 	m_pWorld->EnumChildrenRecurseGroupsOnly(
-		(ENUMMAPCHILDRENPROC)&CMapDoc::GetBrushNumberCallback, (DWORD)&info, MAPCLASS_TYPE(CMapSolid));
+		(ENUMMAPCHILDRENPROC)&CMapDoc::GetBrushNumberCallback, (DWORD_PTR)&info, MAPCLASS_TYPE(CMapSolid));
 
 	CString str;
 	if ( info.m_bFound )
@@ -4348,7 +4348,7 @@ void CMapDoc::SelectRegion( BoundBox *pBox, bool bInsideOnly, bool ResetSelectio
 		SelectObject(NULL, scSaveChanges);
 	}
 
-	m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)SelectInBox, (DWORD)&info);
+	m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)SelectInBox, (DWORD_PTR)&info);
 }
 
 //-----------------------------------------------------------------------------
@@ -4365,7 +4365,7 @@ void CMapDoc::SelectLogicalRegion( const Vector2D &vecMins, const Vector2D &vecM
 
 	SelectObject(NULL, scSaveChanges);
 
-	m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)SelectInLogicalBox, (DWORD)&info);
+	m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)SelectInLogicalBox, (DWORD_PTR)&info);
 }
 
 bool CMapDoc::SelectObject(CMapClass *pObj, int cmd)
@@ -4922,7 +4922,7 @@ void CMapDoc::OnEditApplytexture(void)
 				((CMapSolid*)pobj)->SetTexture(GetDefaultTextureName());
 			}
 
-			pobj->EnumChildren((ENUMMAPCHILDRENPROC)ApplyTextureToSolid, (DWORD)GetDefaultTextureName(), MAPCLASS_TYPE(CMapSolid));
+			pobj->EnumChildren((ENUMMAPCHILDRENPROC)ApplyTextureToSolid, (DWORD_PTR)GetDefaultTextureName(), MAPCLASS_TYPE(CMapSolid));
 		}
 #ifdef SLE
 		GetHistory()->MarkUndoPosition(pSelList, "Apply Texture");
@@ -4978,14 +4978,14 @@ void CMapDoc::OnEditToEntity(void)
 		//
 		else if (pObject->IsGroup())
 		{
-			pObject->EnumChildren(ENUMMAPCHILDRENPROC(CopyObjectsToList), DWORD(&newobjects), MAPCLASS_TYPE(CMapSolid));
+			pObject->EnumChildren(ENUMMAPCHILDRENPROC(CopyObjectsToList), DWORD_PTR(&newobjects), MAPCLASS_TYPE(CMapSolid));
 		}
 		//
 		// If the object is an entity, add any solid children of the entity to our list.
 		//
 		else if (pObject->IsMapClass(MAPCLASS_TYPE(CMapEntity)))
 		{
-			pObject->EnumChildren(ENUMMAPCHILDRENPROC(CopyObjectsToList), DWORD(&newobjects), MAPCLASS_TYPE(CMapSolid));
+			pObject->EnumChildren(ENUMMAPCHILDRENPROC(CopyObjectsToList), DWORD_PTR(&newobjects), MAPCLASS_TYPE(CMapSolid));
 
 			//
 			// See if there is more than one solid entity selected. If so, we'll need to prompt the user
@@ -7332,8 +7332,8 @@ void CMapDoc::OnFileExport(void)
 	//
 	int iIndex = strFile.Find('.');
 
-	char *pszFilter;
-	char *pszExtension;
+	char *pszFilter = "";
+	char *pszExtension = "";
 	if (m_pGame->mapformat == mfHalfLife2)
 	{
 		strFile.SetAt(iIndex, '\0');
@@ -7659,7 +7659,7 @@ void CMapDoc::OnFileRunmap(void)
 		else
 			strThreads.Format("");
 
-		sprintf(cmd.szParms, "%s -game $gamedir %s$path\\$file", strThreads, dlg.m_iVis == 2 ? "-fast " : "");
+		sprintf(cmd.szParms, "%s -game $gamedir %s$path\\$file", strThreads.GetString(), dlg.m_iVis == 2 ? "-fast " : "");
 #else
 		sprintf(cmd.szParms, "-game $gamedir %s$path\\$file", dlg.m_iVis == 2 ? "-fast " : "");
 #endif
@@ -7689,7 +7689,7 @@ void CMapDoc::OnFileRunmap(void)
 		else
 			strThreads.Format("");
 
-		sprintf(cmd.szParms, "%s%s -game $gamedir %s%s%s%s%s%s$path\\$file", strThreads, strVrad, 
+		sprintf(cmd.szParms, "%s%s -game $gamedir %s%s%s%s%s%s$path\\$file", strThreads.GetString(), strVrad.GetString(), 
 			dlg.m_iLight == 2 ? "-noextra " : "", 
 			dlg.m_iLight == 3 ? "-final " : "",
 			dlg.m_bVRadTS ? "-textureshadows " : "",
@@ -7976,7 +7976,7 @@ void CMapDoc::UpdateForApplicator(BOOL bApplicator)
 				Solids.AddToTail(pSolid);
 			}
 
-			pObject->EnumChildren((ENUMMAPCHILDRENPROC)AddLeavesToListCallback, (DWORD)&Solids, MAPCLASS_TYPE(CMapSolid));
+			pObject->EnumChildren((ENUMMAPCHILDRENPROC)AddLeavesToListCallback, (DWORD_PTR)&Solids, MAPCLASS_TYPE(CMapSolid));
 		}
 
 		//
@@ -10520,10 +10520,10 @@ void CMapDoc::ReplaceTextures(LPCTSTR pszFind, LPCTSTR pszReplace, BOOL bEveryth
 			SelectObject(NULL, scClear);
 		}
 
-		m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)ReplaceTexFunc, (DWORD)&info, MAPCLASS_TYPE(CMapSolid));
+		m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)ReplaceTexFunc, (DWORD_PTR)&info, MAPCLASS_TYPE(CMapSolid));
 #ifdef SLE //// SLE NEW - select decals and overlays with Mark in texture browser
-		m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)ReplaceTexFuncDecals, (DWORD)&info, MAPCLASS_TYPE(CMapDecal));
-		m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)ReplaceTexFuncOverlays, (DWORD)&info, MAPCLASS_TYPE(CMapOverlay));
+		m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)ReplaceTexFuncDecals, (DWORD_PTR)&info, MAPCLASS_TYPE(CMapDecal));
+		m_pWorld->EnumChildren((ENUMMAPCHILDRENPROC)ReplaceTexFuncOverlays, (DWORD_PTR)&info, MAPCLASS_TYPE(CMapOverlay));
 #endif
 	}
 	else
@@ -10554,7 +10554,7 @@ void CMapDoc::ReplaceTextures(LPCTSTR pszFind, LPCTSTR pszReplace, BOOL bEveryth
 			{
 				ReplaceTexFunc((CMapSolid *)pobj, &info);
 			}
-			pobj->EnumChildren((ENUMMAPCHILDRENPROC)ReplaceTexFunc, (DWORD)&info, MAPCLASS_TYPE(CMapSolid));
+			pobj->EnumChildren((ENUMMAPCHILDRENPROC)ReplaceTexFunc, (DWORD_PTR)&info, MAPCLASS_TYPE(CMapSolid));
 		}
 	}
 
@@ -10682,7 +10682,7 @@ void CMapDoc::BatchReplaceTextures( FileHandle_t fp )
 		}
 
 		// Search and replace all key textures with val.
-		m_pWorld->EnumChildren( ( ENUMMAPCHILDRENPROC )BatchReplaceTextureCallback, ( DWORD )&Info, MAPCLASS_TYPE( CMapSolid ) ); 
+		m_pWorld->EnumChildren( ( ENUMMAPCHILDRENPROC )BatchReplaceTextureCallback, ( DWORD_PTR )&Info, MAPCLASS_TYPE( CMapSolid ) ); 
 next_line:;
 	}
 }
@@ -11980,7 +11980,7 @@ void CMapDoc::OnFileExportDXF(void)
 	info.pWorld = m_pWorld;
 	info.fp = fp;
 
-	m_pWorld->EnumChildren(ENUMMAPCHILDRENPROC(SaveDXF), DWORD(&info), MAPCLASS_TYPE(CMapSolid));
+	m_pWorld->EnumChildren(ENUMMAPCHILDRENPROC(SaveDXF), DWORD_PTR(&info), MAPCLASS_TYPE(CMapSolid));
 
 	EndWaitCursor();
 
@@ -12047,11 +12047,11 @@ void CMapDoc::OnFileExportSMD(bool onlyCollisions)
 	////
 
 	// make the objects save their triangles in order
-	m_pWorld->EnumChildren(ENUMMAPCHILDRENPROC(SaveSMDSolids), DWORD(&info), MAPCLASS_TYPE(CMapSolid));
+	m_pWorld->EnumChildren(ENUMMAPCHILDRENPROC(SaveSMDSolids), DWORD_PTR(&info), MAPCLASS_TYPE(CMapSolid));
 	if(!onlyCollisions)
-		m_pWorld->EnumChildren(ENUMMAPCHILDRENPROC(SaveSMDModels), DWORD(&info), MAPCLASS_TYPE(CMapEntity));
+		m_pWorld->EnumChildren(ENUMMAPCHILDRENPROC(SaveSMDModels), DWORD_PTR(&info), MAPCLASS_TYPE(CMapEntity));
 	else
-		m_pWorld->EnumChildren(ENUMMAPCHILDRENPROC(SaveSMDModelsCollision), DWORD(&info), MAPCLASS_TYPE(CMapEntity));
+		m_pWorld->EnumChildren(ENUMMAPCHILDRENPROC(SaveSMDModelsCollision), DWORD_PTR(&info), MAPCLASS_TYPE(CMapEntity));
 
 	// end the file
 	fprintf(fp, "end");
@@ -13878,7 +13878,7 @@ bool CMapDoc::ShouldObjectBeVisible(CMapClass *pObject, UpdateVisibilityData_t *
 	//
 	// If the object was hidden by visgroups, hide it unless visgroup hiding is disabled.
 	//
-	if (!CVisGroup::IsShowAllActive() && !pObject->IsVisGroupShown())
+	if (!CVisGroup::IsShowAllActive() && pObject && !pObject->IsVisGroupShown())
 	{
 		return false;
 	}
@@ -13976,7 +13976,7 @@ BOOL CMapDoc::UpdateVisibilityCallback(CMapClass *pObject, UpdateVisibilityData_
 		//
 		if ( ( dynamic_cast< CMapEntity * >( pObject ) ) != NULL || ( dynamic_cast< CMapWorld * >( pObject ) ) != NULL )
 		{
-			pObject->EnumChildren((ENUMMAPCHILDRENPROC)UpdateVisibilityCallback, (DWORD)pData);
+			pObject->EnumChildren((ENUMMAPCHILDRENPROC)UpdateVisibilityCallback, (DWORD_PTR)pData);
 		}
 	}
 
@@ -14028,7 +14028,7 @@ void CMapDoc::UpdateVisibility(CMapClass *pObject)
 	UpdateVisibilityCallback(pObject, &data);
 	if (pObject->IsGroup())
 	{
-		pObject->EnumChildrenRecurseGroupsOnly((ENUMMAPCHILDRENPROC)UpdateVisibilityCallback, (DWORD)&data);
+		pObject->EnumChildrenRecurseGroupsOnly((ENUMMAPCHILDRENPROC)UpdateVisibilityCallback, (DWORD_PTR)&data);
 	}
 }
 
@@ -14044,7 +14044,7 @@ void CMapDoc::UpdateVisibilityAll(void)
 	// Two stage recursion: first we recurse groups only, then from the callback we recurse
 	// solid children of entities.
 	//
-	m_pWorld->EnumChildrenRecurseGroupsOnly((ENUMMAPCHILDRENPROC)UpdateVisibilityCallback, (DWORD)&data);
+	m_pWorld->EnumChildrenRecurseGroupsOnly((ENUMMAPCHILDRENPROC)UpdateVisibilityCallback, (DWORD_PTR)&data);
 	m_pSelection->RemoveInvisibles();
 
 	CMainFrame *pwndMain = GetMainWnd();
@@ -14610,7 +14610,7 @@ void CMapDoc::InternalEnableLightPreview( bool bCustomFilename )
 	if( m_pBSPLighting && !m_pBSPLighting->LoadBSPL( finalPath ) )
 	{
 		char str[256];
-		Q_snprintf( str, sizeof(str), "Can't load lighting from '%s'.", finalPath );
+		Q_snprintf( str, sizeof(str), "Can't load lighting from '%s'.", finalPath.GetString() );
 		AfxMessageBox( str );
 	}
 #ifdef SLE
@@ -15637,7 +15637,7 @@ void CMapDoc::OnInstancesCollapseSelection()
 //--------------------------------------------------------------------------------------------------
 //// SLE NEW - backports for matsys_controls
 //--------------------------------------------------------------------------------------------------
-static BOOL CountUsedModels(CMapClass *pobj, unsigned int dwParam)
+static BOOL CountUsedModels(CMapClass *pobj, DWORD_PTR dwParam)
 {
 	CUtlVector<AssetUsageInfo_t> *pUsedModels = (CUtlVector<AssetUsageInfo_t> *)dwParam;
 	if (pobj->IsMapClass(MAPCLASS_TYPE(CMapEntity)))
@@ -15653,7 +15653,7 @@ static BOOL CountUsedModels(CMapClass *pobj, unsigned int dwParam)
 				{
 					CUtlString modelName;
 					modelName.Set(name);
-					Q_FixSlashes(modelName.Get());
+					modelName.FixSlashes();
 
 					for (int i = 0; i < pUsedModels->Count(); i++)
 					{
@@ -15681,7 +15681,7 @@ static BOOL CountUsedModels(CMapClass *pobj, unsigned int dwParam)
 void CMapDoc::GetUsedModels(CUtlVector<AssetUsageInfo_t> &usedModels)
 {
 	if (!GetActiveMapDoc() || !GetActiveWorld() || !m_pWorld) return;
-	m_pWorld->EnumChildren/*EnumChildrenAndInstances*/((ENUMMAPCHILDRENPROC)CountUsedModels, (unsigned int)&usedModels);
+	m_pWorld->EnumChildren/*EnumChildrenAndInstances*/((ENUMMAPCHILDRENPROC)CountUsedModels, (DWORD_PTR)&usedModels);
 }
 
 //-----------------------------------------------------------------------------

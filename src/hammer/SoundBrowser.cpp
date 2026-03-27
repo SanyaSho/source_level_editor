@@ -116,7 +116,7 @@ BOOL CSoundBrowser::OnInitDialog()
 	{
 		m_SoundList.SetCurSel( nIndex );
 		m_nSelectedSoundIndex = nIndex;
-		int nSoundIndex = m_SoundList.GetItemData(nIndex);
+		intp nSoundIndex = m_SoundList.GetItemData(nIndex);
 		m_SoundFile = g_Sounds.SoundFile( GetSoundType(), nSoundIndex ); 
 		m_SoundSource = g_Sounds.SoundSourceFile( GetSoundType(), nSoundIndex ); 
 		UpdateData( FALSE );
@@ -202,7 +202,7 @@ void CSoundBrowser::PopulateSoundList()
 			CString str;
 			str.Format( _T(pSoundName) );
 			int nIndex = m_SoundList.AddString( str );
-			m_SoundList.SetItemDataPtr( nIndex, (PVOID)i );
+			m_SoundList.SetItemDataPtr( nIndex, (PVOID)(intp)i );
 		}
 	}
 
@@ -268,7 +268,7 @@ void CSoundBrowser::OnFilterChanged( const char *pFilter )
 // Purpose: Timer used to control updates when the filter terms change.
 // Input  : nIDEvent - 
 //-----------------------------------------------------------------------------
-void CSoundBrowser::OnTimer(UINT nIDEvent) 
+void CSoundBrowser::OnTimer(UINT_PTR nIDEvent) 
 {
 	if (!m_bFilterChanged)
 		return;
@@ -384,9 +384,9 @@ void CSoundBrowser::OnRefreshSounds()
 	SetWindowText( oldTitle );
 }
 
-int CSoundBrowser::DoModal() 
+INT_PTR CSoundBrowser::DoModal() 
 {	
-	int nRet = CDialog::DoModal();
+	INT_PTR nRet = CDialog::DoModal();
 	Shutdown();
 	return nRet;
 }

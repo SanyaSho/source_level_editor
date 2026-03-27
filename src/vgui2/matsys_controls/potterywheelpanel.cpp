@@ -816,7 +816,6 @@ void CPotteryWheelPanel::ComputePanelPosition( const Vector &vecPosition, Vector
 //-----------------------------------------------------------------------------
 void CPotteryWheelPanel::DrawGrid()
 {
-	matrix3x4_t transform;
 	CMatRenderContextPtr pRenderContext( MaterialSystem() );
 	pRenderContext->MatrixMode( MATERIAL_MODEL );
 	pRenderContext->LoadIdentity( );
@@ -899,6 +898,7 @@ void CPotteryWheelPanel::Paint()
 
 	int w, h;
 	GetSize( w, h );
+
 	vgui::MatSystemSurface()->Begin3DPaint( 0, 0, w, h, m_bRenderToTexture );
 
 	if ( m_pCurrentManip )

@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -43,7 +43,7 @@ class VMatrix
 {
 public:
 
-	VMatrix();
+	VMatrix() = default;
 	VMatrix(
 		vec_t m00, vec_t m01, vec_t m02, vec_t m03,
 		vec_t m10, vec_t m11, vec_t m12, vec_t m13,
@@ -107,7 +107,6 @@ public:
 	void		PreTranslate(const Vector &vTrans);
 	void		PostTranslate(const Vector &vTrans);
 
-	matrix3x4_t& As3x4();
 	const matrix3x4_t& As3x4() const;
 	void		CopyFrom3x4( const matrix3x4_t &m3x4 );
 	void		Set3x4( matrix3x4_t& matrix3x4 ) const;
@@ -422,10 +421,6 @@ void MatrixInverseTranspose( const VMatrix& src, VMatrix& dst );
 //-----------------------------------------------------------------------------
 // VMatrix inlines.
 //-----------------------------------------------------------------------------
-inline VMatrix::VMatrix()
-{
-}
-
 inline VMatrix::VMatrix(
 	vec_t m00, vec_t m01, vec_t m02, vec_t m03,
 	vec_t m10, vec_t m11, vec_t m12, vec_t m13,
@@ -628,11 +623,6 @@ inline void VMatrix::PostTranslate(const Vector &vTrans)
 inline const matrix3x4_t& VMatrix::As3x4() const
 {
 	return *((const matrix3x4_t*)this);
-}
-
-inline matrix3x4_t& VMatrix::As3x4()
-{
-	return *((matrix3x4_t*)this);
 }
 
 inline void VMatrix::CopyFrom3x4( const matrix3x4_t &m3x4 )

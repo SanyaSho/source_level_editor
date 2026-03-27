@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose:  
 //
@@ -204,6 +204,7 @@ DBG_INTERFACE void   _SpewInfo( SpewType_t type, const tchar* pFile, int line );
 DBG_INTERFACE SpewRetval_t   _SpewMessage( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
 DBG_INTERFACE SpewRetval_t   _DSpewMessage( const tchar *pGroupName, int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 3, 4 );
 DBG_INTERFACE SpewRetval_t   ColorSpewMessage( SpewType_t type, const Color *pColor, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 3, 4 );
+DBG_INTERFACE SpewRetval_t   ColorSpewMessage2( SpewType_t type, const Color &color, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 3, 4 );
 DBG_INTERFACE void _ExitOnFatalAssert( const tchar* pFile, int line );
 DBG_INTERFACE bool ShouldUseNewAssertDialog();
 
@@ -220,6 +221,9 @@ DBG_INTERFACE void SetAllAssertsDisabled( bool bAssertsEnabled );
 typedef void (*AssertFailedNotifyFunc_t)( const char *pchFile, int nLine, const char *pchMessage );
 DBG_INTERFACE void SetAssertFailedNotifyFunc( AssertFailedNotifyFunc_t func );
 DBG_INTERFACE void CallAssertFailedNotifyFunc( const char *pchFile, int nLine, const char *pchMessage );
+
+/* True if -hushasserts was passed on command line. */
+DBG_INTERFACE bool HushAsserts();
 
 #if defined( USE_SDL )
 DBG_INTERFACE void SetAssertDialogParent( struct SDL_Window *window );
@@ -247,10 +251,10 @@ DBG_INTERFACE struct SDL_Window * GetAssertDialogParent();
 			if (!(_exp)) 													\
 			{ 																\
 				_SpewInfo( SPEW_ASSERT, __TFILE__, __LINE__ );				\
-				SpewRetval_t ret = _SpewMessage("%s", static_cast<const char*>( _msg ));	\
+				SpewRetval_t retAssert = _SpewMessage("%s", static_cast<const char*>( _msg ));	\
 				CallAssertFailedNotifyFunc( __TFILE__, __LINE__, _msg );					\
 				_executeExp; 												\
-				if ( ret == SPEW_DEBUGGER)									\
+				if ( retAssert == SPEW_DEBUGGER)									\
 				{															\
 					if ( !ShouldUseNewAssertDialog() || DoNewAssertDialog( __TFILE__, __LINE__, _msg ) ) \
 					{														\
@@ -391,18 +395,36 @@ DBG_INTERFACE struct SDL_Window * GetAssertDialogParent();
 #define  AssertAlways( _exp )           							_AssertMsg( _exp, _T("Assertion Failed: ") _T(#_exp), ((void)0), false )
 #define  AssertMsgAlways( _exp, _msg )  							_AssertMsg( _exp, _msg, ((void)0), false )
 
+// Stringify a number
+#define V_STRINGIFY_INTERNAL(x) #x
+// Extra level of indirection needed when passing in a macro to avoid getting the macro name instead of value
+#define V_STRINGIFY(x) V_STRINGIFY_INTERNAL(x)
 
-#if !defined( _RETAIL )
+// Macros to help decorate warnings or errors with the location in code
+#define FILE_LINE_FUNCTION_STRING __FILE__ "(" V_STRINGIFY(__LINE__) "):" __FUNCTION__ ":"
+#define FILE_LINE_STRING __FILE__ "(" V_STRINGIFY(__LINE__) "):"
+#define FUNCTION_LINE_STRING __FUNCTION__ "(" V_STRINGIFY(__LINE__) "): "
+
+// Handy define for inserting clickable messages into the build output.
+// Use like this:
+// #pragma MESSAGE("Some message")
+#define MESSAGE(msg) message(__FILE__ "(" V_STRINGIFY(__LINE__) "): " msg)
+
+
+#if !defined( _X360 ) || !defined( _RETAIL )
 
 /* These are always compiled in */
 DBG_INTERFACE void Msg( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
 DBG_INTERFACE void DMsg( const tchar *pGroupName, int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 3, 4 );
+DBG_INTERFACE void MsgV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist );
 
 DBG_INTERFACE void Warning( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
 DBG_INTERFACE void DWarning( const tchar *pGroupName, int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 3, 4 );
+DBG_INTERFACE void WarningV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist );
 
 DBG_INTERFACE void Log( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
 DBG_INTERFACE void DLog( const tchar *pGroupName, int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 3, 4 );
+DBG_INTERFACE void LogV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist );
 
 #ifdef Error
 // p4.cpp does a #define Error Warning and in that case the Error prototype needs to
@@ -410,17 +432,23 @@ DBG_INTERFACE void DLog( const tchar *pGroupName, int level, PRINTF_FORMAT_STRIN
 DBG_INTERFACE void Error( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
 #else
 DBG_INTERFACE void NORETURN Error( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
+DBG_INTERFACE void NORETURN ErrorV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist );
+
 #endif
 
 #else
 
 inline void Msg( ... ) {}
 inline void DMsg( ... ) {}
+inline void MsgV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist ) {}
 inline void Warning( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) {}
+inline void WarningV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist ) {}
 inline void DWarning( ... ) {}
 inline void Log( ... ) {}
 inline void DLog( ... ) {}
+inline void LogV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist ) {}
 inline void Error( ... ) {}
+inline void ErrorV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist ) {}
 
 #endif
 
@@ -437,7 +465,7 @@ inline void Error( ... ) {}
 		Error msg;			\
 	}
 
-#if !defined( _RETAIL )
+#if !defined( _X360 ) || !defined( _RETAIL )
 
 /* A couple of super-common dynamic spew messages, here for convenience */
 /* These looked at the "developer" group */
@@ -530,34 +558,17 @@ public:
 #define SCOPE_MSG( msg )
 #endif
 
-
 //-----------------------------------------------------------------------------
-// Macro to assist in asserting constant invariants during compilation
+// Utilities to suppress warnings or other annotations
 
-// This implementation of compile time assert has zero cost (so it can safely be
-// included in release builds) and can be used at file scope or function scope.
-// We're using an ancient version of GCC that can't quite handle some
-// of our complicated templates properly.  Use some preprocessor trickery
-// to workaround this
-#ifdef __GNUC__
-	#define COMPILE_TIME_ASSERT( pred ) typedef int UNIQUE_ID[ (pred) ? 1 : -1 ]
-#else
-	#if _MSC_VER >= 1600
-	// If available use static_assert instead of weird language tricks. This
-	// leads to much more readable messages when compile time assert constraints
-	// are violated.
-	#define COMPILE_TIME_ASSERT( pred ) static_assert( pred, "Compile time assert constraint is not true: " #pred )
-	#else
-	// Due to gcc bugs this can in rare cases (some template functions) cause redeclaration
-	// errors when used multiple times in one scope. Fix by adding extra scoping.
-	#define COMPILE_TIME_ASSERT( pred ) typedef char compile_time_assert_type[(pred) ? 1 : -1];
-	#endif
-#endif
-// ASSERT_INVARIANT used to be needed in order to allow COMPILE_TIME_ASSERTs at global
-// scope. However the new COMPILE_TIME_ASSERT macro supports that by default.
-#define ASSERT_INVARIANT( pred )	COMPILE_TIME_ASSERT( pred )
+// Note a variable is possibly unused to avoid analyzer warnings
+template< typename T > static FORCEINLINE void NoteUnused( const T& foo ) { return; }
 
-
+// NOTE: On GCC / Clang, assert_cast can sometimes fire even if the type is correct. We should just workaround these.
+// The situation where this would occur is 
+// 1. You create an object of a low level type in a DLL, and it really gets created there.
+// 2. You pass it across a DLL boundary
+// 3. You use assert_cast to verify it in the second DLL boundary (where it also could've been created).
 #ifdef _DEBUG
 template<typename DEST_POINTER_TYPE, typename SOURCE_POINTER_TYPE>
 inline DEST_POINTER_TYPE assert_cast(SOURCE_POINTER_TYPE* pSource)
@@ -588,6 +599,7 @@ FORCEINLINE void AssertValidReadWritePtr( const void* ptr, int count = 1 )	{ _As
 #else
 
 FORCEINLINE void AssertValidReadPtr( const void* ptr, int count = 1 )			 { }
+FORCEINLINE void AssertValidReadPtr( const void* ptr, size_t count )			 { }
 FORCEINLINE void AssertValidWritePtr( const void* ptr, int count = 1 )		     { }
 FORCEINLINE void AssertValidReadWritePtr( const void* ptr, int count = 1 )	     { }
 #define AssertValidStringPtr AssertValidReadPtr
@@ -660,7 +672,7 @@ private:
 //
 // Purpose: Embed debug info in each file.
 //
-#if defined( _WIN32 )
+#if defined( _WIN32 ) && !defined( _X360 )
 
 	#ifdef _DEBUG
 		#pragma comment(compiler)
@@ -795,5 +807,24 @@ private:
 #endif
 
 //-----------------------------------------------------------------------------
+
+
+// This is horrible, but we don't want to integrate CS:GO new logging system atm.
+
+#ifdef BUILDING_VPC
+#define Log_Warning( ignore, ... )	::Warning( __VA_ARGS__ );
+#define Log_Msg( ignore, ... )		::Msg( __VA_ARGS__ );
+#define Log_Error( ignore, ... )		::Error( __VA_ARGS__ );
+#else
+#define Log_Warning( ignore, ... )	::Warning( __VA_ARGS__ ); ::Log( __VA_ARGS__ );
+#define Log_Msg( ignore, ... )		::Msg( __VA_ARGS__ ); ::Log( __VA_ARGS__ );
+#define Log_Error( ignore, ... )		::Error( __VA_ARGS__ );
+#endif
+#define Log_Warning_Color( ignore, ... )	::ColorSpewMessage2( SPEW_WARNING, __VA_ARGS__ );
+#define Log_Msg_Color( ignore, ... )	::ColorSpewMessage2( SPEW_MESSAGE, __VA_ARGS__ );
+#define Log_Error_Color( ignore, ... )	::ColorSpewMessage2( SPEW_ERROR, __VA_ARGS__ );
+#define DECLARE_LOGGING_CHANNEL( ... );
+#define DEFINE_LOGGING_CHANNEL_NO_TAGS( ... );
+#define Plat_FatalError( ... ) do { Log_Error( LOG_GENERAL, __VA_ARGS__ ); Plat_ExitProcess( EXIT_FAILURE ); } while( 0 )
 
 #endif /* DBG_H */

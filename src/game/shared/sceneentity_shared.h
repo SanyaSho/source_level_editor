@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -115,7 +115,6 @@ private:
 extern CSceneTokenProcessor g_TokenProcessor;
 
 void Scene_Printf( PRINTF_FORMAT_STRING const char *pFormat, ... );
-#ifdef _DEBUG
 extern ConVar scene_clientflex;
-#endif
+
 #endif // SCENEENTITY_SHARED_H

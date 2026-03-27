@@ -639,10 +639,10 @@ void CMapWorld::OnUndoRedo()
 void CMapWorld::GetUsedTextures(CUsedTextureList &List)
 {
 	List.RemoveAll();
-	EnumChildren((ENUMMAPCHILDRENPROC)AddUsedTextures, (DWORD)&List, MAPCLASS_TYPE(CMapSolid));
-	EnumChildren((ENUMMAPCHILDRENPROC)AddOverlayTextures, (DWORD)&List, MAPCLASS_TYPE(CMapOverlay));
+	EnumChildren((ENUMMAPCHILDRENPROC)AddUsedTextures, (DWORD_PTR)&List, MAPCLASS_TYPE(CMapSolid));
+	EnumChildren((ENUMMAPCHILDRENPROC)AddOverlayTextures, (DWORD_PTR)&List, MAPCLASS_TYPE(CMapOverlay));
 #ifdef SLE //// SLE NEW - count decal textures as used textures in addition to face/overlay materials
-	EnumChildren(( ENUMMAPCHILDRENPROC )AddDecalTextures, ( DWORD )&List, MAPCLASS_TYPE(CMapDecal));
+	EnumChildren(( ENUMMAPCHILDRENPROC )AddDecalTextures, ( DWORD_PTR )&List, MAPCLASS_TYPE(CMapDecal));
 #endif
 }
 
@@ -1085,7 +1085,7 @@ ChunkFileResult_t CMapWorld::SaveSolids(CChunkFile *pFile, CSaveInfo *pSaveInfo,
 	PresaveWorld();
 
 	SaveLists_t SaveLists;
-	EnumChildrenRecurseGroupsOnly((ENUMMAPCHILDRENPROC)BuildSaveListsCallback, (DWORD)&SaveLists);
+	EnumChildrenRecurseGroupsOnly((ENUMMAPCHILDRENPROC)BuildSaveListsCallback, (DWORD_PTR)&SaveLists);
 
 	return SaveObjectListVMF(pFile, pSaveInfo, &SaveLists.Solids, saveFlags);
 }
@@ -1108,7 +1108,7 @@ ChunkFileResult_t CMapWorld::SaveVMF(CChunkFile *pFile, CSaveInfo *pSaveInfo, in
 	// Sort the world objects into lists for saving into different chunks.
 	//
 	SaveLists_t SaveLists;
-	EnumChildrenRecurseGroupsOnly(( ENUMMAPCHILDRENPROC )BuildSaveListsCallback, ( DWORD )&SaveLists);
+	EnumChildrenRecurseGroupsOnly(( ENUMMAPCHILDRENPROC )BuildSaveListsCallback, ( DWORD_PTR )&SaveLists);
 #ifdef HAMMER2013_PORT_CORDONS
 	if ( extraSolids )
 	{

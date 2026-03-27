@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -14,7 +14,7 @@
 
 #include <utlvector.h>
 #include <utllinkedlist.h>
-#include <vgui/vgui.h>
+#include <vgui/VGUI.h>
 #include <vgui_controls/Panel.h>
 #include <vgui_controls/PHandle.h>
 #include <vgui_controls/Label.h>
@@ -86,9 +86,16 @@ public:
 
 	// set the text color of an item
 	virtual void SetItemFgColor(int itemID, Color color);
+	//=============================================================================
+	// HPE_BEGIN:
+	// [menglish] Getters and setters for several item and section objects
+	//=============================================================================	 
 	virtual void SetItemBgColor( int itemID, Color color );
 	virtual int GetColumnIndexByName(int sectionID, char* name);
 	virtual int GetLineSpacing() { return m_iLineSpacing; }
+	//=============================================================================
+	// HPE_END
+	//=============================================================================
 	virtual void SetItemFont( int itemID, HFont font );
 	virtual void SetItemEnabled( int itemID, bool bEnabled );
 
@@ -150,21 +157,30 @@ public:
 
 	// Gets the coordinates of a section header
 	virtual bool GetSectionHeaderBounds(int sectionID, int &x, int &y, int &wide, int &tall);
-		 
+
+	//=============================================================================
+	// HPE_BEGIN:
+	// [menglish] Get the bounds of an item or column.
+	//=============================================================================
+	 
 	// gets the local coordinates of a cell using the max width for every column
 	virtual bool GetMaxCellBounds(int itemID, int column, int &x, int &y, int &wide, int &tall);
 
 	// gets the local coordinates of an item
 	virtual bool GetItemBounds(int itemID, int &x, int &y, int &wide, int &tall);
 
-	// Accessors for clickability
+	// [tj] Accessors for clickability
 	void SetClickable(bool clickable) { m_clickable = clickable; }
 	bool IsClickable() { return m_clickable; }
 
-	// Accessors for header drawing
+	// [tj] Accessors for header drawing
 	void SetDrawHeaders(bool drawHeaders) { m_bDrawSectionHeaders = drawHeaders; }
 	bool GetDrawHeaders() { return m_bDrawSectionHeaders; }
-	
+	 
+	//=============================================================================
+	// HPE_END
+	//=============================================================================
+
 	// set up a field for editing
 	virtual void EnterEditMode(int itemID, int column, vgui::Panel *editPanel);
 
@@ -194,6 +210,10 @@ public:
 	void MoveSelectionDown( void );
 	void MoveSelectionUp( void );
 
+	ScrollBar *GetScrollBar( void ) { return m_pScrollBar; }
+
+	void SetColumnWidthBySection(int sectionID, const char *columnName, int iWidth);
+
 protected:
 	virtual void PerformLayout();
 	virtual void ApplySchemeSettings(IScheme *pScheme);
@@ -207,6 +227,23 @@ protected:
 
 public:
 	virtual void SetFontSection(int sectionID, HFont font);
+	virtual void SetItemBgHorizFillInset( int itemID, int nInset );
+	void SetColorOverrideForCell( int sectionID, int itemID, int columnID, Color clrOverride );
+	Color *GetColorOverrideForCell( int sectionID, int itemID, int columnID );
+	void ClearAllColorOverrideForCell(){ m_ColorOverrides.Purge(); }
+
+	enum
+	{
+		BUTTON_HEIGHT_DEFAULT = 20,
+		BUTTON_HEIGHT_SPACER = 7,
+		DEFAULT_LINE_SPACING = 20,
+		DEFAULT_SECTION_GAP = 8,
+		COLUMN_DATA_INDENT = 6,
+		COLUMN_DATA_GAP = 2,
+	};
+
+	virtual void SetSectionDrawDividerBar( int sectionID, bool bDraw );
+
 private:
 	MESSAGE_FUNC( OnSliderMoved, "ScrollBarSliderMoved" );
 
@@ -219,6 +256,14 @@ private:
 	friend class CItemButton;
 	void SetSelectedItem(CItemButton *item);
 	DHANDLE<CItemButton> m_hSelectedItem;
+
+	struct color_override_t
+	{
+		int m_SectionID;
+		int m_ItemID;
+		int m_ColumnID;
+		Color m_clrOverride;
+	};
 
 	struct column_t
 	{
@@ -243,11 +288,14 @@ private:
 	CUtlLinkedList<CItemButton *, int> 	m_FreeItems;
     CUtlVector<CItemButton *> 			m_SortedItems;
 
+	CUtlVector<color_override_t> 		m_ColorOverrides;
+
 	PHandle m_hEditModePanel;
 	int m_iEditModeItemID;
 	int m_iEditModeColumn;
 	int m_iContentHeight;
-	int m_iLineSpacing;
+	int m_iLineSpacing;	// row height
+	int m_iLineGap;		// gap between rows
 	int m_iSectionGap;
 
 	int FindSectionIndexByID(int sectionID);
@@ -261,11 +309,16 @@ private:
 
 	HFont m_hHeaderFont;
 	HFont m_hRowFont;
-	
-	// Whether or not this list should respond to the mouse
+	//=============================================================================
+	// HPE_BEGIN:	
+	//=============================================================================
+	// [tj] Whether or not this list should respond to the mouse
 	bool m_clickable;
-	// Whether or not this list should draw the headers for the sections
+	// [tj] Whether or not this list should draw the headers for the sections
 	bool m_bDrawSectionHeaders;
+	//=============================================================================
+	// HPE_END
+	//=============================================================================
 
 	CPanelAnimationVar( bool, m_bShowColumns, "show_columns", "false" );
 };
@@ -284,11 +337,13 @@ public:
 
 	void SetColor(Color col);
 	void SetDividerColor(Color col );
+	void DrawDividerBar(bool bDraw){ m_bDrawDividerBar = bDraw; }
 
 protected:
 	int m_iSectionID;
 	Color m_SectionDividerColor;
 	SectionedListPanel *m_pListPanel;
+	bool m_bDrawDividerBar;
 };
 
 } // namespace vgui

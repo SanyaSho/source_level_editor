@@ -1,4 +1,4 @@
-//========================================================================//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Holds the enumerated list of default cursors
 //
@@ -14,7 +14,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <vgui/vgui.h>
+#include <vgui/VGUI.h>
 #include "tier1/utlvector.h"
 
 #include "tier0/memdbgon.h"
