@@ -28,8 +28,8 @@ static const unsigned int g_uToggleStateMsg = ::RegisterWindowMessage(GROUPLIST_
 #endif
 BEGIN_MESSAGE_MAP(COP_Groups, CObjectPage)
 	//{{AFX_MSG_MAP(COP_Groups)
-	ON_BN_CLICKED(IDC_EDITGROUPS, OnEditgroups)
-	ON_REGISTERED_MESSAGE(g_uToggleStateMsg, OnListToggleState)
+	ON_BN_CLICKED(IDC_EDITGROUPS, &COP_Groups::OnEditgroups)
+	ON_REGISTERED_MESSAGE(g_uToggleStateMsg, &COP_Groups::OnListToggleState)
 	ON_WM_SIZE()
 	//}}AFX_MSG_MAP
 	ON_WM_SETFOCUS()

@@ -561,7 +561,8 @@ void StudioModel::SetUpBones( bool bUpdatePose, matrix3x4_t *pBoneToWorld )
 
 	for (int i = 0; i < pStudioHdr->numbones(); i++) 
 	{
-		if ( CalcProceduralBone( pStudioHdr, i, CBoneAccessor( pBoneToWorld ) ))
+		CBoneAccessor boneAccessor( pBoneToWorld );
+		if ( CalcProceduralBone( pStudioHdr, i, boneAccessor ))
 			continue;
 
 		matrix3x4_t	bonematrix;
@@ -893,7 +894,7 @@ void StudioModel::DrawModel3D(CRender3D *pRender, const Color &color, float flAl
 				overlay->AddRef();
 			}
 
-			float color[4] = { GetRValue(Options.colors.clrModelSelection) / 100, GetGValue(Options.colors.clrModelSelection) / 100, GetBValue(Options.colors.clrModelSelection) / 100, 1 };
+			float color[4] = { (float)GetRValue(Options.colors.clrModelSelection) / 100.f, (float)GetGValue(Options.colors.clrModelSelection) / 100.f, (float)GetBValue(Options.colors.clrModelSelection) / 100.f, 1.f };
 			g_pStudioRender->SetColorModulation(color);
 			g_pStudioRender->ForcedMaterialOverride(overlay, OVERRIDE_NORMAL);
 			g_pStudioRender->DrawModel(NULL, info, boneToWorld, 0, 0, m_origin);
@@ -1244,9 +1245,9 @@ void StudioModel::GetAttachmentPosition(Vector &attachmentPos, int attachmentInd
 
 	SetUpBones(false, boneToWorld);
 
-	mstudioattachment_t &pattachments = (mstudioattachment_t)hdr->pAttachment(attachmentIndex);
+	mstudioattachment_t &pattachments = (mstudioattachment_t &)hdr->pAttachment(attachmentIndex);
 	matrix3x4_t m;
-	ConcatTransforms(boneToWorld[hdr->GetAttachmentBone(attachmentIndex)], pattachments.local, m);
+	ConcatTransforms(boneToWorld[hdr->GetAttachmentBone(attachmentIndex)], hdr->pAttachment(attachmentIndex).local, m);
 	
 	attachmentPos = Vector(m[0][3], m[1][3], m[2][3]);
 }

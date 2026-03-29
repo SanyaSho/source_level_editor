@@ -96,23 +96,23 @@ SolidTypeInfo_t ExtendedSolidTypes[] =
 #endif
 
 BEGIN_MESSAGE_MAP(CObjectBar, CHammerBar)
-	ON_UPDATE_COMMAND_UI(IDC_CREATELIST, UpdateControl)
-	ON_UPDATE_COMMAND_UI(IDC_CATEGORYLIST, UpdateControl)
-	ON_UPDATE_COMMAND_UI(IDC_FACES, UpdateFaceControl)
-	ON_UPDATE_COMMAND_UI(IDC_FACESSPIN, UpdateFaceControl)
+	ON_UPDATE_COMMAND_UI(IDC_CREATELIST, &CObjectBar::UpdateControl)
+	ON_UPDATE_COMMAND_UI(IDC_CATEGORYLIST, &CObjectBar::UpdateControl)
+	ON_UPDATE_COMMAND_UI(IDC_FACES, &CObjectBar::UpdateFaceControl)
+	ON_UPDATE_COMMAND_UI(IDC_FACESSPIN, &CObjectBar::UpdateFaceControl)
 #ifdef SLE
 	//// SLE NEW - set start angle for block tool
-	ON_UPDATE_COMMAND_UI(IDC_STARTANGLE, UpdateAngleControl)
-	ON_UPDATE_COMMAND_UI(IDC_STARTANGLESPIN, UpdateAngleControl)
-	ON_EN_CHANGE(IDC_STARTANGLE, OnChangeStartAngle)
-	ON_EN_CHANGE(IDC_STARTANGLESPIN, OnChangeStartAngleSpin)
+	ON_UPDATE_COMMAND_UI(IDC_STARTANGLE, &CObjectBar::UpdateAngleControl)
+	ON_UPDATE_COMMAND_UI(IDC_STARTANGLESPIN, &CObjectBar::UpdateAngleControl)
+	ON_EN_CHANGE(IDC_STARTANGLE, &CObjectBar::OnChangeStartAngle)
+	ON_EN_CHANGE(IDC_STARTANGLESPIN, &CObjectBar::OnChangeStartAngleSpin)
 
-	ON_EN_CHANGE(IDC_FACES, OnChangeFaceCount)
-	ON_EN_CHANGE(IDC_FACESSPIN, OnChangeFaceSpin)
+	ON_EN_CHANGE(IDC_FACES, &CObjectBar::OnChangeFaceCount)
+	ON_EN_CHANGE(IDC_FACESSPIN, &CObjectBar::OnChangeFaceSpin)
 #endif
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_CREATEPREFAB, UpdateControl)
-	ON_UPDATE_COMMAND_UI(ID_CREATEOBJECT, UpdateControl)
-	ON_CBN_SELCHANGE(IDC_CATEGORYLIST, OnChangeCategory)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_CREATEPREFAB, &CObjectBar::UpdateControl)
+	ON_UPDATE_COMMAND_UI(ID_CREATEOBJECT, &CObjectBar::UpdateControl)
+	ON_CBN_SELCHANGE(IDC_CATEGORYLIST, &CObjectBar::OnChangeCategory)
 END_MESSAGE_MAP()
 
 //-----------------------------------------------------------------------------

@@ -111,37 +111,37 @@ BEGIN_MESSAGE_MAP(CMapView3D, CView)
 	ON_WM_CHAR()
 	ON_WM_SETFOCUS()
 	ON_WM_NCPAINT()
-	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
-	ON_COMMAND(ID_FILE_PRINT_DIRECT, CView::OnFilePrint)
-	ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
-	ON_COMMAND(ID_VIEW_3DWIREFRAME, OnView3dWireframe)
-	ON_COMMAND(ID_VIEW_3DPOLYGON, OnView3dPolygon)
-	ON_COMMAND(ID_VIEW_3DTEXTURED, OnView3dTextured)
-	ON_COMMAND(ID_VIEW_3DLIGHTMAP_GRID, OnView3dLightmapGrid)
+	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
+	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
+	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
+	ON_COMMAND(ID_VIEW_3DWIREFRAME, &CMapView3D::OnView3dWireframe)
+	ON_COMMAND(ID_VIEW_3DPOLYGON, &CMapView3D::OnView3dPolygon)
+	ON_COMMAND(ID_VIEW_3DTEXTURED, &CMapView3D::OnView3dTextured)
+	ON_COMMAND(ID_VIEW_3DLIGHTMAP_GRID, &CMapView3D::OnView3dLightmapGrid)
 #ifdef SLE
-	ON_COMMAND(ID_VIEW_ENGINE, OnView3dEngine) //// SLE NEW: Attempt to re-enable "Engine View". So far doesn't do anything.
+	ON_COMMAND(ID_VIEW_ENGINE, &CMapView3D::OnView3dEngine) //// SLE NEW: Attempt to re-enable "Engine View". So far doesn't do anything.
 #endif
 #ifdef SLE //// SLE NEW - BSP lighting // it uses lighting preview 1 while the rendertarget-based preview has been disabled
-	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW, OnView3dBSPLightingPreview)
-	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW2, OnView3dLightingPreview)
+	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW, &CMapView3D::OnView3dBSPLightingPreview)
+	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW2, &CMapView3D::OnView3dLightingPreview)
 #else
-	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW, OnView3dLightingPreview)
+	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW, &CMapView3D::OnView3dLightingPreview)
 #endif
-	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW_RAYTRACED, OnView3dLightingPreviewRayTraced)
+	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW_RAYTRACED, &CMapView3D::OnView3dLightingPreviewRayTraced)
 #ifdef SLE
-	ON_COMMAND(ID_VIEW_LOD_HIGHER, OnLODIncrease) //// SLE NEW - LOD control option
-	ON_COMMAND(ID_VIEW_LOD_LOWER, OnLODDecrease) //// SLE NEW - LOD control option
-	ON_COMMAND(ID_VIEW_PICMIP_HIGHER, OnPicmipIncrease) //// SLE NEW - picmip control option
-	ON_COMMAND(ID_VIEW_PICMIP_LOWER, OnPicmipDecrease)
-	ON_COMMAND(ID_VIEW_PICMIP_VERYHIGH, OnPicmipVeryHigh)
-	ON_COMMAND(ID_VIEW_PICMIP_HIGH, OnPicmipHigh)
-	ON_COMMAND(ID_VIEW_PICMIP_MEDIUM, OnPicmipMedium)
-	ON_COMMAND(ID_VIEW_PICMIP_LOW, OnPicmipLow) ////
-	ON_COMMAND_EX(ID_FLIP_HORIZONTAL, OnFlip) //// SLE NEW - flipping in 3d view
-	ON_COMMAND_EX(ID_FLIP_VERTICAL, OnFlip)
-	ON_COMMAND_EX(ID_FLIP_BACKFRONT, OnFlip) //// SLE NEW - third mirroring option
-	ON_COMMAND(ID_EDIT_PROPERTIES, OnEditProperties)
-	ON_UPDATE_COMMAND_UI(ID_EDIT_PROPERTIES, OnUpdateEditFunction)
+	ON_COMMAND(ID_VIEW_LOD_HIGHER, &CMapView3D::OnLODIncrease) //// SLE NEW - LOD control option
+	ON_COMMAND(ID_VIEW_LOD_LOWER, &CMapView3D::OnLODDecrease) //// SLE NEW - LOD control option
+	ON_COMMAND(ID_VIEW_PICMIP_HIGHER, &CMapView3D::OnPicmipIncrease) //// SLE NEW - picmip control option
+	ON_COMMAND(ID_VIEW_PICMIP_LOWER, &CMapView3D::OnPicmipDecrease)
+	ON_COMMAND(ID_VIEW_PICMIP_VERYHIGH, &CMapView3D::OnPicmipVeryHigh)
+	ON_COMMAND(ID_VIEW_PICMIP_HIGH, &CMapView3D::OnPicmipHigh)
+	ON_COMMAND(ID_VIEW_PICMIP_MEDIUM, &CMapView3D::OnPicmipMedium)
+	ON_COMMAND(ID_VIEW_PICMIP_LOW, &CMapView3D::OnPicmipLow) ////
+	ON_COMMAND_EX(ID_FLIP_HORIZONTAL, &CMapView3D::OnFlip) //// SLE NEW - flipping in 3d view
+	ON_COMMAND_EX(ID_FLIP_VERTICAL, &CMapView3D::OnFlip)
+	ON_COMMAND_EX(ID_FLIP_BACKFRONT, &CMapView3D::OnFlip) //// SLE NEW - third mirroring option
+	ON_COMMAND(ID_EDIT_PROPERTIES, &CMapView3D::OnEditProperties)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_PROPERTIES, &CMapView3D::OnUpdateEditFunction)
 #endif
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -2090,7 +2090,7 @@ void CMapView3D::ProcessMouse(void)
 		return;
 	}
 
-	// If not in mouselook mode, only process mouse messages if there
+	// If not in mouselook mode, &CMapView3D::Only process mouse messages if there
 	// is an active tool.
 	//
 	CBaseTool *pTool = m_pToolManager->GetActiveTool();

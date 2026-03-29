@@ -51,8 +51,8 @@ static BOOL CountObject(CMapClass *pobj, DWORD_PTR dwParam)
 BEGIN_MESSAGE_MAP(CMapInfoDlg, CDialog)
 	//{{AFX_MSG_MAP(CMapInfoDlg)
 #ifdef SLE //// SLE NEW - improved Map Information dialogue
-	ON_BN_CLICKED(IDC_MAPINFO_ONLYVISIBLE, OnOnlyVisible)
-	ON_BN_CLICKED(IDC_OPEN_SOURCE, OnOpenSource)
+	ON_BN_CLICKED(IDC_MAPINFO_ONLYVISIBLE, &CMapInfoDlg::OnOnlyVisible)
+	ON_BN_CLICKED(IDC_OPEN_SOURCE, &CMapInfoDlg::OnOpenSource)
 #endif
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()

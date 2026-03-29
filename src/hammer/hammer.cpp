@@ -443,11 +443,11 @@ class CHammerCmdLine : public CCommandLineInfo
 
 BEGIN_MESSAGE_MAP(CHammer, CWinApp)
 	//{{AFX_MSG_MAP(CHammer)
-	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
-	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
-	ON_COMMAND(ID_FILE_NEW, OnFileNew)
-	ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
-	ON_COMMAND(ID_FILE_PRINT_SETUP, CWinApp::OnFilePrintSetup)
+	ON_COMMAND(ID_APP_ABOUT, &CHammer::OnAppAbout)
+	ON_COMMAND(ID_FILE_OPEN, &CHammer::OnFileOpen)
+	ON_COMMAND(ID_FILE_NEW, &CHammer::OnFileNew)
+	ON_COMMAND(ID_FILE_OPEN, &CWinApp::OnFileOpen)
+	ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinApp::OnFilePrintSetup)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

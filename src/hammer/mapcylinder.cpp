@@ -181,7 +181,8 @@ void CMapCylinder::BuildCylinder(void)
 		m_pStartEntity->GetOrigin(Start);
 		m_pEndEntity->GetOrigin(End);
 
-		SetOrigin((Start + End) / 2);
+		Vector originVec( ( Start + End ) / 2 );
+		SetOrigin( originVec );
 	}
 
 	CalcBounds();

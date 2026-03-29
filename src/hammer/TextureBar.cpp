@@ -24,16 +24,16 @@
 #include <tier0/memdbgoff.h>
 
 BEGIN_MESSAGE_MAP(CTextureBar, CHammerBar)
-	ON_CBN_SELCHANGE(IDC_TEXTURES, OnSelChangeTexture)
-	ON_UPDATE_COMMAND_UI(IDC_TEXTURES, UpdateControl)
-//	ON_CBN_SELCHANGE(IDC_TEXTUREGROUPS, OnChangeTextureGroup) //// SLE REMOVE - deprecated in SLE
-//	ON_UPDATE_COMMAND_UI(IDC_TEXTUREGROUPS, UpdateControl)
-	ON_BN_CLICKED(IDC_BROWSE, OnBrowse)
-	ON_UPDATE_COMMAND_UI(IDC_BROWSE, UpdateControl)
-	ON_BN_CLICKED(IDC_REPLACE, OnReplace)
-	ON_UPDATE_COMMAND_UI(IDC_REPLACE, UpdateControl)
-	ON_BN_CLICKED(IDC_MARK, OnMark) //// SLE NEW - mark button on texture bar
-	ON_UPDATE_COMMAND_UI(IDC_MARK, UpdateControl)
+	ON_CBN_SELCHANGE(IDC_TEXTURES, &CTextureBar::OnSelChangeTexture)
+	ON_UPDATE_COMMAND_UI(IDC_TEXTURES, &CTextureBar::UpdateControl)
+//	ON_CBN_SELCHANGE(IDC_TEXTUREGROUPS, &CTextureBar::OnChangeTextureGroup) //// SLE REMOVE - deprecated in SLE
+//	ON_UPDATE_COMMAND_UI(IDC_TEXTUREGROUPS, &CTextureBar::UpdateControl)
+	ON_BN_CLICKED(IDC_BROWSE, &CTextureBar::OnBrowse)
+	ON_UPDATE_COMMAND_UI(IDC_BROWSE, &CTextureBar::UpdateControl)
+	ON_BN_CLICKED(IDC_REPLACE, &CTextureBar::OnReplace)
+	ON_UPDATE_COMMAND_UI(IDC_REPLACE, &CTextureBar::UpdateControl)
+	ON_BN_CLICKED(IDC_MARK, &CTextureBar::OnMark) //// SLE NEW - mark button on texture bar
+	ON_UPDATE_COMMAND_UI(IDC_MARK, &CTextureBar::UpdateControl)
 	ON_WM_WINDOWPOSCHANGED()
 #ifdef SLE_DARK_THEME
 	//// SLE dark theme test

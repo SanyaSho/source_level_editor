@@ -29,7 +29,7 @@ IMPLEMENT_DYNCREATE(CManifest, CMapDoc)
 
 BEGIN_MESSAGE_MAP(CManifest, CMapDoc)
 	//{{AFX_MSG_MAP(CManifest)
-	ON_COMMAND(ID_FILE_SAVE_AS, OnFileSaveAs)
+	ON_COMMAND(ID_FILE_SAVE_AS, &CManifest::OnFileSaveAs)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -978,7 +978,8 @@ CManifestMap *CManifest::CreateNewMap( const char *AbsoluteFileName, const char 
 	pManifestMap->m_Entity = new CManifestInstance( pManifestMap );
 
 	pManifestMap->m_Entity->SetPlaceholder( true );
-	pManifestMap->m_Entity->SetOrigin( Vector( 0.0f, 0.0f, 0.0f ) );
+	Vector originVec( 0.f, 0.f, 0.f );
+	pManifestMap->m_Entity->SetOrigin( originVec );
 	pManifestMap->m_Entity->SetClass( "func_instance" );
 	pManifestMap->m_Entity->SetKeyValue( "classname", "func_instance" );
 

@@ -45,9 +45,9 @@ void CTransformDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CTransformDlg, CDialog)
 	//{{AFX_MSG_MAP(CTransformDlg)
 #ifdef SLE //// SLE NEW - more transform dialogue controls
-	ON_BN_CLICKED(IDC_TRANSFORMRESET, OnButtonReset)
-	ON_BN_CLICKED(IDC_TRANSFORM_SKYSCALE, OnButtonCalculateSkyScale)
-	ON_BN_CLICKED(IDC_TRANSFORM_LOCKTEXSCALE, OnButtonLockTexScale)
+	ON_BN_CLICKED(IDC_TRANSFORMRESET, &CTransformDlg::OnButtonReset)
+	ON_BN_CLICKED(IDC_TRANSFORM_SKYSCALE, &CTransformDlg::OnButtonCalculateSkyScale)
+	ON_BN_CLICKED(IDC_TRANSFORM_LOCKTEXSCALE, &CTransformDlg::OnButtonLockTexScale)
 
 #ifdef	SLE_DARK_THEME	//// SLE dark theme test
 	ON_WM_CTLCOLOR()

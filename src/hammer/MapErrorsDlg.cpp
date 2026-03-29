@@ -37,9 +37,9 @@ void CMapErrorsDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CMapErrorsDlg, CDialog)
 	//{{AFX_MSG_MAP(CMapErrorsDlg)
-	ON_BN_CLICKED(IDC_CLEAR, OnClear)
-	ON_LBN_DBLCLK(IDC_ERRORS, OnDblclkErrors)
-	ON_BN_CLICKED(IDC_VIEW, OnView)
+	ON_BN_CLICKED(IDC_CLEAR, &CMapErrorsDlg::OnClear)
+	ON_LBN_DBLCLK(IDC_ERRORS, &CMapErrorsDlg::OnDblclkErrors)
+	ON_BN_CLICKED(IDC_VIEW, &CMapErrorsDlg::OnView)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

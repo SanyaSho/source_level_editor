@@ -53,7 +53,7 @@ static const char *g_pszClassName = "ValveEditor_BlockToolWnd";
 
 BEGIN_MESSAGE_MAP(CToolBlockMessageWnd, CWnd)
 	//{{AFX_MSG_MAP(CToolMessageWnd)
-	ON_COMMAND(ID_CREATEOBJECT, OnCreateObject)
+	ON_COMMAND(ID_CREATEOBJECT, &CToolBlockMessageWnd::OnCreateObject)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

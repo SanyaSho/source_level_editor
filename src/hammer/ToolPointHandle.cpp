@@ -46,7 +46,7 @@ static const char *g_pszClassName = "ValveEditor_PointHandleToolWnd";
 
 BEGIN_MESSAGE_MAP(CToolPointHandleMsgWnd, CWnd)
 	//{{AFX_MSG_MAP(CToolPointHandleMsgWnd)
-	ON_COMMAND(ID_CENTER_ON_ENTITY, OnCenter)
+	ON_COMMAND(ID_CENTER_ON_ENTITY, &CToolPointHandleMsgWnd::OnCenter)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

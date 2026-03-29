@@ -183,6 +183,7 @@ void CEntityHelpDlg::UpdateClass(GDclass *pClass)
 //-----------------------------------------------------------------------------
 void CEntityHelpDlg::UpdateHelp(void)
 {
+#if !defined( __clang__ )
 	if (m_pClass != NULL)
 	{
 		m_pHelpText->SetWindowText("");
@@ -335,6 +336,7 @@ void CEntityHelpDlg::UpdateHelp(void)
 			}
 		}
 	}
+#endif // !__clang__
 }
 
 //-----------------------------------------------------------------------------

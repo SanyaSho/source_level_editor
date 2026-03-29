@@ -1745,7 +1745,10 @@ void CMapClass::SetVisible(bool bVisible)
 	{
 		CMapClass *pChild = m_Children.Element(pos);
 #ifdef SLE //// safety check
-		pChild ? pChild->SetVisible(bVisible) : NULL;
+		if ( pChild )
+		{
+			pChild->SetVisible( bVisible );
+		}
 #else
 		pChild->SetVisible(bVisible);
 #endif

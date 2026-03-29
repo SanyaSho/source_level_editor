@@ -97,16 +97,16 @@ void CArchDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CArchDlg, CDialog)
 	//{{AFX_MSG_MAP(CArchDlg)
-	ON_EN_CHANGE(IDC_ARC, OnChangeArc)
-	ON_BN_CLICKED(IDC_CIRCLE, OnCircle)
-	ON_EN_UPDATE(IDC_SIDES, OnUpdateSides)
-	ON_EN_UPDATE(IDC_WALLWIDTH, OnUpdateWallwidth)
+	ON_EN_CHANGE(IDC_ARC, &CArchDlg::OnChangeArc)
+	ON_BN_CLICKED(IDC_CIRCLE, &CArchDlg::OnCircle)
+	ON_EN_UPDATE(IDC_SIDES, &CArchDlg::OnUpdateSides)
+	ON_EN_UPDATE(IDC_WALLWIDTH, &CArchDlg::OnUpdateWallwidth)
 #ifdef SLE //// SLE CHANGE - all controls should be updating the preview
-	ON_EN_UPDATE(IDC_ANGLE, OnUpdateStartAngle)
-	ON_EN_UPDATE(IDC_ADDHEIGHT, OnUpdateAddHeight)
+	ON_EN_UPDATE(IDC_ANGLE, &CArchDlg::OnUpdateStartAngle)
+	ON_EN_UPDATE(IDC_ADDHEIGHT, &CArchDlg::OnUpdateAddHeight)
 #endif
 	ON_WM_PAINT()
-	ON_BN_CLICKED(IDC_ARCH_PREVIEW, OnArchPreview)
+	ON_BN_CLICKED(IDC_ARCH_PREVIEW, &CArchDlg::OnArchPreview)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

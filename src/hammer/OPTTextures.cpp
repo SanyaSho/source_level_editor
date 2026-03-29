@@ -83,22 +83,22 @@ void COPTTextures::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(COPTTextures, CPropertyPage)
 	//{{AFX_MSG_MAP(COPTTextures)
-	ON_BN_CLICKED(IDC_EXTRACT, OnExtract)
-	ON_BN_CLICKED(IDC_ADDTEXFILE, OnAddtexfile)
-	ON_BN_CLICKED(IDC_REMOVETEXFILE, OnRemovetexfile)
+	ON_BN_CLICKED(IDC_EXTRACT, &COPTTextures::OnExtract)
+	ON_BN_CLICKED(IDC_ADDTEXFILE, &COPTTextures::OnAddtexfile)
+	ON_BN_CLICKED(IDC_REMOVETEXFILE, &COPTTextures::OnRemovetexfile)
 	ON_WM_HSCROLL()
 #ifndef SLE //// SLE REMOVE - deprecated, Quake 2
-	ON_BN_CLICKED(IDC_ADDTEXFILE2, OnAddtexfile2)
+	ON_BN_CLICKED(IDC_ADDTEXFILE2, &COPTTextures::OnAddtexfile2)
 #endif
-	ON_BN_CLICKED( ID_MATERIALEXCLUDE_ADD, OnMaterialExcludeAdd )
-	ON_BN_CLICKED( ID_MATERIALEXCLUDE_REM, OnMaterialExcludeRemove )
-	ON_LBN_SELCHANGE(ID_MATERIALEXCLUDE_LIST, OnMaterialExcludeListSel)
+	ON_BN_CLICKED( ID_MATERIALEXCLUDE_ADD, &COPTTextures::OnMaterialExcludeAdd )
+	ON_BN_CLICKED( ID_MATERIALEXCLUDE_REM, &COPTTextures::OnMaterialExcludeRemove )
+	ON_LBN_SELCHANGE(ID_MATERIALEXCLUDE_LIST, &COPTTextures::OnMaterialExcludeListSel)
 #ifdef SLE //// SLE NEW - Favourites for material browser
-	ON_BN_CLICKED(ID_MATERIALFAVOURITE_ADD, OnFavouriteAdd)
-	ON_BN_CLICKED(ID_MATERIALFAVOURITE_REM, OnFavouriteRemove)
-	ON_LBN_SELCHANGE(ID_MATERIALFAVOURITES_LIST, OnFavouriteListSel)
+	ON_BN_CLICKED(ID_MATERIALFAVOURITE_ADD, &COPTTextures::OnFavouriteAdd)
+	ON_BN_CLICKED(ID_MATERIALFAVOURITE_REM, &COPTTextures::OnFavouriteRemove)
+	ON_LBN_SELCHANGE(ID_MATERIALFAVOURITES_LIST, &COPTTextures::OnFavouriteListSel)
 	//// SLE NEW - game config selection for Materials tab, as Materials are game-specific
-	ON_CBN_SELCHANGE(IDC_CONFIGS, OnSelchangeConfigs)
+	ON_CBN_SELCHANGE(IDC_CONFIGS, &COPTTextures::OnSelchangeConfigs)
 #endif
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()

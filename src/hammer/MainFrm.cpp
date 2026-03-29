@@ -60,10 +60,10 @@ IMPLEMENT_DYNAMIC(CMainFrame, CMDIFrameWnd)
 BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	//{{AFX_MSG_MAP(CMainFrame)
 	ON_WM_CREATE()
-	ON_COMMAND(ID_EDIT_PROPERTIES, OnEditProperties)
-	ON_UPDATE_COMMAND_UI(ID_EDIT_PROPERTIES, OnUpdateEditFunction)
-	ON_COMMAND(ID_VIEW_MESSAGES, OnViewMessages)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_MESSAGES, OnUpdateViewMessages)
+	ON_COMMAND(ID_EDIT_PROPERTIES, &CMainFrame::OnEditProperties)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_PROPERTIES, &CMainFrame::OnUpdateEditFunction)
+	ON_COMMAND(ID_VIEW_MESSAGES, &CMainFrame::OnViewMessages)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_MESSAGES, &CMainFrame::OnUpdateViewMessages)
 	ON_WM_ACTIVATEAPP()
 	ON_WM_SIZE()
 	ON_WM_CLOSE()
@@ -72,141 +72,141 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	ON_WM_TIMER()
 #ifdef SLE
 	ON_WM_ERASEBKGND() //// SLE NEW - dark theme test
-	ON_COMMAND(IDC_COLOR_3DBACKGROUND, On3DVoidColor) //// SLE NEW - selectable void colour setting
-	ON_COMMAND(IDC_COLOR_3DSELECTION, OnSelectionColor) //// SLE NEW - configure the tint on selected objects
-	ON_COMMAND(ID_REPORT_GITHUB, OnOpenGitHubIssues) //// SLE NEW - link directly to GitHub repo
-	ON_COMMAND(ID_INSTANCES_ENABLE_LOADING, OnToggleInstancesLoading) //// SLE NEW - control to disable loading instances
-	ON_UPDATE_COMMAND_UI(ID_INSTANCES_ENABLE_LOADING, OnUpdateToggleInstancesLoading) //// ditto
+	ON_COMMAND(IDC_COLOR_3DBACKGROUND, &CMainFrame::On3DVoidColor) //// SLE NEW - selectable void colour setting
+	ON_COMMAND(IDC_COLOR_3DSELECTION, &CMainFrame::OnSelectionColor) //// SLE NEW - configure the tint on selected objects
+	ON_COMMAND(ID_REPORT_GITHUB, &CMainFrame::OnOpenGitHubIssues) //// SLE NEW - link directly to GitHub repo
+	ON_COMMAND(ID_INSTANCES_ENABLE_LOADING, &CMainFrame::OnToggleInstancesLoading) //// SLE NEW - control to disable loading instances
+	ON_UPDATE_COMMAND_UI(ID_INSTANCES_ENABLE_LOADING, &CMainFrame::OnUpdateToggleInstancesLoading) //// ditto
 #endif
-	ON_COMMAND(ID_TOOLS_OPTIONS, OnToolsOptions)
-	ON_COMMAND(ID_TOOLS_PREFABFACTORY, OnToolsPrefabfactory)
-	ON_COMMAND_EX(ID_HELP_TOPICS, OnHelpOpenURL)
-	ON_COMMAND_EX(ID_HELP_EDITINGSITE, OnHelpOpenURL)
-	ON_COMMAND_EX(ID_HELP_WORLDCRAFT_SUPPORT_MAIL, OnHelpOpenURL)
-	ON_COMMAND(ID_EDIT_UNDOREDOACTIVE, OnEditUndoredoactive)
-	ON_UPDATE_COMMAND_UI(ID_EDIT_UNDOREDOACTIVE, OnUpdateEditUndoredoactive)
-	ON_COMMAND_EX(ID_FILE_NEW, OnFileNew)
-	ON_COMMAND(ID_SAVEWINDOWSTATE, OnSavewindowstate)
-	ON_COMMAND(ID_LOADWINDOWSTATE, OnLoadwindowstate)
-	ON_COMMAND_EX(ID_MAP_UNITS_NONE, OnUnits)
-	ON_UPDATE_COMMAND_UI(ID_MAP_UNITS_NONE, OnUpdateUnits)
-	ON_COMMAND_EX(ID_MAP_UNITS_INCHES, OnUnits)
-	ON_UPDATE_COMMAND_UI(ID_MAP_UNITS_INCHES, OnUpdateUnits)
-	ON_COMMAND_EX(ID_MAP_UNITS_FEET_INCHES, OnUnits)
+	ON_COMMAND(ID_TOOLS_OPTIONS, &CMainFrame::OnToolsOptions)
+	ON_COMMAND(ID_TOOLS_PREFABFACTORY, &CMainFrame::OnToolsPrefabfactory)
+	ON_COMMAND_EX(ID_HELP_TOPICS, &CMainFrame::OnHelpOpenURL)
+	ON_COMMAND_EX(ID_HELP_EDITINGSITE, &CMainFrame::OnHelpOpenURL)
+	ON_COMMAND_EX(ID_HELP_WORLDCRAFT_SUPPORT_MAIL, &CMainFrame::OnHelpOpenURL)
+	ON_COMMAND(ID_EDIT_UNDOREDOACTIVE, &CMainFrame::OnEditUndoredoactive)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_UNDOREDOACTIVE, &CMainFrame::OnUpdateEditUndoredoactive)
+	ON_COMMAND_EX(ID_FILE_NEW, &CMainFrame::OnFileNew)
+	ON_COMMAND(ID_SAVEWINDOWSTATE, &CMainFrame::OnSavewindowstate)
+	ON_COMMAND(ID_LOADWINDOWSTATE, &CMainFrame::OnLoadwindowstate)
+	ON_COMMAND_EX(ID_MAP_UNITS_NONE, &CMainFrame::OnUnits)
+	ON_UPDATE_COMMAND_UI(ID_MAP_UNITS_NONE, &CMainFrame::OnUpdateUnits)
+	ON_COMMAND_EX(ID_MAP_UNITS_INCHES, &CMainFrame::OnUnits)
+	ON_UPDATE_COMMAND_UI(ID_MAP_UNITS_INCHES, &CMainFrame::OnUpdateUnits)
+	ON_COMMAND_EX(ID_MAP_UNITS_FEET_INCHES, &CMainFrame::OnUnits)
 #ifdef SLE
-	ON_UPDATE_COMMAND_UI(ID_MAP_UNITS_FEET_INCHES, OnUpdateUnits) //// SLE NEW - show units in cm
-	ON_COMMAND_EX(ID_MAP_UNITS_CENTIMETERS, OnUnits)
-	ON_UPDATE_COMMAND_UI(ID_MAP_UNITS_METERS_CENTIMETERS, OnUpdateUnits) //// SLE NEW - show units in m + cm
-	ON_COMMAND_EX(ID_MAP_UNITS_METERS_CENTIMETERS, OnUnits)
-	ON_UPDATE_COMMAND_UI(ID_MAP_UNITS_METERS_CENTIMETERS, OnUpdateUnits)
+	ON_UPDATE_COMMAND_UI(ID_MAP_UNITS_FEET_INCHES, &CMainFrame::OnUpdateUnits) //// SLE NEW - show units in cm
+	ON_COMMAND_EX(ID_MAP_UNITS_CENTIMETERS, &CMainFrame::OnUnits)
+	ON_UPDATE_COMMAND_UI(ID_MAP_UNITS_METERS_CENTIMETERS, &CMainFrame::OnUpdateUnits) //// SLE NEW - show units in m + cm
+	ON_COMMAND_EX(ID_MAP_UNITS_METERS_CENTIMETERS, &CMainFrame::OnUnits)
+	ON_UPDATE_COMMAND_UI(ID_MAP_UNITS_METERS_CENTIMETERS, &CMainFrame::OnUpdateUnits)
 #endif
-	ON_COMMAND(ID_VIEW_OPAQUE_MATERIALS, OnOpaqueMaterials)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_OPAQUE_MATERIALS, OnUpdateOpaqueMaterials)
+	ON_COMMAND(ID_VIEW_OPAQUE_MATERIALS, &CMainFrame::OnOpaqueMaterials)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_OPAQUE_MATERIALS, &CMainFrame::OnUpdateOpaqueMaterials)
 #ifdef SLE //// SLE NEW - preview normal maps, diffuse, specular...
-	ON_COMMAND(ID_VIEW_SHOW_ILLUMPOS, OnShowIllumPos) //// SLE NEW - show illum position
-	ON_UPDATE_COMMAND_UI(ID_VIEW_SHOW_ILLUMPOS, OnUpdateShowIllumPos)
-	ON_COMMAND(ID_VIEW_SHOW_DIFFUSE, OnShowDiffuse)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_SHOW_DIFFUSE, OnUpdateShowDiffuse)
-	ON_COMMAND(ID_VIEW_SHOW_NORMALMAPS, OnShowNormalMaps)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_SHOW_NORMALMAPS, OnUpdateShowNormalMaps)
-	ON_COMMAND(ID_VIEW_SHOW_SPECULAR, OnShowSpecular)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_SHOW_SPECULAR, OnUpdateShowSpecular)
-	ON_COMMAND(ID_VIEW_EDITOR_MODE, OnUseEditorMode)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_EDITOR_MODE, OnUpdateUseEditorMode)
+	ON_COMMAND(ID_VIEW_SHOW_ILLUMPOS, &CMainFrame::OnShowIllumPos) //// SLE NEW - show illum position
+	ON_UPDATE_COMMAND_UI(ID_VIEW_SHOW_ILLUMPOS, &CMainFrame::OnUpdateShowIllumPos)
+	ON_COMMAND(ID_VIEW_SHOW_DIFFUSE, &CMainFrame::OnShowDiffuse)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_SHOW_DIFFUSE, &CMainFrame::OnUpdateShowDiffuse)
+	ON_COMMAND(ID_VIEW_SHOW_NORMALMAPS, &CMainFrame::OnShowNormalMaps)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_SHOW_NORMALMAPS, &CMainFrame::OnUpdateShowNormalMaps)
+	ON_COMMAND(ID_VIEW_SHOW_SPECULAR, &CMainFrame::OnShowSpecular)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_SHOW_SPECULAR, &CMainFrame::OnUpdateShowSpecular)
+	ON_COMMAND(ID_VIEW_EDITOR_MODE, &CMainFrame::OnUseEditorMode)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_EDITOR_MODE, &CMainFrame::OnUpdateUseEditorMode)
 #endif
-	ON_UPDATE_COMMAND_UI(ID_VIEW_2DXZ, OnUpdateView2d)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_2DYZ, OnUpdateView2d) 
-	ON_UPDATE_COMMAND_UI(ID_VIEW_2DXY, OnUpdateView2d)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_3DWIREFRAME, OnUpdateView3d)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_3DPOLYGON, OnUpdateView3d)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_3DTEXTURED, OnUpdateView3d)
-	//ON_UPDATE_COMMAND_UI(ID_VIEW_3DENGINE, OnUpdateView3d)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_2DXZ, &CMainFrame::OnUpdateView2d)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_2DYZ, &CMainFrame::OnUpdateView2d) 
+	ON_UPDATE_COMMAND_UI(ID_VIEW_2DXY, &CMainFrame::OnUpdateView2d)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_3DWIREFRAME, &CMainFrame::OnUpdateView3d)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_3DPOLYGON, &CMainFrame::OnUpdateView3d)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_3DTEXTURED, &CMainFrame::OnUpdateView3d)
+	//ON_UPDATE_COMMAND_UI(ID_VIEW_3DENGINE, &CMainFrame::OnUpdateView3d)
 #ifdef SLE //// New bar ids
-	ON_UPDATE_COMMAND_UI(ID_VIEW_UNDO_REDO_BAR, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_UNDO_REDO_BAR, CFrameWnd::OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_GRIDSELECTION, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_GRIDSELECTION, CFrameWnd::OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_GROUPHIDECORDONTEX, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_GROUPHIDECORDONTEX, CFrameWnd::OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_VISIBILITY, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_VISIBILITY, CFrameWnd::OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_CHECKCOMPILE, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_CHECKCOMPILE, CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_UNDO_REDO_BAR, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_UNDO_REDO_BAR, &CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_GRIDSELECTION, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_GRIDSELECTION, &CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_GROUPHIDECORDONTEX, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_GROUPHIDECORDONTEX, &CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_VISIBILITY, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_VISIBILITY, &CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_CHECKCOMPILE, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_CHECKCOMPILE, &CFrameWnd::OnBarCheck)
 #endif
 #ifndef SLE //// SL REMOVE - deprecated, Quake 2
-	ON_COMMAND_EX(ID_VIEW3D_BRIGHTER, OnView3dChangeBrightness)
-	ON_COMMAND_EX(ID_VIEW3D_DARKER, OnView3dChangeBrightness)
+	ON_COMMAND_EX(ID_VIEW3D_BRIGHTER, &CMainFrame::OnView3dChangeBrightness)
+	ON_COMMAND_EX(ID_VIEW3D_DARKER, &CMainFrame::OnView3dChangeBrightness)
 #endif
-	ON_UPDATE_COMMAND_UI(ID_VIEW_OBJECTBAR, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_OBJECTBAR, CFrameWnd::OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_SELECTION_MODE_BAR, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_SELECTION_MODE_BAR, CFrameWnd::OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_FILTERCONTROL, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_FILTERCONTROL, CFrameWnd::OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_MAPVIEWBAR, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_MAPVIEWBAR, CFrameWnd::OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_MAPTOOLSBAR, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_MAPTOOLSBAR, CFrameWnd::OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_TEXTUREBAR, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_TEXTUREBAR, CFrameWnd::OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_MANIFEST_BAR, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_MANIFEST_BAR, CFrameWnd::OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_ANIMATIONBAR, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_ANIMATIONBAR, CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_OBJECTBAR, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_OBJECTBAR, &CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_SELECTION_MODE_BAR, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_SELECTION_MODE_BAR, &CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_FILTERCONTROL, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_FILTERCONTROL, &CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_MAPVIEWBAR, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_MAPVIEWBAR, &CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_MAPTOOLSBAR, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_MAPTOOLSBAR, &CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_TEXTUREBAR, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_TEXTUREBAR, &CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_MANIFEST_BAR, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_MANIFEST_BAR, &CFrameWnd::OnBarCheck)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_ANIMATIONBAR, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_ANIMATIONBAR, &CFrameWnd::OnBarCheck)
 #ifdef SLE //// SLE TODO - separate render settings toolbar
-//	ON_UPDATE_COMMAND_UI(ID_VIEW_RENDERSETTINGS, CFrameWnd::OnUpdateControlBarMenu)
-//	ON_COMMAND_EX(ID_VIEW_RENDERSETTINGS, CFrameWnd::OnBarCheck)
+//	ON_UPDATE_COMMAND_UI(ID_VIEW_RENDERSETTINGS, &CFrameWnd::OnUpdateControlBarMenu)
+//	ON_COMMAND_EX(ID_VIEW_RENDERSETTINGS, &CFrameWnd::OnBarCheck)
 #endif
-	ON_UPDATE_COMMAND_UI(ID_VIEW_MAPOPSBAR, CFrameWnd::OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_MAPOPSBAR, CFrameWnd::OnBarCheck)
-	ON_COMMAND_EX(ID_TOOLS_POINTER, OnChangeTool)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_POINTER, OnUpdateToolUI)
-	ON_COMMAND_EX(ID_TOOLS_CAMERA, OnChangeTool)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_CAMERA, OnUpdateToolUI)
-	ON_COMMAND_EX(ID_TOOLS_MAGNIFY, OnChangeTool)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_MAGNIFY, OnUpdateToolUI)
-	ON_COMMAND_EX(ID_TOOLS_BLOCK, OnChangeTool)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_BLOCK, OnUpdateToolUI)
-	ON_COMMAND_EX(ID_TOOLS_ENTITY, OnChangeTool)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_ENTITY, OnUpdateToolUI)
-	ON_COMMAND_EX(ID_TOOLS_APPLYDECALS, OnChangeTool)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_APPLYDECALS, OnUpdateToolUI)
-	ON_COMMAND_EX(ID_TOOLS_MORPH, OnChangeTool)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_MORPH, OnUpdateToolUI)
-	ON_COMMAND_EX(ID_TOOLS_CLIPPER, OnChangeTool)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_CLIPPER, OnUpdateToolUI)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_MAPOPSBAR, &CFrameWnd::OnUpdateControlBarMenu)
+	ON_COMMAND_EX(ID_VIEW_MAPOPSBAR, &CFrameWnd::OnBarCheck)
+	ON_COMMAND_EX(ID_TOOLS_POINTER, &CMainFrame::OnChangeTool)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_POINTER, &CMainFrame::OnUpdateToolUI)
+	ON_COMMAND_EX(ID_TOOLS_CAMERA, &CMainFrame::OnChangeTool)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_CAMERA, &CMainFrame::OnUpdateToolUI)
+	ON_COMMAND_EX(ID_TOOLS_MAGNIFY, &CMainFrame::OnChangeTool)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_MAGNIFY, &CMainFrame::OnUpdateToolUI)
+	ON_COMMAND_EX(ID_TOOLS_BLOCK, &CMainFrame::OnChangeTool)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_BLOCK, &CMainFrame::OnUpdateToolUI)
+	ON_COMMAND_EX(ID_TOOLS_ENTITY, &CMainFrame::OnChangeTool)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_ENTITY, &CMainFrame::OnUpdateToolUI)
+	ON_COMMAND_EX(ID_TOOLS_APPLYDECALS, &CMainFrame::OnChangeTool)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_APPLYDECALS, &CMainFrame::OnUpdateToolUI)
+	ON_COMMAND_EX(ID_TOOLS_MORPH, &CMainFrame::OnChangeTool)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_MORPH, &CMainFrame::OnUpdateToolUI)
+	ON_COMMAND_EX(ID_TOOLS_CLIPPER, &CMainFrame::OnChangeTool)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_CLIPPER, &CMainFrame::OnUpdateToolUI)
 #ifdef SLE
-	ON_COMMAND_EX(ID_TOOLS_CLIPPER3POINT, OnChangeTool) //// SLE NEW - 3-point clipping tool, a subclass of normal Clipper
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_CLIPPER3POINT, OnUpdateToolUI)
+	ON_COMMAND_EX(ID_TOOLS_CLIPPER3POINT, &CMainFrame::OnChangeTool) //// SLE NEW - 3-point clipping tool, a subclass of normal Clipper
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_CLIPPER3POINT, &CMainFrame::OnUpdateToolUI)
 #endif
-	ON_COMMAND_EX(ID_TOOLS_EDITCORDON, OnChangeTool)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_EDITCORDON, OnUpdateToolUI)
-	ON_COMMAND_EX(ID_TOOLS_PATH, OnChangeTool)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_PATH, OnUpdateToolUI)
-	ON_COMMAND_EX(ID_TOOLS_OVERLAY, OnChangeTool)
-	ON_UPDATE_COMMAND_UI(ID_TOOLS_OVERLAY, OnUpdateToolUI)
-	ON_COMMAND_EX(ID_MODE_APPLICATOR, OnApplicator)
-	ON_COMMAND_EX(ID_TOOLS_SOUND_BROWSER, OnSoundBrowser)
-	ON_COMMAND_EX(ID_FILE_RELOAD_SOUNDS, OnReloadSounds)
+	ON_COMMAND_EX(ID_TOOLS_EDITCORDON, &CMainFrame::OnChangeTool)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_EDITCORDON, &CMainFrame::OnUpdateToolUI)
+	ON_COMMAND_EX(ID_TOOLS_PATH, &CMainFrame::OnChangeTool)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_PATH, &CMainFrame::OnUpdateToolUI)
+	ON_COMMAND_EX(ID_TOOLS_OVERLAY, &CMainFrame::OnChangeTool)
+	ON_UPDATE_COMMAND_UI(ID_TOOLS_OVERLAY, &CMainFrame::OnUpdateToolUI)
+	ON_COMMAND_EX(ID_MODE_APPLICATOR, &CMainFrame::OnApplicator)
+	ON_COMMAND_EX(ID_TOOLS_SOUND_BROWSER, &CMainFrame::OnSoundBrowser)
+	ON_COMMAND_EX(ID_FILE_RELOAD_SOUNDS, &CMainFrame::OnReloadSounds)
 #ifdef SLE
-	ON_COMMAND(ID_TOOLS_MODEL_BROWSER, OnModelBrowser) //// SLE NEW - backports for matsys_control
-	ON_COMMAND_EX(ID_FILE_RELOAD_MATERIALS, OnReloadMaterials) //// SLE NEW: option to manually uncache mats and textures
-	ON_COMMAND_EX(ID_FILE_RELOAD_FGD, OnReloadFGD) //// SLE NEW: quick fgd reload button
+	ON_COMMAND(ID_TOOLS_MODEL_BROWSER, &CMainFrame::OnModelBrowser) //// SLE NEW - backports for matsys_control
+	ON_COMMAND_EX(ID_FILE_RELOAD_MATERIALS, &CMainFrame::OnReloadMaterials) //// SLE NEW: option to manually uncache mats and textures
+	ON_COMMAND_EX(ID_FILE_RELOAD_FGD, &CMainFrame::OnReloadFGD) //// SLE NEW: quick fgd reload button
 #endif
-    ON_UPDATE_COMMAND_UI(ID_MODE_APPLICATOR, OnUpdateApplicatorUI)
+    ON_UPDATE_COMMAND_UI(ID_MODE_APPLICATOR, &CMainFrame::OnUpdateApplicatorUI)
 #ifdef SLE //// SLE CHANGE - bring back offline .chm help
-	ON_COMMAND(ID_HELP_OFFLINE, OnHelpFinder)
+	ON_COMMAND(ID_HELP_OFFLINE, &CMainFrame::OnHelpFinder)
 #endif
-	ON_COMMAND(ID_HELP_FINDER, CMDIFrameWnd::OnHelpFinder)
-	ON_COMMAND(ID_HELP, CMDIFrameWnd::OnHelp)
-	ON_COMMAND(ID_CONTEXT_HELP, CMDIFrameWnd::OnContextHelp)
-	ON_COMMAND(ID_DEFAULT_HELP, CMDIFrameWnd::OnHelpFinder)
-	ON_COMMAND(ID_HDR, OnHDR)
+	ON_COMMAND(ID_HELP_FINDER, &CMDIFrameWnd::OnHelpFinder)
+	ON_COMMAND(ID_HELP, &CMDIFrameWnd::OnHelp)
+	ON_COMMAND(ID_CONTEXT_HELP, &CMDIFrameWnd::OnContextHelp)
+	ON_COMMAND(ID_DEFAULT_HELP, &CMDIFrameWnd::OnHelpFinder)
+	ON_COMMAND(ID_HDR, &CMainFrame::OnHDR)
 	ON_WM_HELPINFO()
 	ON_WM_SYSCOMMAND()
 	ON_WM_ENTERMENULOOP()
 #ifdef SLE_WINTAB_ENABLE //// SLE NEW - Tablet support w/ Wintab
-	ON_MESSAGE(WT_PACKET, OnWTPacket)
+	ON_MESSAGE(WT_PACKET, &CMainFrame::OnWTPacket)
 #endif
 #if defined( SLE )
 	ON_WM_DROPFILES()
@@ -758,7 +758,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//
 	CRect clientrect;
 	wndMDIClient.GetClientRect(clientrect);
-	g_pwndMessage->CreateMessageWindow( this, CRect( 0, clientrect.Height() - 90, clientrect.Width(), clientrect.Height() ) );
+	CRect msgWndRect( 0, clientrect.Height() - 90, clientrect.Width(), clientrect.Height() );
+	g_pwndMessage->CreateMessageWindow( this, msgWndRect );
 
 	CPrefabLibrary::LoadAllLibraries();
 
@@ -1169,7 +1170,8 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 		CRect clientrect;
 		wndMDIClient.GetClientRect(clientrect);
 
-		g_pwndMessage->Resize(CRect(0, clientrect.Height() - 130, clientrect.Width(), clientrect.Height()));
+		CRect msgWndRect(0, clientrect.Height() - 130, clientrect.Width(), clientrect.Height());
+		g_pwndMessage->Resize(msgWndRect);
 	}
 }
 

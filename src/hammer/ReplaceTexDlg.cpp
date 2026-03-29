@@ -59,10 +59,10 @@ void CReplaceTexDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CReplaceTexDlg, CDialog)
 	//{{AFX_MSG_MAP(CReplaceTexDlg)
-	ON_BN_CLICKED(IDC_BROWSEREPLACE, OnBrowsereplace)
-	ON_BN_CLICKED(IDC_BROWSEFIND, OnBrowsefind)
-	ON_EN_UPDATE(IDC_FIND, OnUpdateFind)
-	ON_EN_UPDATE(IDC_REPLACE, OnUpdateReplace)
+	ON_BN_CLICKED(IDC_BROWSEREPLACE, &CReplaceTexDlg::OnBrowsereplace)
+	ON_BN_CLICKED(IDC_BROWSEFIND, &CReplaceTexDlg::OnBrowsefind)
+	ON_EN_UPDATE(IDC_FIND, &CReplaceTexDlg::OnUpdateFind)
+	ON_EN_UPDATE(IDC_REPLACE, &CReplaceTexDlg::OnUpdateReplace)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

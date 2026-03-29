@@ -487,7 +487,7 @@ BEGIN_SRC( HAMMER_DLL_SOURCE_FILES "Source Files" )
 			"${SRCDIR}/public/bone_setup.cpp"
 			"${SRCDIR}/public/CollisionUtils.cpp"
 			"${SRCDIR}/common/debug_dll_check.cpp"
-			"${SRCDIR}/public/filesystem_helpers.cpp"
+			#"${SRCDIR}/public/filesystem_helpers.cpp"
 			"${SRCDIR}/public/filesystem_init.cpp"
 			"${SRCDIR}/public/interpolatortypes.cpp"
 			"${SRCDIR}/public/KeyFrame/keyframe.cpp"

@@ -366,7 +366,7 @@ protected:
 	void ComputeColor( CRender3D* pRender, bool bRenderAsSelected, SelectionState_t faceSelectionState,
 					   bool ignoreLighting, Color &pColor );	
 #ifdef SLE
-	void DrawFace(Vector& ViewPoint, Color &pColor, EditorRenderMode_t mode, bool bPicking /*= false*/ );
+	void DrawFace( CRender* pRender, Color &pColor, EditorRenderMode_t mode, bool bPicking /*= false*/ );
 #else
 	void DrawFace( Color &pColor, EditorRenderMode_t mode );
 #endif
@@ -393,6 +393,32 @@ protected:
 	//
 	static ChunkFileResult_t LoadDispInfoCallback(CChunkFile *pFile, CMapFace *pFace);
 	static ChunkFileResult_t LoadKeyCallback(const char *szKey, const char *szValue, LoadFace_t *pLoadFace);
+	
+	// Have to put these functions here because of the inline, so the displacements can access it too. Bleh!
+	FORCEINLINE bool CullFace( CRender *pRender, PLANE& CullPlane, Vector& ViewPoint )
+	{
+		if ( /*m_bInvalidFace 
+			||*/ ( pRender->GetDefaultRenderMode() == RENDER_MODE_WIREFRAME )
+			|| ( pRender->GetCurrentRenderMode() == RENDER_MODE_FLAT_NOZ )
+			|| pRender->IsInLocalTransformMode() 
+			/*|| m_pTexture->IsNoCull()*/ )
+			return false;
+
+		if ( pRender->GetInstanceRendering() )
+		{
+			//PLANE Plane;
+			//pRender->TransformInstancePlane( CullPlane, Plane );
+			//if ( DotProduct( Plane.normal, ViewPoint ) < Plane.dist )
+			//	return true;
+		}
+		else
+		{
+			if ( DotProduct( CullPlane.normal, ViewPoint ) < CullPlane.dist )
+				return true;
+		}
+
+		return false;
+	}
 
 	unsigned char m_uchAlpha;			// HACK: should be in CMapAtom
 

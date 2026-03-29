@@ -48,7 +48,7 @@ void CEditPrefabDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CEditPrefabDlg, CDialog)
 	//{{AFX_MSG_MAP(CEditPrefabDlg)
-	ON_CBN_SELCHANGE(IDC_CREATEIN, OnSelchangeCreatein)
+	ON_CBN_SELCHANGE(IDC_CREATEIN, &CEditPrefabDlg::OnSelchangeCreatein)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

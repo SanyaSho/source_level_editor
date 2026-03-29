@@ -40,40 +40,40 @@ BEGIN_MESSAGE_MAP(CChildFrame, CMDIChildWnd)
 	ON_WM_PAINT()
 #endif
 	ON_WM_CLOSE()
-	ON_COMMAND(ID_VIEW_2DXY, OnView2dxy)
-	ON_COMMAND(ID_VIEW_2DYZ, OnView2dyz)
-	ON_COMMAND(ID_VIEW_2DXZ, OnView2dxz)
-	ON_COMMAND(ID_VIEW_2DLOGICAL, OnViewLogical)
-	ON_COMMAND(ID_VIEW_3DPOLYGON, OnView3dPolygon)
-	ON_COMMAND(ID_VIEW_3DTEXTURED, OnView3dTextured)
-	ON_COMMAND(ID_VIEW_3DTEXTURED_SHADED, OnView3dTexturedShaded)
+	ON_COMMAND(ID_VIEW_2DXY, &CChildFrame::OnView2dxy)
+	ON_COMMAND(ID_VIEW_2DYZ, &CChildFrame::OnView2dyz)
+	ON_COMMAND(ID_VIEW_2DXZ, &CChildFrame::OnView2dxz)
+	ON_COMMAND(ID_VIEW_2DLOGICAL, &CChildFrame::OnViewLogical)
+	ON_COMMAND(ID_VIEW_3DPOLYGON, &CChildFrame::OnView3dPolygon)
+	ON_COMMAND(ID_VIEW_3DTEXTURED, &CChildFrame::OnView3dTextured)
+	ON_COMMAND(ID_VIEW_3DTEXTURED_SHADED, &CChildFrame::OnView3dTexturedShaded)
 #ifdef SLE //// SLE CHANGE - lighting preview is BSP lightmaps, 2 is the procedural one (unused)
-	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW, OnView3dBSPLightingPreview)
-	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW2, OnView3dLightingPreview)
+	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW, &CChildFrame::OnView3dBSPLightingPreview)
+	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW2, &CChildFrame::OnView3dLightingPreview)
 #else	
-	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW, OnView3dLightingPreview)
+	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW, &CChildFrame::OnView3dLightingPreview)
 #endif
-	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW_RAYTRACED, OnView3dLightingPreviewRayTraced)
-	ON_COMMAND(ID_VIEW_3DLIGHTMAP_GRID, OnView3dLightmapGrid)
-	ON_COMMAND(ID_VIEW_3DWIREFRAME, OnView3dWireframe)
-	ON_COMMAND(ID_VIEW_3DSMOOTH, OnView3dSmooth)
+	ON_COMMAND(ID_VIEW_LIGHTINGPREVIEW_RAYTRACED, &CChildFrame::OnView3dLightingPreviewRayTraced)
+	ON_COMMAND(ID_VIEW_3DLIGHTMAP_GRID, &CChildFrame::OnView3dLightmapGrid)
+	ON_COMMAND(ID_VIEW_3DWIREFRAME, &CChildFrame::OnView3dWireframe)
+	ON_COMMAND(ID_VIEW_3DSMOOTH, &CChildFrame::OnView3dSmooth)
 #ifdef SLE
-	ON_COMMAND(ID_SWITCH_3DVIEW_TO_WIREFRAME, OnSwitch3dToWireframe) //// SLE NEW: separate commands for switching 3d view modes through F1-5 hotkeys.
-	ON_COMMAND(ID_SWITCH_3DVIEW_TO_FLATPOLYS, OnSwitch3dToFlatPolys)
-	ON_COMMAND(ID_SWITCH_3DVIEW_TO_TEXTURED, OnSwitch3dToTextured)
-	ON_COMMAND(ID_SWITCH_3DVIEW_TO_SHADED, OnSwitch3dToShaded)
-	ON_COMMAND(ID_SWITCH_3DVIEW_TO_LIGHTMAPS, OnSwitch3dToLightmaps)
-	ON_COMMAND(ID_VIEW_ENGINE, OnView3dEngine) //// SLE NEW: Attempted to restore "Engine View" functionality. So far unsuccessful.
+	ON_COMMAND(ID_SWITCH_3DVIEW_TO_WIREFRAME, &CChildFrame::OnSwitch3dToWireframe) //// SLE NEW: separate commands for switching 3d view modes through F1-5 hotkeys.
+	ON_COMMAND(ID_SWITCH_3DVIEW_TO_FLATPOLYS, &CChildFrame::OnSwitch3dToFlatPolys)
+	ON_COMMAND(ID_SWITCH_3DVIEW_TO_TEXTURED, &CChildFrame::OnSwitch3dToTextured)
+	ON_COMMAND(ID_SWITCH_3DVIEW_TO_SHADED, &CChildFrame::OnSwitch3dToShaded)
+	ON_COMMAND(ID_SWITCH_3DVIEW_TO_LIGHTMAPS, &CChildFrame::OnSwitch3dToLightmaps)
+	ON_COMMAND(ID_VIEW_ENGINE, &CChildFrame::OnView3dEngine) //// SLE NEW: Attempted to restore "Engine View" functionality. So far unsuccessful.
 #endif
-	ON_COMMAND(ID_VIEW_AUTOSIZE4, OnViewAutosize4)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_AUTOSIZE4, OnUpdateViewAutosize4)
-	ON_COMMAND(ID_VIEW_MAXIMIZEPANE, OnViewMaximizepane)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_MAXIMIZERESTOREACTIVEVIEW, OnUpdateViewMaximizepane)
-	ON_COMMAND(ID_WINDOW_TOGGLE, OnWindowToggle)
-	ON_COMMAND(ID_VIEW_MAXIMIZERESTOREACTIVEVIEW, OnViewMaximizepane)
+	ON_COMMAND(ID_VIEW_AUTOSIZE4, &CChildFrame::OnViewAutosize4)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_AUTOSIZE4, &CChildFrame::OnUpdateViewAutosize4)
+	ON_COMMAND(ID_VIEW_MAXIMIZEPANE, &CChildFrame::OnViewMaximizepane)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_MAXIMIZERESTOREACTIVEVIEW, &CChildFrame::OnUpdateViewMaximizepane)
+	ON_COMMAND(ID_WINDOW_TOGGLE, &CChildFrame::OnWindowToggle)
+	ON_COMMAND(ID_VIEW_MAXIMIZERESTOREACTIVEVIEW, &CChildFrame::OnViewMaximizepane)
 #ifdef SLE
-	ON_COMMAND(ID_VIEW_MAXIMISERESTORE3DVIEW, OnMaximize3DView) //// SLE NEW - space for maximising/restoring 3d viewport exclusively
-	ON_UPDATE_COMMAND_UI(ID_VIEW_MAXIMISERESTORE3DVIEW, OnUpdateMaximize3DView)
+	ON_COMMAND(ID_VIEW_MAXIMISERESTORE3DVIEW, &CChildFrame::OnMaximize3DView) //// SLE NEW - space for maximising/restoring 3d viewport exclusively
+	ON_UPDATE_COMMAND_UI(ID_VIEW_MAXIMISERESTORE3DVIEW, &CChildFrame::OnUpdateMaximize3DView)
 #endif
 	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP

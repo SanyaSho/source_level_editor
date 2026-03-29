@@ -43,10 +43,10 @@ void CMapDiffDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CMapDiffDlg, CDialog)
-	ON_BN_CLICKED(IDC_SIMILARCHECK, OnBnClickedSimilarcheck)
-	ON_BN_CLICKED(IDC_MAPBROWSE, OnBnClickedMapbrowse)
-	ON_BN_CLICKED(IDOK, OnBnClickedOk)
-	ON_BN_CLICKED(IDCANCEL, OnBnClickedCancel)
+	ON_BN_CLICKED(IDC_SIMILARCHECK, &CMapDiffDlg::OnBnClickedSimilarcheck)
+	ON_BN_CLICKED(IDC_MAPBROWSE, &CMapDiffDlg::OnBnClickedMapbrowse)
+	ON_BN_CLICKED(IDOK, &CMapDiffDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDCANCEL, &CMapDiffDlg::OnBnClickedCancel)
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 

@@ -27,8 +27,8 @@ BEGIN_MESSAGE_MAP(COP_Model, CObjectPage)
 	/*
 	ON_WM_LBUTTONUP()
 	*/
-	ON_COMMAND(IDC_MODEL_TAB_PLAYANIMS, OnPlayModelAnimations) //// SLE NEW: Easy menu key to toggle model animations on/off.
-	ON_UPDATE_COMMAND_UI(IDC_MODEL_TAB_PLAYANIMS, OnUpdatePlayModelAnimations)
+	ON_COMMAND(IDC_MODEL_TAB_PLAYANIMS, &COP_Model::OnPlayModelAnimations) //// SLE NEW: Easy menu key to toggle model animations on/off.
+	ON_UPDATE_COMMAND_UI(IDC_MODEL_TAB_PLAYANIMS, &COP_Model::OnUpdatePlayModelAnimations)
 #endif
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()

@@ -676,7 +676,8 @@ void CToolEntitySprinkle::CreateMapObject( Vector &vOrigin, Vector &vSurfaceNorm
 		pEntity = new CMapEntity;
 	}
 
-	pEntity->SetOrigin( vOrigin + Vector(0,0,z) );
+	Vector originVec( vOrigin + Vector( 0, 0, z ) );
+	pEntity->SetOrigin( originVec );
 	pEntity->SetClass( pClass->GetString() );
 
 	PopulateEntity( pEntity, pBaseInfo );
@@ -1008,7 +1009,10 @@ void CToolEntitySprinkle::PerformSprinkle( bool bInitial )
 				ReplacedEntities[ i ]->GetOrigin( vOrigin );
 
 				if( !bSurfaceAlign)
-					CreateMapObject( vOrigin, Vector(0,0,1), pSprinkleType, nMode, bRandomYaw, ReplacedEntities[ i ] );
+				{
+					Vector normalVec( 0, 0, 1 );
+					CreateMapObject( vOrigin, normalVec, pSprinkleType, nMode, bRandomYaw, ReplacedEntities[i] );
+				}
 				else
 				{
 					Vector vStart, vEnd;

@@ -39,10 +39,10 @@ void CRunMapCfgDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CRunMapCfgDlg, CDialog)
 	//{{AFX_MSG_MAP(CRunMapCfgDlg)
-	ON_BN_CLICKED(IDC_NEW, OnNew)
-	ON_BN_CLICKED(IDC_REMOVE, OnRemove)
-	ON_BN_CLICKED(IDC_RENAME, OnRename)
-	ON_BN_CLICKED(IDC_COPY, OnCopy)
+	ON_BN_CLICKED(IDC_NEW, &CRunMapCfgDlg::OnNew)
+	ON_BN_CLICKED(IDC_REMOVE, &CRunMapCfgDlg::OnRemove)
+	ON_BN_CLICKED(IDC_RENAME, &CRunMapCfgDlg::OnRename)
+	ON_BN_CLICKED(IDC_COPY, &CRunMapCfgDlg::OnCopy)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

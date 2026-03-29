@@ -56,7 +56,7 @@ static const char *g_pszClassName = "ValveEditor_EntityToolWnd";
 
 BEGIN_MESSAGE_MAP(CToolEntityMessageWnd, CWnd)
 	//{{AFX_MSG_MAP(CToolMessageWnd)
-	ON_COMMAND(ID_CREATEOBJECT, OnCreateObject)
+	ON_COMMAND(ID_CREATEOBJECT, &CToolEntityMessageWnd::OnCreateObject)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

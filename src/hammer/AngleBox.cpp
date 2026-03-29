@@ -472,8 +472,8 @@ void CAngleBox::UpdateAngleEditText(void)
 
 BEGIN_MESSAGE_MAP(CAngleCombo, CWnd)
 	//{{AFX_MSG_MAP(CAngleBox)
-	ON_CONTROL_REFLECT(CBN_EDITCHANGE, OnChangeAngleEdit)
-	ON_CONTROL_REFLECT(CBN_SELENDOK, OnSelChangeAngleEdit)
+	ON_CONTROL_REFLECT(CBN_EDITCHANGE, &CAngleCombo::OnChangeAngleEdit)
+	ON_CONTROL_REFLECT(CBN_SELENDOK, &CAngleCombo::OnSelChangeAngleEdit)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

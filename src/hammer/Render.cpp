@@ -108,7 +108,9 @@ CRender::CRender(void)
 	m_nInstanceCount = 0;
 	m_InstanceSelectionDepth = 0;
 
-	PushInstanceData( NULL, Vector( 0.0f, 0.0f, 0.0f ), QAngle( 0.0f, 0.0f, 0.0f ) ); // always add a default state
+	Vector originVec( 0.f, 0.f, 0.f );
+	QAngle originAng( 0.f, 0.f, 0.f );
+	PushInstanceData( NULL, originVec, originAng ); // always add a default state
 
 	UpdateStudioRenderConfig( false, false );
 }
@@ -293,7 +295,9 @@ void CRender::DrawInstanceStencil( void )
 		m_ShaderStencilState.m_nReferenceValue = 0x01;
 		pRenderContext->SetStencilState( m_ShaderStencilState );
 #endif // STENCIL_AS_CALLS
-		DrawFilledRect( Vector2D( 0.0f, 0.0f ), Vector2D( width, height ), ( byte * )&InstanceColoring, false );
+		static Vector2D ulVec2D( 0.f, 0.f );
+		Vector2D lrVec2D( width, height );
+		DrawFilledRect( ulVec2D, lrVec2D, (byte *)&InstanceColoring, false );
 
 		InstanceColor( InstanceColoring, true );
 #if STENCIL_AS_CALLS
@@ -303,7 +307,7 @@ void CRender::DrawInstanceStencil( void )
 		m_ShaderStencilState.m_nReferenceValue = 0x02;
 		pRenderContext->SetStencilState( m_ShaderStencilState );
 #endif // STENCIL_AS_CALLS
-		DrawFilledRect( Vector2D( 0.0f, 0.0f ), Vector2D( width, height ), ( byte * )&InstanceColoring, false );
+		DrawFilledRect( ulVec2D, lrVec2D, (byte *)&InstanceColoring, false );
 
 		EndClientSpace();
 		PopRenderMode();

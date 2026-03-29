@@ -47,7 +47,7 @@ void COP_Flags::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(COP_Flags, CObjectPage)
 	//{{AFX_MSG_MAP(COP_Flags)
-	ON_CLBN_CHKCHANGE(IDC_CHECKLIST, OnCheckListChange)
+	ON_CLBN_CHKCHANGE(IDC_CHECKLIST, &COP_Flags::OnCheckListChange)
 	ON_WM_SIZE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()

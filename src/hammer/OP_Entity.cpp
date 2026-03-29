@@ -411,52 +411,52 @@ void CSmartControlTargetNameRouter::OnTextChanged( const char *pText )
 
 BEGIN_MESSAGE_MAP(COP_Entity, CObjectPage)
 	//{{AFX_MSG_MAP(COP_Entity)
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_KEYVALUES, OnItemChangedKeyValues)
-	ON_NOTIFY(NM_DBLCLK, IDC_KEYVALUES, OnDblClickKeyValues)
-	ON_BN_CLICKED(IDC_ADDKEYVALUE, OnAddkeyvalue)
-	ON_BN_CLICKED(IDC_REMOVEKEYVALUE, OnRemovekeyvalue)
-	ON_BN_CLICKED(IDC_SMARTEDIT, OnSmartedit)
-	ON_EN_CHANGE(IDC_VALUE, OnChangeKeyorValue)
-	ON_BN_CLICKED(IDC_COPY, OnCopy)
-	ON_BN_CLICKED(IDC_PASTE, OnPaste)
-	ON_BN_CLICKED(IDC_PICKCOLOR, OnPickColor)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_KEYVALUES, &COP_Entity::OnItemChangedKeyValues)
+	ON_NOTIFY(NM_DBLCLK, IDC_KEYVALUES, &COP_Entity::OnDblClickKeyValues)
+	ON_BN_CLICKED(IDC_ADDKEYVALUE, &COP_Entity::OnAddkeyvalue)
+	ON_BN_CLICKED(IDC_REMOVEKEYVALUE, &COP_Entity::OnRemovekeyvalue)
+	ON_BN_CLICKED(IDC_SMARTEDIT, &COP_Entity::OnSmartedit)
+	ON_EN_CHANGE(IDC_VALUE, &COP_Entity::OnChangeKeyorValue)
+	ON_BN_CLICKED(IDC_COPY, &COP_Entity::OnCopy)
+	ON_BN_CLICKED(IDC_PASTE, &COP_Entity::OnPaste)
+	ON_BN_CLICKED(IDC_PICKCOLOR, &COP_Entity::OnPickColor)
 	ON_WM_SIZE()
-	ON_EN_SETFOCUS(IDC_KEY, OnSetfocusKey)
-	ON_EN_KILLFOCUS(IDC_KEY, OnKillfocusKey)
-	ON_MESSAGE(ABN_CHANGED, OnChangeAngleBox)
-	ON_CBN_SELCHANGE(IDC_SMARTCONTROL, OnChangeSmartcontrolSel)
-	ON_CBN_EDITUPDATE(IDC_SMARTCONTROL, OnChangeSmartcontrol)
-	ON_EN_CHANGE(IDC_SMARTCONTROL, OnChangeSmartcontrol)
-	ON_BN_CLICKED(IDC_BROWSE, OnBrowse)
-	ON_BN_CLICKED(IDC_BROWSE_INSTANCE, OnBrowseInstance)
-	ON_BN_CLICKED(IDC_PLAY_SOUND, OnPlaySound)
+	ON_EN_SETFOCUS(IDC_KEY, &COP_Entity::OnSetfocusKey)
+	ON_EN_KILLFOCUS(IDC_KEY, &COP_Entity::OnKillfocusKey)
+	ON_MESSAGE(ABN_CHANGED, &COP_Entity::OnChangeAngleBox)
+	ON_CBN_SELCHANGE(IDC_SMARTCONTROL, &COP_Entity::OnChangeSmartcontrolSel)
+	ON_CBN_EDITUPDATE(IDC_SMARTCONTROL, &COP_Entity::OnChangeSmartcontrol)
+	ON_EN_CHANGE(IDC_SMARTCONTROL, &COP_Entity::OnChangeSmartcontrol)
+	ON_BN_CLICKED(IDC_BROWSE, &COP_Entity::OnBrowse)
+	ON_BN_CLICKED(IDC_BROWSE_INSTANCE, &COP_Entity::OnBrowseInstance)
+	ON_BN_CLICKED(IDC_PLAY_SOUND, &COP_Entity::OnPlaySound)
 #ifdef SLE //// SLE NEW - stop sound button for object properties
-	ON_BN_CLICKED(IDC_STOPSOUND, OnStopSound)
+	ON_BN_CLICKED(IDC_STOPSOUND, &COP_Entity::OnStopSound)
 #endif
-	ON_BN_CLICKED(IDC_MARK, OnMark)
-	ON_BN_CLICKED(IDC_MARK_AND_ADD, OnMarkAndAdd)
-	ON_BN_CLICKED(IDC_PICK_FACES, OnPickFaces)
-	ON_BN_CLICKED(IDC_ENTITY_HELP, OnEntityHelp)
+	ON_BN_CLICKED(IDC_MARK, &COP_Entity::OnMark)
+	ON_BN_CLICKED(IDC_MARK_AND_ADD, &COP_Entity::OnMarkAndAdd)
+	ON_BN_CLICKED(IDC_PICK_FACES, &COP_Entity::OnPickFaces)
+	ON_BN_CLICKED(IDC_ENTITY_HELP, &COP_Entity::OnEntityHelp)
 #ifdef SLE
-	ON_BN_CLICKED(IDC_ENTITY_HELP_ONLINE, OnEntityHelpOnline)
-	ON_BN_CLICKED(IDC_ENTITY_PRESET_LIST, OnEntityPresetList) //// SLE NEW - quick access class buttons for setting current entity's class
-	ON_COMMAND_EX_RANGE(COP_Entity::id_QuickAccess_Start, COP_Entity::id_QuickAccess_End, InsertEntityPreset)
-	//	ON_BN_CLICKED(IDC_ENTITY_PRESET1, OnQuickAccess1) // been reworked as a drop-down list
-	//	ON_BN_CLICKED(IDC_ENTITY_PRESET2, OnQuickAccess2)
-	//	ON_BN_CLICKED(IDC_ENTITY_PRESET3, OnQuickAccess3)
-	//	ON_BN_CLICKED(IDC_ENTITY_PRESET4, OnQuickAccess4)
+	ON_BN_CLICKED(IDC_ENTITY_HELP_ONLINE, &COP_Entity::OnEntityHelpOnline)
+	ON_BN_CLICKED(IDC_ENTITY_PRESET_LIST, &COP_Entity::OnEntityPresetList) //// SLE NEW - quick access class buttons for setting current entity's class
+	ON_COMMAND_EX_RANGE(COP_Entity::id_QuickAccess_Start, COP_Entity::id_QuickAccess_End, &COP_Entity::InsertEntityPreset)
+	//	ON_BN_CLICKED(IDC_ENTITY_PRESET1, &COP_Entity::OnQuickAccess1) // been reworked as a drop-down list
+	//	ON_BN_CLICKED(IDC_ENTITY_PRESET2, &COP_Entity::OnQuickAccess2)
+	//	ON_BN_CLICKED(IDC_ENTITY_PRESET3, &COP_Entity::OnQuickAccess3)
+	//	ON_BN_CLICKED(IDC_ENTITY_PRESET4, &COP_Entity::OnQuickAccess4)
 	
-	ON_BN_CLICKED(IDC_ANGLE_RANDOM_YAW, OnSetRandomYaw) //// SLE NEW: Button to randomise yaw in already placed objects.
-	ON_BN_CLICKED(IDC_ANGLE_FIXUP, OnFixupAngles) //// SLE NEW: Button to round angle values.
+	ON_BN_CLICKED(IDC_ANGLE_RANDOM_YAW, &COP_Entity::OnSetRandomYaw) //// SLE NEW: Button to randomise yaw in already placed objects.
+	ON_BN_CLICKED(IDC_ANGLE_FIXUP, &COP_Entity::OnFixupAngles) //// SLE NEW: Button to round angle values.
 #endif
-	ON_BN_CLICKED(IDC_PICK_ANGLES, OnPickAngles)
-	ON_BN_CLICKED(IDC_PICK_ENTITY, OnPickEntity)
-	ON_BN_CLICKED(IDC_CAMERA_DISTANCE, OnCameraDistance)
-	ON_EN_CHANGE(IDC_SMARTCONTROL_INSTANCE_VARIABLE, OnChangeInstanceVariableControl)
-	ON_EN_CHANGE(IDC_SMARTCONTROL_INSTANCE_VALUE, OnChangeInstanceVariableControl)
-	ON_EN_CHANGE(IDC_SMARTCONTROL_INSTANCE_PARM, OnChangeInstanceParmControl)
-	ON_CBN_SELCHANGE(IDC_SMARTCONTROL_INSTANCE_PARM, OnChangeInstanceParmControl)
-	ON_CBN_EDITUPDATE(IDC_SMARTCONTROL_INSTANCE_PARM, OnChangeInstanceParmControl)
+	ON_BN_CLICKED(IDC_PICK_ANGLES, &COP_Entity::OnPickAngles)
+	ON_BN_CLICKED(IDC_PICK_ENTITY, &COP_Entity::OnPickEntity)
+	ON_BN_CLICKED(IDC_CAMERA_DISTANCE, &COP_Entity::OnCameraDistance)
+	ON_EN_CHANGE(IDC_SMARTCONTROL_INSTANCE_VARIABLE, &COP_Entity::OnChangeInstanceVariableControl)
+	ON_EN_CHANGE(IDC_SMARTCONTROL_INSTANCE_VALUE, &COP_Entity::OnChangeInstanceVariableControl)
+	ON_EN_CHANGE(IDC_SMARTCONTROL_INSTANCE_PARM, &COP_Entity::OnChangeInstanceParmControl)
+	ON_CBN_SELCHANGE(IDC_SMARTCONTROL_INSTANCE_PARM, &COP_Entity::OnChangeInstanceParmControl)
+	ON_CBN_EDITUPDATE(IDC_SMARTCONTROL_INSTANCE_PARM, &COP_Entity::OnChangeInstanceParmControl)
 #ifdef SLE_DARK_THEME
 	ON_WM_CTLCOLOR()
 	ON_WM_ERASEBKGND()
@@ -2547,7 +2547,7 @@ void COP_Entity::CreateSmartControls_BrowseAndPlayButtons(GDinputvariable *pVar,
 #ifdef SLE //// SLE NEW - more data types
 void COP_Entity::CreateSmartControls_BrowseScripts(GDinputvariable *pVar, CRect &ctrlrect, HFONT hControlFont)
 {
-	if ( m_eEditType == ivScript ) //// at the moment, only singular scripts are supported
+	if ( m_eEditType == ivScript ) //// at the moment, &COP_Entity::Only singular scripts are supported
 	{
 		CRect ButtonRect = ctrlrect;
 

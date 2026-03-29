@@ -22,9 +22,9 @@ static BOOL s_bLastHideObjects = TRUE;
 
 BEGIN_MESSAGE_MAP(CNewVisGroupDlg, CDialog)
 	//{{AFX_MSG_MAP(CNewVisGroupDlg)
-	ON_REGISTERED_MESSAGE(g_uSelChangeMsg, OnSelChangeGroupList)
-	ON_COMMAND(IDC_PLACE_IN_EXISTING_VISGROUP, OnPlaceInExistingVisGroup)
-	ON_COMMAND(IDC_CREATE_NEW_VISGROUP, OnCreateNewVisGroup)
+	ON_REGISTERED_MESSAGE(g_uSelChangeMsg, &CNewVisGroupDlg::OnSelChangeGroupList)
+	ON_COMMAND(IDC_PLACE_IN_EXISTING_VISGROUP, &CNewVisGroupDlg::OnPlaceInExistingVisGroup)
+	ON_COMMAND(IDC_CREATE_NEW_VISGROUP, &CNewVisGroupDlg::OnCreateNewVisGroup)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

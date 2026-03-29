@@ -17,7 +17,7 @@
 
 BEGIN_MESSAGE_MAP(CScenePreviewDlg, CDialog)
 	//{{AFX_MSG_MAP(CScenePreviewDlg)
-	ON_BN_CLICKED(IDCANCEL, OnCancel)
+	ON_BN_CLICKED(IDCANCEL, &CScenePreviewDlg::OnCancel)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

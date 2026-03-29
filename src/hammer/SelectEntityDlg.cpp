@@ -39,7 +39,7 @@ void CSelectEntityDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CSelectEntityDlg, CDialog)
 	//{{AFX_MSG_MAP(CSelectEntityDlg)
-	ON_LBN_SELCHANGE(IDC_ENTITIES, OnSelchangeEntities)
+	ON_LBN_SELCHANGE(IDC_ENTITIES, &CSelectEntityDlg::OnSelchangeEntities)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

@@ -24,12 +24,12 @@ static const unsigned int g_uSelChangeMsg = ::RegisterWindowMessage(GROUPLIST_MS
 
 BEGIN_MESSAGE_MAP(CEditGroups, CDialog)
 	//{{AFX_MSG_MAP(CEditGroups)
-	ON_BN_CLICKED(IDC_COLOR, OnColor)
-	ON_EN_CHANGE(IDC_NAME, OnChangeName)
-	ON_BN_CLICKED(IDC_NEW, OnNew)
-	ON_BN_CLICKED(IDC_REMOVE, OnRemove)
+	ON_BN_CLICKED(IDC_COLOR, &CEditGroups::OnColor)
+	ON_EN_CHANGE(IDC_NAME, &CEditGroups::OnChangeName)
+	ON_BN_CLICKED(IDC_NEW, &CEditGroups::OnNew)
+	ON_BN_CLICKED(IDC_REMOVE, &CEditGroups::OnRemove)
 	ON_WM_CLOSE()
-	ON_REGISTERED_MESSAGE(g_uSelChangeMsg, OnSelChangeGroupList)
+	ON_REGISTERED_MESSAGE(g_uSelChangeMsg, &CEditGroups::OnSelChangeGroupList)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

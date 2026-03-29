@@ -3785,7 +3785,7 @@ void CSculptProjectOptions::OnBnClickedResetImage()
 	m_StartSizingPoint = Vector2D(0, 0);
 }
 #endif
-bool CSculptProjectOptions::ReadImage( CString &FileName )
+bool CSculptProjectOptions::ReadImage( CString FileName )
 {
 #ifndef SLE_USE_STB
 	enum ImageFormat	imageFormat;

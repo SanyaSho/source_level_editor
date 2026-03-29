@@ -4769,7 +4769,7 @@ bool CMapDisp::SaveSMD(ExportSMDInfo_s *pInfo)
 }
 #endif
 #ifdef SLE //// moved out of .h
-inline void CMapDisp::GetVert( int index, Vector& v )
+/*inline*/ void CMapDisp::GetVert( int index, Vector& v )
 {
     m_CoreDispInfo.GetVert( index, v );
 #ifdef SLE //// SLE NEW: 3d skybox preview

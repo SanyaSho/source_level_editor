@@ -636,6 +636,7 @@ void CLightingPreviewThread::CalculateForLightTask( int nLineMask, int nLineMatc
 													int calc_mask, 
 													float *fContributionOut )
 {
+#if !defined( __clang__ )
 	FourVectors zero_vector;
 	zero_vector.x=Four_Zeros;
 	zero_vector.y=Four_Zeros;
@@ -716,6 +717,7 @@ void CLightingPreviewThread::CalculateForLightTask( int nLineMask, int nLineMatc
 	}
 	fltx4 lmag=total_light.length();
 	*(fContributionOut)=lmag.m128_f32[0]+lmag.m128_f32[1]+lmag.m128_f32[2]+lmag.m128_f32[3];
+#endif // !__clang__
 }
 
 void CLightingPreviewThread::CalculateForLight( CLightingPreviewLightDescription &l )

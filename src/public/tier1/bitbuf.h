@@ -164,7 +164,7 @@ public:
 	void			SetAssertOnOverflow( bool bAssert );
 
 	// This can be set to assign a name that gets output if the buffer overflows.
-	const char*		GetDebugName();
+	const char*		GetDebugName() RESTRICT;
 	void			SetDebugName( const char *pDebugName );
 
 
@@ -182,7 +182,7 @@ public:
 	void			WriteOneBitAt( int iBit, int nValue );
 	
 	// Write signed or unsigned. Range is only checked in debug.
-	void			WriteUBitLong( unsigned int data, int numbits, bool bCheckRange=true );
+	void			WriteUBitLong( unsigned int data, int numbits, bool bCheckRange=true ) RESTRICT;
 	void			WriteSBitLong( int data, int numbits );
 	
 	// Tell it whether or not the data is unsigned. If it's signed,
@@ -646,7 +646,7 @@ public:
 	inline bool		SeekRelative(int iBitDelta);	// Seek to an offset from the current position.
 
 	// Called when the buffer is overflowed.
-	void			SetOverflowFlag();
+	void			SetOverflowFlag() RESTRICT;
 
 
 public:

@@ -41,14 +41,14 @@ void CEditGameConfigs::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CEditGameConfigs, CDialog)
 	//{{AFX_MSG_MAP(CEditGameConfigs)
-	ON_BN_CLICKED(IDC_ADD, OnAdd)
-	ON_BN_CLICKED(IDC_COPY, OnCopy)
-	ON_BN_CLICKED(IDC_REMOVE, OnRemove)
-	ON_LBN_SELCHANGE(IDC_CONFIGS, OnSelchangeConfigs)
-	ON_LBN_DBLCLK(IDC_CONFIGS, OnDblclkConfigs)
+	ON_BN_CLICKED(IDC_ADD, &CEditGameConfigs::OnAdd)
+	ON_BN_CLICKED(IDC_COPY, &CEditGameConfigs::OnCopy)
+	ON_BN_CLICKED(IDC_REMOVE, &CEditGameConfigs::OnRemove)
+	ON_LBN_SELCHANGE(IDC_CONFIGS, &CEditGameConfigs::OnSelchangeConfigs)
+	ON_LBN_DBLCLK(IDC_CONFIGS, &CEditGameConfigs::OnDblclkConfigs)
 #ifdef SLE
-	ON_BN_CLICKED(IDC_OPEN_SOURCE, OnOpenSource) //// SLE NEW - button to open game configs folder
-	ON_BN_CLICKED(IDC_RENAME, OnRename) //// SLE NEW - allow renaming of existing configs
+	ON_BN_CLICKED(IDC_OPEN_SOURCE, &CEditGameConfigs::OnOpenSource) //// SLE NEW - button to open game configs folder
+	ON_BN_CLICKED(IDC_RENAME, &CEditGameConfigs::OnRename) //// SLE NEW - allow renaming of existing configs
 #endif
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()

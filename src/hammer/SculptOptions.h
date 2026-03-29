@@ -371,7 +371,7 @@ protected:
 	virtual bool	DoSizing( const Vector2D &vPoint );
 	virtual bool	DoPosition( const Vector2D &vPoint );
 	virtual bool	DoTiling( const Vector2D &vPoint );
-			bool	ReadImage( CString &FileName );
+			bool	ReadImage( CString FileName );
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

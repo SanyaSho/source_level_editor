@@ -99,9 +99,9 @@ static Clipper3DMessageWnd s_wndToolMessage;
 static const char *g_pszClassName = "SLE_ClipperToolWnd";
 
 BEGIN_MESSAGE_MAP(Clipper3DMessageWnd, CWnd)
-	ON_COMMAND(ID_CLIPPER_FINISH, OnCmdFinishClipping)
-	ON_COMMAND(ID_CLIPPER_ITERATE, OnCmdIterate)
-	ON_COMMAND(ID_CLIPPER_CANCEL, OnCmdCancelClipping)
+	ON_COMMAND(ID_CLIPPER_FINISH, &Clipper3DMessageWnd::OnCmdFinishClipping)
+	ON_COMMAND(ID_CLIPPER_ITERATE, &Clipper3DMessageWnd::OnCmdIterate)
+	ON_COMMAND(ID_CLIPPER_CANCEL, &Clipper3DMessageWnd::OnCmdCancelClipping)
 END_MESSAGE_MAP()
 
 //-----------------------------------------------------------------------------

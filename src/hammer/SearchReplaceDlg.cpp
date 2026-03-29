@@ -305,9 +305,9 @@ int FindReplace(CMapEntity *pEntity, FindObject_t &FindObject, const char *pszRe
 BEGIN_MESSAGE_MAP(CSearchReplaceDlg, CDialog)
 	//{{AFX_MSG_MAP(CSearchReplaceDlg)
 	ON_WM_SHOWWINDOW()
-	ON_COMMAND_EX(IDC_FIND_NEXT, OnFindReplace)
-	ON_COMMAND_EX(IDC_REPLACE, OnFindReplace)
-	ON_COMMAND_EX(IDC_REPLACE_ALL, OnFindReplace)
+	ON_COMMAND_EX(IDC_FIND_NEXT, &CSearchReplaceDlg::OnFindReplace)
+	ON_COMMAND_EX(IDC_REPLACE, &CSearchReplaceDlg::OnFindReplace)
+	ON_COMMAND_EX(IDC_REPLACE_ALL, &CSearchReplaceDlg::OnFindReplace)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

@@ -711,7 +711,8 @@ int CMapEntity::SerializeRMF(std::fstream &file, BOOL fIsStoring)
 
 		if (!(IsPlaceholder()))
 		{
-			CMapPoint::SetOrigin(Vector(0, 0, 0));
+			Vector originVec( 0, 0, 0 );
+			CMapPoint::SetOrigin( originVec );
 		}
 
 		GetOrigin(Origin);

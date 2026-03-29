@@ -112,7 +112,7 @@ void CRunMap::SaveToIni(void)
 
 BEGIN_MESSAGE_MAP(CRunMap, CDialog)
 	//{{AFX_MSG_MAP(CRunMap)
-	ON_BN_CLICKED(IDC_EXPERT, OnExpert)
+	ON_BN_CLICKED(IDC_EXPERT, &CRunMap::OnExpert)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

@@ -1243,14 +1243,23 @@ bool Selection3D::OnLMouseUp2D(CMapView2D *pView, UINT nFlags, const Vector2D &v
 		switch ( pView->axThird )
 		{
 			case 0: // x
-				m_pDocument->SetRotationPivotPos(Vector(m_pDocument->m_rotation_pivot_vec[ 0 ], vecWorld[ 1 ], vecWorld[ 2 ]));
+			{
+				Vector pivotPos( m_pDocument->m_rotation_pivot_vec[ 0 ], vecWorld[ 1 ], vecWorld[ 2 ] );
+				m_pDocument->SetRotationPivotPos( pivotPos );
 				break;
+			}
 			case 1: // y
-				m_pDocument->SetRotationPivotPos(Vector(vecWorld[ 0 ], m_pDocument->m_rotation_pivot_vec[ 1 ], vecWorld[ 2 ]));
+			{
+				Vector pivotPos( vecWorld[0], m_pDocument->m_rotation_pivot_vec[1], vecWorld[2] );
+				m_pDocument->SetRotationPivotPos( pivotPos );
 				break;
+			}
 			case 2: // z
-				m_pDocument->SetRotationPivotPos(Vector(vecWorld[ 0 ], vecWorld[ 1 ], m_pDocument->m_rotation_pivot_vec[ 2 ]));
+			{
+				Vector pivotPos( vecWorld[0], vecWorld[1], m_pDocument->m_rotation_pivot_vec[2] );
+				m_pDocument->SetRotationPivotPos( pivotPos );
 				break;
+			}
 			default:
 				break;
 		}

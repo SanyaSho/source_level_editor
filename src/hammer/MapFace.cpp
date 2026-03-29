@@ -1923,24 +1923,23 @@ static bool ModeUsesTextureCoords(EditorRenderMode_t mode)
 //-----------------------------------------------------------------------------
 // Draws the face using the material system material // this draws the translucent faces of brushes.
 //-----------------------------------------------------------------------------
-void CMapFace::DrawFace(Vector& ViewPoint, Color &pColor, EditorRenderMode_t mode, bool bPicking )
+void CMapFace::DrawFace( CRender* pRender, Color &pColor, EditorRenderMode_t mode, bool bPicking )
 {
 	// retrieve the coordinate frame to render into 
 	// (most likely just the identity, unless we're animating)
 	VMatrix frame;
 	bool hasParent = GetTransformMatrix( frame );
 
-	// don't do this -- if you use the material system to rotate and/or translate
-	// this will cull the locally spaced object!! -- need to pass around a flag!
-#if 0
-	// A little culling....
-	float fEyeDot = DotProduct(plane.normal, ViewPoint);
-	if ((fEyeDot < 0.5) /*&& (mode != RENDER_MODE_WIREFRAME)*/ /*&& !hasParent && 
-		(m_uchAlpha == 255)*/ && !bPicking)
+	// A little culling...
+	if ( !hasParent )
 	{
-		return;
+		Vector viewPoint;
+		pRender->GetCamera()->GetViewPoint( viewPoint );
+
+		if ( CullFace( pRender, plane, viewPoint ) )
+			return;
 	}
-#endif
+
 #ifdef SLE //// SLE REMOVE - not used
 	// don't draw no draws in ray tracced mode
 	if ( mode == RENDER_MODE_LIGHT_PREVIEW_RAYTRACED )
@@ -2152,10 +2151,13 @@ void CMapFace::RenderGridsIfCloseEnough( CRender3D* pRender, int nCount, CMapFac
 		}
 
 		// Only render the grid if the face is close enough to the camera.
-		if ( IsPointInBox(viewPoint, Mins, Maxs) )
-		{
-			ppFinalList[nFinalCount++] = ppFaces[i];
-		}
+		if ( !IsPointInBox(viewPoint, Mins, Maxs) )
+			continue;
+
+		if ( ppFaces[i]->CullFace( pRender, ppFaces[i]->plane, viewPoint ) )
+			continue;
+
+		ppFinalList[nFinalCount++] = ppFaces[i];
 	}
 
 	Render3DGrids( pRender, nFinalCount, ppFinalList );
@@ -2398,7 +2400,7 @@ void CMapFace::RenderFace3D( CRender3D* pRender, Vector& viewPoint, EditorRender
 	{
 		Color color;
 		ComputeColor( pRender, renderSelected, faceSelectionState, m_bIgnoreLighting, color );
-  		DrawFace(viewPoint, color, renderMode, pRender->IsPicking() );
+  		DrawFace( pRender, color, renderMode, pRender->IsPicking() );
 	}
 
 	// Draw the texture axes
@@ -2622,10 +2624,8 @@ void CMapFace::Render2D(CRender2D *pRender)
 			pRender->PushRenderMode(RENDER_MODE_TRANSLUCENT_FLAT);
 			pRender->BindTexture(m_pTexture);
 
-			Vector viewpoint;
-			pRender->GetCamera()->GetViewPoint(viewpoint);
-
-			DrawFace(viewpoint, Color(255, 255, 255, 20), RENDER_MODE_TRANSLUCENT_FLAT, false);
+			Color faceColor( 255, 255, 255, 20 );
+			DrawFace( pRender, faceColor, RENDER_MODE_TRANSLUCENT_FLAT, false );
 			pRender->PopRenderMode();
 		}
 #endif

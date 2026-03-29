@@ -197,7 +197,7 @@ public:
     // Surface Data
     //
     inline void SetVert( int index, Vector const &v );
-    inline void GetVert( int index, Vector& v );
+    /*inline*/ void GetVert( int index, Vector& v );
     inline void SetAlpha( int index, float alpha );
     inline float GetAlpha( int index );
     inline void GetFlatVert( int index, Vector& v );

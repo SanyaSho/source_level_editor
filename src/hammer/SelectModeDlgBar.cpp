@@ -16,12 +16,12 @@
 
 BEGIN_MESSAGE_MAP(CSelectModeDlgBar, CHammerBar)
 	//{{AFX_MSG_MAP(CSelectModeDlgBar)
-	ON_BN_CLICKED(IDC_GROUPS, OnGroups)
-	ON_BN_CLICKED(IDC_OBJECTS, OnObjects)
-	ON_BN_CLICKED(IDC_SOLIDS, OnSolids)
-	ON_UPDATE_COMMAND_UI(IDC_GROUPS, UpdateControlGroups)
-	ON_UPDATE_COMMAND_UI(IDC_OBJECTS, UpdateControlObjects)
-	ON_UPDATE_COMMAND_UI(IDC_SOLIDS, UpdateControlSolids)
+	ON_BN_CLICKED(IDC_GROUPS, &CSelectModeDlgBar::OnGroups)
+	ON_BN_CLICKED(IDC_OBJECTS, &CSelectModeDlgBar::OnObjects)
+	ON_BN_CLICKED(IDC_SOLIDS, &CSelectModeDlgBar::OnSolids)
+	ON_UPDATE_COMMAND_UI(IDC_GROUPS, &CSelectModeDlgBar::UpdateControlGroups)
+	ON_UPDATE_COMMAND_UI(IDC_OBJECTS, &CSelectModeDlgBar::UpdateControlObjects)
+	ON_UPDATE_COMMAND_UI(IDC_SOLIDS, &CSelectModeDlgBar::UpdateControlSolids)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

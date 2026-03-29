@@ -20,7 +20,7 @@ BEGIN_MESSAGE_MAP(CTitleWnd, CWnd)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_MOUSEMOVE()
-	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)
+	ON_MESSAGE(WM_MOUSELEAVE, &CTitleWnd::OnMouseLeave)
 END_MESSAGE_MAP()
 
 //-----------------------------------------------------------------------------

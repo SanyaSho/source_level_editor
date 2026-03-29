@@ -147,15 +147,15 @@ CMapCheckDlg *s_pDlg = NULL;
 
 BEGIN_MESSAGE_MAP(CMapCheckDlg, CDialog)
 	//{{AFX_MSG_MAP(CMapCheckDlg)
-	ON_BN_CLICKED(IDC_GO, OnGo)
-	ON_LBN_SELCHANGE(IDC_ERRORS, OnSelchangeErrors)
-	ON_LBN_DBLCLK(IDC_ERRORS, OnDblClkErrors)
+	ON_BN_CLICKED(IDC_GO, &CMapCheckDlg::OnGo)
+	ON_LBN_SELCHANGE(IDC_ERRORS, &CMapCheckDlg::OnSelchangeErrors)
+	ON_LBN_DBLCLK(IDC_ERRORS, &CMapCheckDlg::OnDblClkErrors)
 	ON_WM_PAINT()
-	ON_BN_CLICKED(IDC_FIX, OnFix)
-	ON_BN_CLICKED(IDC_FIXALL, OnFixall)
+	ON_BN_CLICKED(IDC_FIX, &CMapCheckDlg::OnFix)
+	ON_BN_CLICKED(IDC_FIXALL, &CMapCheckDlg::OnFixall)
 	ON_WM_DESTROY()
 	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDC_CHECK_VISIBLE_ONLY, OnCheckVisibleOnly)
+	ON_BN_CLICKED(IDC_CHECK_VISIBLE_ONLY, &CMapCheckDlg::OnCheckVisibleOnly)
 #ifdef SLE //// SLE CHANGE - make Map Problems resizable
 	ON_WM_SIZE()
 #endif
