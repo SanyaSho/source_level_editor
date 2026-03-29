@@ -1377,6 +1377,9 @@ InitReturnVal_t CHammer::HammerInternalInit()
 #endif
 
 #ifdef SLE // report editor being launched
+	// Dump current driver info
+	g_pMaterialSystem->SpewDriverInfo();
+
 	Msg( mwStatus, "------------------------------------------------------------------" );
 	Msg( mwStatus, "Done loading Source Level Editor 2.117 (%s)", GetRevisionInfo() );
 #endif
