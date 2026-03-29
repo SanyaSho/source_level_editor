@@ -657,6 +657,10 @@ target_compile_definitions(
 	NO_MEMOVERRIDE_NEW_DELETE
 
 	ISOLATION_AWARE_ENABLED
+
+	# Steam does not support Windows 10<
+	WINVER=0x0A00
+	_WIN32_WINNT=0x0A00
 )
 
 target_link_directories(
