@@ -636,7 +636,6 @@ target_include_directories(
 
 	"${SRCDIR}/common/shaderdll"
 	"${SRCDIR}/common/iostream"
-	"${DX9SDKDIR}/Include"
 	"${SRCDIR}/engine"
 	"${SRCDIR}/game/shared"
 	"${SRCDIR}/utils/common"

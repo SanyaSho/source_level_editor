@@ -9,7 +9,15 @@
 #ifndef _GAMEPALETTE_H
 #define _GAMEPALETTE_H
 
-#include <d3drmdef.h>
+//
+// Snippet from the deprecated 'd3drmdef.h'
+//
+typedef enum _D3DRMPALETTEFLAGS
+{
+	D3DRMPALETTE_FREE,                  /* renderer may use this entry freely */
+	D3DRMPALETTE_READONLY,              /* fixed but may be used by renderer */
+	D3DRMPALETTE_RESERVED               /* may not be used by renderer */
+} D3DRMPALETTEFLAGS, *LPD3DRMPALETTEFLAGS;
 
 class CGamePalette
 {
@@ -24,8 +32,6 @@ public:
 
 	operator LOGPALETTE*()
 	{ return pPalette; }
-	operator D3DRMPALETTEENTRY*()
-	{ return (D3DRMPALETTEENTRY*) pPalette->palPalEntry; }
 	operator CPalette*()
 	{ return &GDIPalette; }
 

@@ -31,7 +31,6 @@ set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 set( SRCDIR "${CMAKE_CURRENT_LIST_DIR}" )
 set( GAMEDIR "${CMAKE_CURRENT_LIST_DIR}/_compiled_bin" CACHE STRING "Build output folder" )
 set( THIRDPARTYDIR "${SRCDIR}/thirdparty" )
-set( DX9SDKDIR "${SRCDIR}/dx9sdk" )
 
 # Compile options that are populated and set for each target depending on their type
 set( ADDITIONAL_COMPILE_OPTIONS_EXE )
