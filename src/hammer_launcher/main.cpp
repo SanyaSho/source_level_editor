@@ -198,8 +198,14 @@ bool CHammerApp::Create( )
 	g_pInputSystem = (IInputSystem*)FindSystem( INPUTSYSTEM_INTERFACE_VERSION );
 
 	// This has to be done before connection.
+#if defined( SLE )
+	// If NULL is passed MaterialSystem will try to look for "-vulkan" first and only then 
+	// fallback to shaderapidx9
+	g_pMaterialSystem->SetShaderAPI( NULL );
+#else
 	g_pMaterialSystem->SetShaderAPI( "shaderapidx9.dll" );
-	
+#endif // SLE
+
 	return true;
 }
 
