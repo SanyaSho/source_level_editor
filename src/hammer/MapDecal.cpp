@@ -164,7 +164,7 @@ int CMapDecal::CanDecalSolid(CMapSolid *pSolid, CMapFace **ppFaces)
 			if (!V_strncmp(pFace->GetTexture()->GetFileName(), "tools/", 6)) // if it's anything from the tools folder, then...
 			{
 				if (/*!V_strncmp(m_pTexture->GetFileName(), "tools/toolsskybox", 17)*/
-					m_pTexture->HasVariable("%compilesky") || m_pTexture->HasVariable("%compile2Dsky")
+					m_pTexture->GetMaterial() && m_pTexture->HasVariable("%compilesky") || m_pTexture->HasVariable("%compile2Dsky")
 					) // if it's a skybox, count it as sky texture only...
 					continue;
 
