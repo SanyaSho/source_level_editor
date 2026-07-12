@@ -78,9 +78,9 @@ static bool g_bUseCullTree = false;
 #else
 static bool g_bUseCullTree = true;
 #endif
-
+#ifndef SLE //// SLE NEW - toggle cullbox display, moved to view3d options
 static bool g_bRenderCullBoxes = false;
-
+#endif
 #ifdef SLE_USE_HAMMER_LPREVIEW
 int g_nBitmapGenerationCounter = 1;
 #endif
@@ -840,7 +840,7 @@ void CRender3D::StartRenderFrame(void)
 		//
 		// Clear the frame buffer and Z buffer.
 		//
-#ifdef SLE //// SL NEW - customisable 3d background colour
+#ifdef SLE //// SLE NEW - customisable 3d background colour
 		int r, g, b; //// the colour is retrieved from registry-saved value.
 		r = GetRValue(Options.colors.clr3DBackground);
 		g = GetGValue(Options.colors.clr3DBackground);
@@ -1266,7 +1266,7 @@ bool CompareLightPreview_Lights(CLightPreview_Light const &a, CLightPreview_Ligh
 	return (a.m_flDistanceToEye > b.m_flDistanceToEye);
 }
 #ifdef SLE //// SLE CHANGE - bump up the lights count
-#define MAX_PREVIEW_LIGHTS 320 // max # of lights to process.
+#define MAX_PREVIEW_LIGHTS 32 // max # of lights to process.
 #else
 #define MAX_PREVIEW_LIGHTS 10 // max # of lights to process.
 #endif
@@ -1619,7 +1619,7 @@ void CRender3D::EndRenderFrame(void)
 				qsort(m_Pick.Hits, m_Pick.nNumHits, sizeof(m_Pick.Hits[ 0 ]), _CompareHitsReverse);
 			}
 		}
-
+		
 		//
 		// Copy the requested number of nearest hits into the destination buffer.
 		//
@@ -1767,7 +1767,7 @@ void CRender3D::EndRenderFrame(void)
 						( pLight->m_Type == MATERIAL_LIGHT_SPOT ) ||
 						( pLight->m_Type == MATERIAL_LIGHT_POINT )
 #ifdef SLE //// SLE CHANGE - taken from Hammer-2013
-						||( pLight->m_Type == MATERIAL_LIGHT_DIRECTIONAL /*&& ( pLight->m_nObjectID & 0x80000000 ) == 0*/ )
+						||( pLight->m_Type == MATERIAL_LIGHT_DIRECTIONAL && ( pLight->m_nObjectID & 0x80000000 ) == 0 )
 #endif
 						)
 					{
@@ -1846,7 +1846,8 @@ void CRender3D::EndRenderFrame(void)
 						// model point as a spot with infinite inner radius
 						SetNamedMaterialVar(src_mat, "$C0_W", 0.5);
 						SetNamedMaterialVar(src_mat, "$C1_W", 1.0e10);
-					} else
+					}
+					else
 					{
 						SetNamedMaterialVar(src_mat, "$C0_W", light.m_ThetaDot);
 						SetNamedMaterialVar(src_mat, "$C1_W", light.m_PhiDot);
@@ -3117,8 +3118,12 @@ void CRender3D::RenderMapClass(CMapClass *pMapClass)
 			//
 			// Render this object's culling box if it is enabled.
 			//
-			
+
+#ifdef SLE //// SLE NEW - toggle cullbox display, moved to view3d options
+			if (Options.view3d.bShowCullBoxes)
+#else
 			if (g_bRenderCullBoxes)
+#endif
 			{
 				Vector mins,maxs;
 				pMapClass->GetCullBox(mins, maxs);
@@ -3270,7 +3275,11 @@ void CRender3D::RenderInstanceMapClass_r(CMapClass *pMapClass)
 			//
 			// Render this object's culling box if it is enabled.
 			//			
+#ifdef SLE //// SLE NEW - toggle cullbox display, moved to view3d options
+			if (Options.view3d.bShowCullBoxes)
+#else
 			if (g_bRenderCullBoxes)
+#endif
 			{
 				Vector vecMins, vecMaxs, vecExpandedMins, vecExpandedMaxs;
 				pMapClass->GetCullBox( vecMins, vecMaxs );
@@ -3767,7 +3776,9 @@ void CRender3D::DebugHook1(void *pData)
 //-----------------------------------------------------------------------------
 void CRender3D::DebugHook2(void *pData)
 {
+#ifndef SLE //// SLE NEW - toggle cullbox display, moved to view3d options
 	g_bRenderCullBoxes = !g_bRenderCullBoxes;
+#endif
 }
 
 #ifdef SLE //// Ported from SDK-2013-Hammer

@@ -170,6 +170,7 @@
 #define IDD_FILESYSTEM_OPENDIALOG       327
 #define IDB_LABEL_MDL                   328
 #define IDB_LABEL_FOLDER                329
+//#define IDD_DISP_FREEZE_VERTS			330
 #define IDB_LABEL_FILE                  331
 #define IDD_MODEL_BROWSER               332
 #define IDD_DIFFMAP                     333
@@ -967,6 +968,7 @@
 #define ID_DISP_SCULPT_PAINT            1560
 #define ID_DISP_PAINT_DATA_SMOOTH       1561
 #define ID_DISP_PAINT_DATA_SLIDER_VALUE 1562
+#define ID_DISP_FREEZE_VERTS			1563
 #define ID_DISP_PAINT_DATA_TYPE         1564
 #define ID_MAP_ENABLELIGHTPREVIEW       1565
 #define IDC_VISIBLES_ONLY               1565
@@ -1225,6 +1227,7 @@
 #define ID_VIEW_PROPERTIES              32818
 #define ID_EDIT_PROPERTIES              32819
 #define ID_VIEW_MESSAGES                32820
+#define ID_SHOW_MESSAGES_ON_STARTUP		32821
 #define ID_HELP_BRUSHEDITOR             32822
 #define ID_VIEW_4VIEWS                  32823
 #define ID_VIEW_AUTOSIZE4               32824
@@ -1284,6 +1287,7 @@
 #define ID_VIEW_SKYCAMERA				32898 //// SLE NEW - Ctrl + Shift + Home cycles you through sky cameras starting with lowest id
 #define ID_CREATEOBJECT                 32899
 #define ID_FILE_EXPORT                  32900
+#define ID_CANCELOBJECT                 32901
 #define ID_EDIT_MAPPROPERTIES           32902
 #define ID_FILE_RUNMAP                  32903
 #define ID_TOOLS_SHOWITEMS              32906
@@ -1385,6 +1389,7 @@
 #define ID_TOGGLE_3D_GRID               33059
 #define ID_SHOW_SOLID_EDGES_NOZ			33060 //// SLE NEW - option to render selected solids' edges in wireframe noz
 #define ID_GOTO_BRUSH                   33061
+#define ID_SHOW_CULLBOXES				33062 //// SLE NEW - toggle cullbox display
 #define ID_TOOLS_DISPLACE               33063
 #define ID_DISP_LOAD                    33064
 #define ID_DISP_SAVE                    33065

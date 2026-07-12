@@ -119,6 +119,10 @@ protected:
 	afx_msg void OnEditProperties();
 	afx_msg void OnViewMessages();
 	afx_msg void OnUpdateViewMessages(CCmdUI* pCmdUI);
+#ifdef SLE //// SLE NEW - allow disabling messages window
+	afx_msg void OnShowMessagesOnStartup();
+	afx_msg void OnUpdateShowMessagesOnStartup(CCmdUI* pCmdUI);
+#endif
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnClose();
 	afx_msg void OnDestroy();
@@ -152,9 +156,9 @@ protected:
 #endif
 	afx_msg BOOL OnHelpInfo(HELPINFO*);
 	afx_msg void OnEnterMenuLoop( BOOL bIsTrackPopupMenu );
-#if defined( SLE )
+#ifdef SLE //// SLE NEW - drag & drop support, by SanyaSho
 	afx_msg void OnDropFiles(HDROP hDropInfo);
-#endif // SLE
+#endif
 #if _MSC_VER < 1300
 	afx_msg void OnActivateApp(BOOL bActive, HTASK hTask);
 #else

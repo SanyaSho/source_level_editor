@@ -59,6 +59,9 @@
 #include "lpreview_thread.h"
 #include "inputsystem/iinputsystem.h"
 #include "datacache/idatacache.h"
+#ifdef HAMMER2013_DM // used by the grid model browser
+#include "datamodel/dmelementfactoryhelper.h"
+#endif
 #ifdef HAMMER2013_PORT_KEYBINDS
 #include "KeyBinds.h"
 #include "fmtstr.h"
@@ -514,6 +517,9 @@ bool CHammer::Connect( CreateInterfaceFn factory )
 	if( !g_pStudioDataCache )
 		return false;
 #endif
+#ifdef HAMMER2013_DM // used by the grid model browser
+	InstallDmElementFactories();
+#endif
 #ifdef SLE_WINTAB_ENABLE //// SLE NEW - Tablet support w/ Wintab
 	WinTab_Init();
 #endif
@@ -556,7 +562,20 @@ bool CHammer::Connect( CreateInterfaceFn factory )
 	// Load the options
 	// NOTE: Have to do this now, because we need it before Inits() are called
 	// NOTE: SetRegistryKey will cause hammer to look into the registry for its values
+#ifdef SLE_USE_INI
+	// command line offers legacy support
+	if (CommandLine()->FindParm( "-useregistry" ))
+	{
+		SetRegistryKey("Source Level Editor"); //// SLE CHANGED: Changed registry paths to differentiate from original program.
+	}
+	else
+	{
+		free((void*)m_pszProfileName);
+		m_pszProfileName = ::_tcsdup(_T(".\\level_editor.ini")); // SLE TODO - support separate configs via command line?
+	}
+#else
 	SetRegistryKey("Source Level Editor"); //// SLE CHANGED: Changed registry paths to differentiate from original program.
+#endif
 #else
 	// Default location for GameConfig.txt is the same directory as Hammer.exe but this may be overridden on the command line
 	char szGameConfigDir[MAX_PATH];
@@ -658,13 +677,8 @@ static const char *s_pszOldAppName = NULL;
 void CHammer::BeginImportWCSettings(void)
 {
 	s_pszOldAppName = m_pszAppName;
-#ifdef SLE //// SLE TODO - figure out importing Hammer 4.1 settings? 
-	m_pszAppName = "Editor_Old";
-	SetRegistryKey("Editor_Old"); //// SLE NEW: Changed registry paths to differentiate from original program.
-#else
 	m_pszAppName = "Worldcraft";
 	SetRegistryKey("Valve");
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -674,15 +688,21 @@ void CHammer::BeginImportWCSettings(void)
 void CHammer::BeginImportVHESettings(void)
 {
 	s_pszOldAppName = m_pszAppName;
-#ifdef SLE //// SLE TODO - figure out importing Hammer 4.1 settings? 
-	m_pszAppName = "Editor";
-	SetRegistryKey("Source Level Editor"); //// SLE NEW: Changed registry paths to differentiate from original program.
-#else
 	m_pszAppName = "Valve Hammer Editor";
 	SetRegistryKey("Valve");
-#endif
 }
-
+#ifdef SLE //// SLE NEW - look up residual Hammer 4.1 settings
+//-----------------------------------------------------------------------------
+// Purpose: Tweaks our data members to enable us to import old Hammer 4.1
+//			settings from the registry.
+//-----------------------------------------------------------------------------
+void CHammer::BeginImportHammerSettings(void)
+{
+	s_pszOldAppName = m_pszAppName;
+	m_pszAppName = "Hammer";
+	SetRegistryKey("Valve");
+}
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: Restores our tweaked data members to their original state.
 //-----------------------------------------------------------------------------
@@ -1258,7 +1278,7 @@ InitReturnVal_t CHammer::HammerInternalInit()
 	pMainFrame->UpdateWindow();
 
 #ifdef SLE // report editor being launched
-	Msg( mwStatus, "Preparing Source Level Editor 2.117... (%s)", GetRevisionInfo() );
+	Msg( mwStatus, "Preparing Source Level Editor 2.129... (%s)", GetRevisionInfo() );
 #endif
 
 	// Now that we've initialized the file system, we can parse this config's gameinfo.txt for the additional settings there.
@@ -1381,7 +1401,7 @@ InitReturnVal_t CHammer::HammerInternalInit()
 	g_pMaterialSystem->SpewDriverInfo();
 
 	Msg( mwStatus, "------------------------------------------------------------------" );
-	Msg( mwStatus, "Done loading Source Level Editor 2.117 (%s)", GetRevisionInfo() );
+	Msg( mwStatus, "Done loading Source Level Editor 2.129 (%s)", GetRevisionInfo() );
 #endif
 	return INIT_OK;
 }

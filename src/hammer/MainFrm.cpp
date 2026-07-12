@@ -64,6 +64,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_PROPERTIES, OnUpdateEditFunction)
 	ON_COMMAND(ID_VIEW_MESSAGES, OnViewMessages)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_MESSAGES, OnUpdateViewMessages)
+#ifdef SLE //// SLE NEW - allow disabling messages window
+	ON_COMMAND(ID_SHOW_MESSAGES_ON_STARTUP, OnShowMessagesOnStartup)
+	ON_UPDATE_COMMAND_UI(ID_SHOW_MESSAGES_ON_STARTUP, OnUpdateShowMessagesOnStartup)
+#endif
 	ON_WM_ACTIVATEAPP()
 	ON_WM_SIZE()
 	ON_WM_CLOSE()
@@ -208,9 +212,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 #ifdef SLE_WINTAB_ENABLE //// SLE NEW - Tablet support w/ Wintab
 	ON_MESSAGE(WT_PACKET, OnWTPacket)
 #endif
-#if defined( SLE )
+#ifdef SLE //// SLE NEW - drag & drop support, by SanyaSho
 	ON_WM_DROPFILES()
-#endif // SLE
+#endif
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 	
@@ -242,12 +246,12 @@ struct
 } paneinfo[NUMSTATUSPANES] = 
 {
 	{ SBI_PROMPT,		ID_SEPARATOR,				SBPS_STRETCH | SBPS_NOBORDERS, 0 },
-	{ SBI_SELECTION,	ID_INDICATOR_SELECTION,		SBPS_NORMAL, 350 },
-	{ SBI_COORDS,		ID_INDICATOR_COORDS,		SBPS_NORMAL, 100 },
-	{ SBI_SIZE,			ID_INDICATOR_SIZE,			SBPS_NORMAL, 180 },
-	{ SBI_GRIDZOOM,		ID_INDICATOR_GRIDZOOM,		SBPS_NORMAL, 80 },
-	{ SBI_SNAP,			ID_INDICATOR_SNAP,			SBPS_NORMAL, 135 },
-	{ SBI_LIGHTPROGRESS,ID_INDICATOR_LIGHTPROGRESS,	SBPS_NORMAL, 50 }
+	{ SBI_SELECTION,	ID_INDICATOR_SELECTION,		SBPS_NORMAL, 350	},
+	{ SBI_COORDS,		ID_INDICATOR_COORDS,		SBPS_NORMAL, 85		},
+	{ SBI_SIZE,			ID_INDICATOR_SIZE,			SBPS_NORMAL, 225	},
+	{ SBI_GRIDZOOM,		ID_INDICATOR_GRIDZOOM,		SBPS_NORMAL, 75		},
+	{ SBI_SNAP,			ID_INDICATOR_SNAP,			SBPS_NORMAL, 130	},
+	{ SBI_LIGHTPROGRESS,ID_INDICATOR_LIGHTPROGRESS,	SBPS_NORMAL, 50		}
 };
 
 static GameData gd;
@@ -412,26 +416,39 @@ void CMainFrame::OnEnterMenuLoop( BOOL bIsTrackPopupMenu )
 		}
 	}
 }
-
-#if defined( SLE )
-void CMainFrame::OnDropFiles( HDROP hDropInfo )
+#ifdef SLE //// SLE NEW - drag & drop support, by SanyaSho
+void CMainFrame::OnDropFiles(HDROP hDropInfo)
 {
-	UINT unCount = DragQueryFile( hDropInfo, 0xFFFFFFFF, NULL, 0 );
+	UINT unCount = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
 
-	for ( UINT i = 0; i < unCount; i++ )
+	for (UINT i = 0; i < unCount; i++)
 	{
 		TCHAR fileName[MAX_PATH];
-		DragQueryFile( hDropInfo, i, fileName, MAX_PATH );
+		DragQueryFile(hDropInfo, i, fileName, MAX_PATH);
 
-		APP()->OpenDocumentFile( fileName );
+		//// verify it's our regular map file
+		if (Q_strcmp(Q_GetFileExtension(fileName), "vmf") != 0 && Q_strcmp(Q_GetFileExtension(fileName), "vmx") != 0 && Q_strcmp(Q_GetFileExtension(fileName), "vme") != 0
+			&& Q_strcmp(Q_GetFileExtension(fileName), "rmf") != 0 && Q_strcmp(Q_GetFileExtension(fileName), "map") != 0)
+		{
+			CString str;
+			str.Format("File %s has an extension different than a regular map file. Do you still want to open it?", fileName);
+			if (AfxMessageBox(str, MB_YESNO) == IDYES)
+			{
+				APP()->OpenDocumentFile(fileName);
+			}
+		}
+		else
+		{
+			APP()->OpenDocumentFile(fileName);
+		}
+
 	}
 
-	DragFinish( hDropInfo );
+	DragFinish(hDropInfo);
 
-	CMDIFrameWnd::OnDropFiles( hDropInfo );
+	CMDIFrameWnd::OnDropFiles(hDropInfo);
 }
-#endif // SLE
-
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : lpCreateStruct - 
@@ -759,7 +776,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect clientrect;
 	wndMDIClient.GetClientRect(clientrect);
 	g_pwndMessage->CreateMessageWindow( this, CRect( 0, clientrect.Height() - 90, clientrect.Width(), clientrect.Height() ) );
-
+#ifdef SLE //// SLE NEW - allow disabling messages window
+	if (!Options.general.bShowMessagesOnStartup)
+	{
+		g_pwndMessage->OnClose();
+	}
+#endif
 	CPrefabLibrary::LoadAllLibraries();
 
 	ToolManager()->SetTool(TOOL_POINTER);
@@ -782,9 +804,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		LoadBarState("Barstate");
 	}
 
-#if defined( SLE )
-	DragAcceptFiles( true );
-#endif // SLE
+#ifdef SLE //// SLE NEW - drag & drop support, by SanyaSho
+	DragAcceptFiles(true);
+#endif
 
 	return 0;
 }
@@ -1063,7 +1085,17 @@ void CMainFrame::OnUpdateViewMessages(CCmdUI *pCmdUI)
 {
 	pCmdUI->SetCheck( g_pwndMessage->IsVisible() );
 }
+#ifdef SLE //// SLE NEW - allow disabling messages window
+void CMainFrame::OnShowMessagesOnStartup(void)
+{
+	Options.general.bShowMessagesOnStartup = !Options.general.bShowMessagesOnStartup;
+}
 
+void CMainFrame::OnUpdateShowMessagesOnStartup(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(Options.general.bShowMessagesOnStartup);
+}
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: Brings up the Object Properties dialog.
 //-----------------------------------------------------------------------------

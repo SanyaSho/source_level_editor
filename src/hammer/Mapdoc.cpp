@@ -3,7 +3,17 @@
 // Purpose: The document. Exposes functions for object creation, deletion, and
 //			manipulation. Holds the current tool. Handles GUI messages that are
 //			view-independent.
-//
+// SLE NOTE: 
+// Carving with groups or multi-brush entities works fine in Worldcraft
+// but not in Source Hammer. SLE aims to fix it, and so far one half of the
+// equation has been solved: 
+// 1) selected brushes (what carve is being done with) aren't counted among all
+// the world brushes carve tests against. Otherwise it carves brushes with 
+// themselves, causing multiple or potentially infinite carving.
+// 2) would be to automatically remove the leftovers from group/multi-brush entity
+// carving. They cover up the resulting brush, but once removed, the clean 
+// result is left. It would be nice to automate their removal if there can be a
+// way to count/store these junk brushes... perhaps by checking the bboxes touching
 //=============================================================================//
 
 #include "stdafx.h"
@@ -317,6 +327,8 @@ BEGIN_MESSAGE_MAP(CMapDoc, CDocument)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_MODEL_ANIMATIONS, OnUpdatePlayModelAnimations)
 	ON_COMMAND(ID_SHOW_SOLID_EDGES_NOZ, OnShowSolidEdgesNoZ) //// SLE NEW - option to render selected solids' edges in wireframe noz
 	ON_UPDATE_COMMAND_UI(ID_SHOW_SOLID_EDGES_NOZ, OnUpdateShowSolidEdgesNoZ)
+	ON_COMMAND(ID_SHOW_CULLBOXES, OnShowCullBoxes) //// SLE NEW - toggle cullbox display
+	ON_UPDATE_COMMAND_UI(ID_SHOW_CULLBOXES, OnUpdateShowCullBoxes)
 #endif
 	ON_COMMAND(ID_TOGGLE_GROUPIGNORE, OnToggleGroupIgnore)
 	ON_UPDATE_COMMAND_UI(ID_TOGGLE_GROUPIGNORE, OnUpdateToggleGroupIgnore)
@@ -5538,7 +5550,12 @@ void CMapDoc::OnToolsSubtractselection(void)
 		CMapSolid *pSolid = dynamic_cast <CMapSolid *> (pChild);
 		if (pSolid != NULL)
 		{
-			WorldSolids.AddToTail(pSolid);
+#ifdef SLE //// SLE CHANGE - don't count selected solids, or it causes multiple or infinite carving with multiple brushes selected
+			if (!pSolid->IsSelected())
+#endif
+			{
+				WorldSolids.AddToTail(pSolid);
+			}
 		}
 
 		pChild = m_pWorld->GetNextDescendent(pos);
@@ -5576,7 +5593,7 @@ void CMapDoc::OnToolsSubtractselection(void)
 				if (Outside.Count() > 1)
 				{
 					pResult = (CMapClass *)(new CMapGroup);
-					FOR_EACH_OBJ( Outside, pos2 )
+					FOR_EACH_OBJ(Outside, pos2)
 					{
 						CMapClass *pTemp = Outside.Element(pos2);
 						pResult->AddChild(pTemp);
@@ -5594,6 +5611,8 @@ void CMapDoc::OnToolsSubtractselection(void)
 				// Replace the 'subtract from' object with the subtraction results.
 				//
 				DeleteObject(pSubtractFrom);
+#ifdef SLE	//// SLE TODO - also remove any remaining brushes still intersecting the carver
+#endif
 				AddObjectToWorld(pResult, pDestParent);
 				GetHistory()->KeepNew(pResult);
 			}
@@ -9708,6 +9727,19 @@ void CMapDoc::OnUpdateShowSolidEdgesNoZ(CCmdUI *pCmdUI)
 	pCmdUI->SetCheck(Options.view3d.bSolidsEdgesNoZ ? 1 : 0);
 	pCmdUI->Enable(!GetMainWnd()->IsShellSessionActive());
 }
+
+//// SLE NEW - toggle cullbox display
+void CMapDoc::OnShowCullBoxes(void)
+{
+	Options.view3d.bShowCullBoxes = !Options.view3d.bShowCullBoxes;
+	UpdateAllViews(MAPVIEW_UPDATE_TOOL);
+}
+
+void CMapDoc::OnUpdateShowCullBoxes(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(Options.view3d.bShowCullBoxes ? 1 : 0);
+	pCmdUI->Enable(!GetMainWnd()->IsShellSessionActive());
+}
 #endif //// SLE
 //-----------------------------------------------------------------------------
 // Purpose: Manages the state of the View | Hide Unselected menu item and toolbar button.
@@ -11907,28 +11939,62 @@ static BOOL SaveSMDModelsCollision(CMapEntity *pModel, ExportSMDInfo_s *pInfo)
 void CMapDoc::OnFileExportDXF(void)
 {
 	static CString str;
+#ifdef SLE //// SLE CHANGE - prompt for overwrite or warn about file protection
+	bool bSave = true;
 
-	if (str.IsEmpty())
+	do
 	{
-		int nDot;
-
-		// Replace the extension with DXF.
-		str = GetPathName();
-		if ((nDot = str.ReverseFind('.')) != -1)
+#endif
+		if (str.IsEmpty())
 		{
-			str = str.Left(nDot);
+			int nDot;
+
+			// Replace the extension with DXF.
+			str = GetPathName();
+			if ((nDot = str.ReverseFind('.')) != -1)
+			{
+				str = str.Left(nDot);
+			}
+			str += ".dxf";
 		}
-		str += ".dxf";
-	}
 
-	CExportDlg dlg(str, "dxf", "DXF files (*.dxf)|*.dxf||");
-	if(dlg.DoModal() == IDCANCEL)
-		return;
+		CExportDlg dlg(str, "dxf", "DXF files (*.dxf)|*.dxf||");
+		if (dlg.DoModal() == IDCANCEL)
+			return;
 
-	str = dlg.GetPathName();
-	if(str.ReverseFind('.') == -1)
-		str += ".dxf";
+		str = dlg.GetPathName();
+		if (str.ReverseFind('.') == -1)
+			str += ".dxf";
+#ifdef SLE //// SLE CHANGE - prompt for overwrite or warn about file protection
+		// check for existing files and/or read-only
+		if (access(str, 0) != -1)
+		{
+			// The file exists.
+			char szConfirm[_MAX_PATH];
+
+			if (access(str, 2) == -1)
+			{
+				// The file is read-only
+				wsprintf(szConfirm, "The file %s is read-only. You must change the file's attributes to overwrite it.", (const char*)str);
+				AfxMessageBox(szConfirm, MB_OK | MB_ICONEXCLAMATION);
+				bSave = false;
+			}
+			else
+			{
+				wsprintf(szConfirm, "Overwrite existing file %s?", (const char*)str);
+				if (AfxMessageBox(szConfirm, MB_YESNO | MB_ICONQUESTION) != IDYES)
+				{
+					bSave = false;
+				}
+				else
+					bSave = true;
+			}
+		}
+		//
+	} while (!bSave);
 	
+	if (!bSave) return;
+#endif
 	FILE *fp = fopen(str, "wb");
 
 	m_pWorld->CalcBounds(TRUE);
@@ -11994,27 +12060,59 @@ void CMapDoc::OnFileExportDXF(void)
 void CMapDoc::OnFileExportSMD(bool onlyCollisions) 
 {
 	static CString str;
+	bool bSave = true;
 
-	if (str.IsEmpty())
+	do
 	{
-		int nDot;
-
-		// Replace the extension with smd.
-		str = GetPathName();
-		if ((nDot = str.ReverseFind('.')) != -1)
+		if (str.IsEmpty())
 		{
-			str = str.Left(nDot);
+			int nDot;
+
+			// Replace the extension with smd.
+			str = GetPathName();
+			if ((nDot = str.ReverseFind('.')) != -1)
+			{
+				str = str.Left(nDot);
+			}
+			str += ".smd";
 		}
-		str += ".smd";
-	}
 
-	CExportDlg dlg(str, "smd", "SMD files (*.smd)|*.smd||");
-	if (dlg.DoModal() == IDCANCEL)
-		return;
+		CExportDlg dlg(str, "smd", "SMD files (*.smd)|*.smd||");
+		if (dlg.DoModal() == IDCANCEL)
+			return;
 
-	str = dlg.GetPathName();
-	if (str.ReverseFind('.') == -1)
-		str += ".smd";
+		str = dlg.GetPathName();
+		if (str.ReverseFind('.') == -1)
+			str += ".smd";
+
+		// check for existing files and/or read-only
+		if (access(str, 0) != -1)
+		{
+			// The file exists.
+			char szConfirm[_MAX_PATH];
+
+			if (access(str, 2) == -1)
+			{
+				// The file is read-only
+				wsprintf(szConfirm, "The file %s is read-only. You must change the file's attributes to overwrite it.", (const char*)str);
+				AfxMessageBox(szConfirm, MB_OK | MB_ICONEXCLAMATION);
+				bSave = false;
+			}
+			else
+			{
+				wsprintf(szConfirm, "Overwrite existing file %s?", (const char*)str);
+				if (AfxMessageBox(szConfirm, MB_YESNO | MB_ICONQUESTION) != IDYES)
+				{
+					bSave = false;
+				}
+				else
+					bSave = true;
+			}
+		}
+		//
+	} while (!bSave);
+	
+	if (!bSave) return;
 
 	FILE *fp = fopen(str, "wb");
 
@@ -12022,12 +12120,12 @@ void CMapDoc::OnFileExportSMD(bool onlyCollisions)
 
 	BoundBox box;
 	m_pWorld->GetRender2DBox(box.bmins, box.bmaxs);
-	
+
 	// export solids
 	BeginWaitCursor();
 
 	ExportSMDInfo_s info;
-//	info.bVisOnly = true;
+	//	info.bVisOnly = true;
 	info.nObject = 0;
 	info.pWorld = m_pWorld;
 	info.fp = fp;
@@ -12066,7 +12164,7 @@ void CMapDoc::OnFileExportSMDNoCollisions(void)
 }
 void CMapDoc::OnFileExportSMDCollisions(void)
 {
-	OnFileExportSMD(true); // false - not only collisions
+	OnFileExportSMD(true); // true - only collisions
 }
 #endif
 #ifdef SLE //// SLE NEW: add export to MAP to Tools->Export
@@ -13572,7 +13670,14 @@ bool CMapDoc::SaveVMF(const char *pszFileName, int saveFlags )
 		if (eResult == ChunkFile_Ok)
 		{
 #ifdef HAMMER2013_PORT_CORDONS
-			eResult = m_pWorld->SaveVMF(&File, &SaveInfo, saveFlags, m_bIsCordoning ? pCordonWorld->GetChildren() : nullptr);
+			if (saveFlags & SAVEFLAGS_LIGHTSONLY)
+			{
+				eResult = m_pWorld->SaveVMF(&File, &SaveInfo, saveFlags & SAVEFLAGS_LIGHTSONLY, nullptr);
+			}
+			else
+			{
+				eResult = m_pWorld->SaveVMF(&File, &SaveInfo, saveFlags, m_bIsCordoning ? pCordonWorld->GetChildren() : nullptr);
+			}
 #else
 			eResult = m_pWorld->SaveVMF(&File, &SaveInfo, saveFlags & SAVEFLAGS_LIGHTSONLY);
 #endif

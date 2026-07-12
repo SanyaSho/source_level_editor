@@ -25,7 +25,7 @@ class COptionsGeneral
 public:
 	int nMaxCameras;
 	int iUndoLevels;
-	BOOL bLockingTextures;
+	bool bLockingTextures;
 	BOOL bScaleLockingTextures;
 	TextureAlignment_t eTextureAlignment;
 	BOOL bLoadwinpos;
@@ -50,6 +50,7 @@ public:
 #ifdef SLE
 	BOOL bEnableInstancesLoading = true; //// SLE NEW - control to disable loading instances
 	BOOL bRadiusCullingFollowCamera = true; //// SLE NEW - if disabled, radius culling won't follow the camera
+	BOOL bShowMessagesOnStartup; //// SLE NEW - allow disabling messages window
 
 	BOOL bShowToolBrushFaces; //// SLE NEW: Tool Brush Texture display filter/toogle.
 	BOOL bShowEditorObjects; //// SLE NEW: Editor objects display filter/toggle.
@@ -179,6 +180,7 @@ public:
 	int iMaterialCacheSize; //// SLE NEW - customisable material cache size for the mat browser
 	BOOL bMissingMatAsError; //// SLE NEW - ported from sdk-2013-hammer - display missing texture as emo checkerboard
 	BOOL bShowIllumPosition; //// SLE NEW - show illum position
+	BOOL bShowCullBoxes; //// SLE NEW - toggle cullbox display
 #else
 	float fLightConeLength;  // Multiplier for light_spot cone length //// SLE REMOVE: Does anybody ever use this setting? 
 #endif

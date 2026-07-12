@@ -103,26 +103,27 @@ IDB_VISGROUPSTATUS      BITMAP                  "res\\visgroup.bmp"
 IDB_TREELISTCHECKS      BITMAP                  "res\\treelistchecks.bmp" //// SLE NEW - HAMMER2013_PORT_CORDONS
 IDB_TREEROOTS           BITMAP                  "res\\treeroot.bmp"
 IDB_SPLASH              BITMAP                  "res\\sle_splash.BMP"
-IDB_SPLASH_HL1			BITMAP                  "res\\sle_splash_hl1.BMP"
-IDB_SPLASH_HL2			BITMAP                  "res\\sle_splash_hl2.BMP"
-IDB_SPLASH_HL2DM		BITMAP                  "res\\sle_splash_hl2dm.BMP"
-IDB_SPLASH_EP1			BITMAP                  "res\\sle_splash_ep1.BMP"
-IDB_SPLASH_EP2			BITMAP                  "res\\sle_splash_ep2.BMP"
-IDB_SPLASH_LC			BITMAP                  "res\\sle_splash_lc.BMP"
-IDB_SPLASH_HLA			BITMAP                  "res\\sle_splash_hla.BMP"
-IDB_SPLASH_PORTAL		BITMAP                  "res\\sle_splash_portal.BMP"
-IDB_SPLASH_PORTAL2		BITMAP                  "res\\sle_splash_portal2.BMP"
-IDB_SPLASH_TF2			BITMAP                  "res\\sle_splash_tf2.BMP"
-IDB_SPLASH_SPACE		BITMAP                  "res\\sle_splash_space.BMP"
-IDB_SPLASH_NEWYEAR		BITMAP                  "res\\sle_splash_newyear.BMP"
-IDB_SPLASH_DODS			BITMAP                  "res\\sle_splash_dods.BMP"
-IDB_SPLASH_SEP30		BITMAP                  "res\\sle_splash_sep30.BMP"
-IDB_SPLASH_OF			BITMAP                  "res\\sle_splash_of.BMP"
-IDB_SPLASH_BS			BITMAP                  "res\\sle_splash_bs.BMP"
-IDB_SPLASH_DC			BITMAP                  "res\\sle_splash_dc.BMP"
-IDB_SPLASH_CSS			BITMAP                  "res\\sle_splash_css.BMP"
-IDB_SPLASH_BMI			BITMAP                  "res\\sle_splash_bmi.BMP"
-IDB_SPLASH_COW			BITMAP                  "res\\sle_splash_cow.BMP"
+// the following splashes were replaced with an out-of-folder loading system that supports other formats too
+//IDB_SPLASH_HL1			BITMAP                  "res\\sle_splash_hl1.BMP"
+//IDB_SPLASH_HL2			BITMAP                  "res\\sle_splash_hl2.BMP"
+//IDB_SPLASH_HL2DM			BITMAP                  "res\\sle_splash_hl2dm.BMP"
+//IDB_SPLASH_EP1			BITMAP                  "res\\sle_splash_ep1.BMP"
+//IDB_SPLASH_EP2			BITMAP                  "res\\sle_splash_ep2.BMP"
+//IDB_SPLASH_LC				BITMAP                  "res\\sle_splash_lc.BMP"
+//IDB_SPLASH_HLA			BITMAP                  "res\\sle_splash_hla.BMP"
+//IDB_SPLASH_PORTAL			BITMAP                  "res\\sle_splash_portal.BMP"
+//IDB_SPLASH_PORTAL2		BITMAP                  "res\\sle_splash_portal2.BMP"
+//IDB_SPLASH_TF2			BITMAP                  "res\\sle_splash_tf2.BMP"
+//IDB_SPLASH_SPACE			BITMAP                  "res\\sle_splash_space.BMP"
+//IDB_SPLASH_NEWYEAR		BITMAP                  "res\\sle_splash_newyear.BMP"
+//IDB_SPLASH_DODS			BITMAP                  "res\\sle_splash_dods.BMP"
+//IDB_SPLASH_SEP30			BITMAP                  "res\\sle_splash_sep30.BMP"
+//IDB_SPLASH_OF				BITMAP                  "res\\sle_splash_of.BMP"
+//IDB_SPLASH_BS				BITMAP                  "res\\sle_splash_bs.BMP"
+//IDB_SPLASH_DC				BITMAP                  "res\\sle_splash_dc.BMP"
+//IDB_SPLASH_CSS			BITMAP                  "res\\sle_splash_css.BMP"
+//IDB_SPLASH_BMI			BITMAP                  "res\\sle_splash_bmi.BMP"
+//IDB_SPLASH_COW			BITMAP                  "res\\sle_splash_cow.BMP"
 IDR_MAPDOC_VALVE        BITMAP                  "res\\forgemap.bmp"
 IDB_MAPOPERATIONS_256   BITMAP					"res\\toolbar256.bmp"
 IDR_MAPEDITTOOLS		BITMAP                  "res\\mapedit.bmp"
@@ -424,13 +425,14 @@ BEGIN
     END
     POPUP "&Map"
     BEGIN
-	//	POPUP "&Light Preview"						//// SLE NEW: BSP Lighting // we're not ready yet
-	//	BEGIN
-	//	MENUITEM "Enable BSP Lighting Preview", ID_MAP_ENABLELIGHTPREVIEW // x
-	//	MENUITEM "Disable BSP Lighting Preview", ID_MAP_DISABLELIGHTPREVIEW // x
-	//	MENUITEM "&Update BSP Lighting Preview", ID_MAP_UPDATELIGHTPREVIEW // x
-	//	END	
-	//	MENUITEM SEPARATOR
+		POPUP "&Light Preview"						//// SLE NEW: BSP Lighting // we're not ready yet
+		BEGIN
+		MENUITEM "Enable BSP Lighting Preview", ID_MAP_ENABLELIGHTPREVIEW
+		MENUITEM "Disable BSP Lighting Preview", ID_MAP_DISABLELIGHTPREVIEW
+		MENUITEM "&Update BSP Lighting Preview", ID_MAP_UPDATELIGHTPREVIEW
+		MENUITEM "&Abort BSP Lighting Calculation", ID_MAP_ABORTLIGHTCALCULATION
+		END	
+		MENUITEM SEPARATOR
         MENUITEM "&Snap to Grid",				ID_MAP_SNAPTOGRID // x
         MENUITEM "Sho&w Grid\tShift+R",         ID_VIEW_GRID
 		MENUITEM "Sho&w Grid in 3D",			ID_TOGGLE_3D_GRID
@@ -561,7 +563,7 @@ BEGIN
 		POPUP "&Debug view" //// SLE NEW - LOD control option
 		BEGIN //// SLE TODO - add displacement vector previews here
 			MENUITEM "Show Model Illum Position",	ID_VIEW_SHOW_ILLUMPOS //// SLE NEW - show illum position
-		//	MENUITEM "Show Cullboxes\tC",			ID_SHOW_CULLBOXES
+			MENUITEM "Show Cullboxes",			ID_SHOW_CULLBOXES //// SLE NEW - toggle cullbox display
 			MENUITEM SEPARATOR
 			MENUITEM "&Show Diffuse",			ID_VIEW_SHOW_DIFFUSE
 			MENUITEM "&Show Normal maps",		ID_VIEW_SHOW_NORMALMAPS
@@ -746,6 +748,7 @@ BEGIN
 		MENUITEM "&Load Window State",			ID_LOADWINDOWSTATE
         MENUITEM SEPARATOR
         MENUITEM "&Messages\tAlt+F3",           ID_VIEW_MESSAGES
+		MENUITEM "&Show Messages on Startup",	ID_SHOW_MESSAGES_ON_STARTUP
     END
     POPUP "&Help"
     BEGIN
@@ -813,6 +816,7 @@ BEGIN
     POPUP "Create object"
     BEGIN
         MENUITEM "&Create Object",              ID_CREATEOBJECT
+		MENUITEM "&Cancel",						ID_CANCELOBJECT
     END
     POPUP "2D View"
     BEGIN
@@ -865,12 +869,12 @@ BEGIN
 		MENUITEM SEPARATOR
         MENUITEM "3D &Lightmap Grid\t[F5]",           ID_VIEW_3DLIGHTMAP_GRID // x
         MENUITEM "3D &Smooth",                  ID_VIEW_3DSMOOTH
-//		MENUITEM SEPARATOR
-//		MENUITEM "3D &BSP Lighting",			ID_VIEW_LIGHTINGPREVIEW // the bsp lighting, not raytraced
-//		MENUITEM "3D &Realtime Lighting",		ID_VIEW_LIGHTINGPREVIEW2 // rendertarget lighting
-//		MENUITEM "3D &Ray-traced Preview",      ID_VIEW_LIGHTINGPREVIEW_RAYTRACED
-//		MENUITEM SEPARATOR
-//		MENUITEM "Map Logic Tree", ID_VIEW_2DLOGICAL //// SLE NEW: Restored Entity Connections/Logical view. //// SLE FIXME - logical view is currently broken, patch it out
+		MENUITEM SEPARATOR
+		MENUITEM "3D &BSP Lighting",			ID_VIEW_LIGHTINGPREVIEW // the bsp lighting, not raytraced
+		MENUITEM "3D &Realtime Lighting",		ID_VIEW_LIGHTINGPREVIEW2 // rendertarget lighting
+		MENUITEM "3D &Ray-traced Preview",      ID_VIEW_LIGHTINGPREVIEW_RAYTRACED
+		MENUITEM SEPARATOR
+		MENUITEM "Map Logic Tree", ID_VIEW_2DLOGICAL //// SLE NEW: Restored Entity Connections/Logical view. //// SLE FIXME - logical view is currently broken, patch it out
 		MENUITEM SEPARATOR
 		MENUITEM "Change 3D Background Color...",		IDC_COLOR_3DBACKGROUND
 		MENUITEM "Change 3D Selection Color...",		IDC_COLOR_3DSELECTION
@@ -1189,7 +1193,7 @@ END
 //// 'ABOUT' WINDOW
 IDD_ABOUTBOX DIALOGEX 0, 0, 246, 82
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Source Level Editor 2.117.1600"
+CAPTION "Source Level Editor 3.129.1660"
 FONT 8, "Segoe UI", 0, 0, 0x0
 BEGIN
 //    PUSHBUTTON      "(disabled in this version)",IDC_ORDER,7,49,88,14
@@ -1928,12 +1932,15 @@ CONTROL         "Select", ID_DISP_MASK_SELECT, "Button", BS_AUTOCHECKBOX | WS_TA
 CONTROL         "No Hull Collision", ID_DISP_NOHULL_COLL, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 114, 102, 67, 10
 CONTROL         "No Physics Collision", ID_DISP_NOPHYSICS_COLL, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 114, 90, 79, 10
 CONTROL         "No Ray Collision", ID_DISP_NORAY_COLL, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 114, 114, 67, 10
-PUSHBUTTON      "Select Adjacent", IDC_SELECT_ADJACENT, 139, 160, 66, 14
+PUSHBUTTON      "Select Adjacent", IDC_SELECT_ADJACENT, 139, 156, 66, 14
 //// tags
 GROUPBOX        "Tags", IDC_STATIC, 5, 175, 125, 40
 CONTROL         "Tag Buildable", ID_DISP_TAG_BUILD, "Button", BS_AUTOCHECKBOX | BS_PUSHLIKE | BS_MULTILINE /*| NOT WS_VISIBLE |*/ WS_TABSTOP, 10, 185, 35, 25
 CONTROL         "Tag Walkable", ID_DISP_TAG_WALK, "Button", BS_AUTOCHECKBOX | BS_PUSHLIKE | BS_MULTILINE | /*NOT WS_VISIBLE |*/ WS_TABSTOP, 45, 185, 35, 25
 CONTROL         "Tag Remove", ID_DISP_TAG_REMOVE, "Button", BS_AUTOCHECKBOX | BS_PUSHLIKE | BS_MULTILINE | /*NOT WS_VISIBLE |*/ WS_TABSTOP, 80, 185, 35, 25
+//// freeze/unfreeze verts
+//GROUPBOX        "Freeze", IDC_STATIC, 139, 175, 66, 40
+//CONTROL         "Freeze/ Unfreeze", ID_DISP_FREEZE_VERTS, "Button", BS_AUTOCHECKBOX | BS_PUSHLIKE | BS_MULTILINE /*| NOT WS_VISIBLE |*/ WS_TABSTOP, 144, 185, 35, 25
 END
 
 //// DISPLACEMENT CREATE DIALOGUE
@@ -1972,24 +1979,27 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Displacement Paint Geometry"
 FONT 8, "Segoe UI"
 BEGIN
-GROUPBOX        "Effect", IDC_STATIC, 5, 5, 65, 70
+GROUPBOX        "Effect", IDC_STATIC, 5, 5, 65, 80
 CONTROL         "Raise/Lower", ID_DISP_PAINT_DIST_RAISELOWER, "Button", BS_AUTORADIOBUTTON | WS_GROUP, 10, 15, 57, 10
 CONTROL         "Raise To", ID_DISP_PAINT_DIST_RAISETO, "Button", BS_AUTORADIOBUTTON, 10, 25, 45, 10
 CONTROL         "Smooth", ID_DISP_PAINT_DIST_SMOOTH, "Button", BS_AUTORADIOBUTTON, 10, 35, 40, 10
 //// SLE NEW - disp free drag brush
 CONTROL			"Free drag", ID_DISP_PAINT_FREE_DRAG, "Button", BS_AUTORADIOBUTTON, 10, 45, 50, 10
 ////
-CONTROL         "Spatial", ID_DISP_PAINT_DIST_SPATIAL, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 10, 60, 37, 10
+//// SLE NEW - add freezing for disp verts
+CONTROL			"Un/freeze", ID_DISP_FREEZE_VERTS, "Button", BS_AUTORADIOBUTTON, 10, 55, 50, 10
+////
+CONTROL         "Spatial", ID_DISP_PAINT_DIST_SPATIAL, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 10, 70, 37, 10
 CTEXT           "Axis", IDC_STATIC, 80, 10, 45, 8
 COMBOBOX        ID_DISP_PAINT_DIST_AXIS, 80, 20, 65, 75, CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 GROUPBOX        "Brush", IDC_STATIC, 75, 40, 110, 38
 COMBOBOX        ID_DISP_PAINT_DIST_BRUSH, 80, 49, 50, 120, CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
 CONTROL         "Soft-Edge", ID_DISPPAINT_SOFTEDGE, "Button", BS_AUTORADIOBUTTON | WS_GROUP, 135, 46, 47, 10
 CONTROL         "Hard-Edge", ID_DISPPAINT_HARDEDGE, "Button", BS_AUTORADIOBUTTON, 135, 57, 50, 10
-LTEXT           "Distance", IDC_STATIC, 10, 85, 30, 8
+LTEXT           "Distance", IDC_STATIC, 10, 90, 30, 8
 CONTROL         "Slider1", ID_DISP_PAINT_DIST_SLIDER_DISTANCE,
-"msctls_trackbar32", TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP, 40, 80, 105, 20
-EDITTEXT        ID_DISP_PAINT_DIST_EDIT_DISTANCE, 145, 80, 30, 14, ES_AUTOHSCROLL
+"msctls_trackbar32", TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP, 40, 85, 105, 20
+EDITTEXT        ID_DISP_PAINT_DIST_EDIT_DISTANCE, 145, 85, 30, 14, ES_AUTOHSCROLL
 GROUPBOX        "Spatial", IDC_STATIC, 5, 105, 180, 35
 LTEXT           "Radius", IDC_STATIC, 15, 120, 23, 8
 CONTROL         "Slider2", ID_DISP_PAINT_DIST_SLIDER_RADIUS,
@@ -2017,6 +2027,17 @@ EDITTEXT        ID_DISP_PAINT_DATA_EDIT_VALUE, 140, 70, 30, 14, ES_AUTOHSCROLL
 COMBOBOX        ID_DISP_PAINT_DATA_TYPE, 70, 15, 65, 55, CBS_DROPDOWN | WS_VSCROLL | WS_GROUP | WS_TABSTOP
 CTEXT           "Type", IDC_STATIC, 70, 5, 55, 8
 END
+
+//// DISPLACEMENT TOOL - FREEZE/UNFREEZE DIALOGUE
+//IDD_DISP_FREEZE_VERTS DIALOG  0, 0, 128, 64
+//STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+//CAPTION "Displacement Freeze/Unfreeze Verts"
+//FONT 8, "Segoe UI"
+//BEGIN
+//LTEXT           "Left-click to Freeze verts within tool radius", IDC_STATIC, 10, 10, 100, 8
+//LTEXT           "Right-click to Unfreeze verts within tool radius", IDC_STATIC, 10, 20, 100, 8
+//LTEXT           "Close dialogue to return", IDC_STATIC, 10, 30, 100, 8
+//END
 
 //// DISPLACEMENT TOOL - SCULPTING DIALOGUE
 IDD_DISP_PAINT_SCULPT DIALOGEX 0, 0, 178, 350
@@ -3294,10 +3315,10 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "Source Level Editor"
-            VALUE "FileVersion", "2.117.1600"
+            VALUE "FileVersion", "3.129.1660"
             VALUE "InternalName", "Source Level Editor"
             VALUE "ProductName", "Source Level Editor"
-            VALUE "ProductVersion", "2.117.1600"
+            VALUE "ProductVersion", "3.129.1660"
         END
     END
     BLOCK "VarFileInfo"
@@ -4011,7 +4032,7 @@ IDC_CROSSHAIR           CURSOR                  "res\\cur_crosshair.cur"
 
 STRINGTABLE 
 BEGIN
-    IDR_MAINFRAME           "Source Level Editor 2.117"
+    IDR_MAINFRAME           "Source Level Editor 3.129"
     IDR_FORGEMAPTYPE        "\nvmf\nSource Engine Projects\nSource Engine Projects (*.vmf)\n.vmf"
     IDR_FORGEPAKTYPE        "\npak\nQuake PAK archive\nQuake PAK archive (*.pak)\n.pak\nWorldcraft.Pak\nQuake PAK archive"
     IDS_NONE                "(none)"

@@ -68,7 +68,11 @@ public:
 	//}}AFX_VIRTUAL
 
 // Implementation
+#ifdef SLE //// SLE NEW - allow disabling messages window
+public:
+#else
 protected:
+#endif
 	virtual ~CMessageWnd();
 
 	void CalculateScrollSize();

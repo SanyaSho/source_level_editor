@@ -72,11 +72,17 @@ void AppRegisterPostInitFn( void (*)() );
 void AppRegisterMessageLoopFn( void (*)() );
 void AppRegisterMessagePretranslateFn( void (*)( MSG * ) );
 void AppRegisterPreShutdownFn( void (*)() );
-
+#ifdef HAMMER2013_DM
+class CHammer : public CWinApp, public CTier3DmAppSystem< IHammer >
+#else
 class CHammer : public CWinApp, public CTier3AppSystem< IHammer >
+#endif
 {
+#ifdef HAMMER2013_DM
+	typedef CTier3DmAppSystem< IHammer > BaseClass;
+#else
 	typedef CTier3AppSystem< IHammer > BaseClass;
-
+#endif
 public:
 	CHammer(void);
 	virtual ~CHammer(void);
@@ -127,6 +133,9 @@ public:
 
 	void BeginImportWCSettings();
 	void BeginImportVHESettings();
+#ifdef SLE //// SLE NEW - look up residual Hammer 4.1 settings
+	void BeginImportHammerSettings();
+#endif
 	void EndImportSettings();
 
 	void BeginClosing();
